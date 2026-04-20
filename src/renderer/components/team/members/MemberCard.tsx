@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import { Badge } from '@renderer/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@renderer/components/ui/tooltip';
 import { getTeamColorSet, getThemedBadge } from '@renderer/constants/teamColors';
@@ -62,6 +64,7 @@ export const MemberCard = ({
   onSendMessage,
   onAssignTask,
 }: MemberCardProps): React.JSX.Element => {
+  const { t } = useTranslation();
   // NOTE: lead context display disabled — usage formula is inaccurate
   // const teamName = useStore((s) => s.selectedTeamName);
   // const leadContext = useStore((s) =>
@@ -91,9 +94,9 @@ export const MemberCard = ({
   const progressPercent = totalTasks > 0 ? Math.round((completed / totalTasks) * 100) : 0;
   const activityTask = currentTask ?? reviewTask ?? null;
   const activityTitle = currentTask
-    ? `Current task: #${deriveTaskDisplayId(currentTask.id)}`
+    ? t('team.members.currentTaskTitle', { id: deriveTaskDisplayId(currentTask.id) })
     : reviewTask
-      ? `Reviewing task: #${deriveTaskDisplayId(reviewTask.id)}`
+      ? t('team.members.reviewingTaskTitle', { id: deriveTaskDisplayId(reviewTask.id) })
       : undefined;
 
   return (
@@ -145,7 +148,7 @@ export const MemberCard = ({
               <CurrentTaskIndicator
                 task={currentTask}
                 borderColor={colors.border}
-                activityLabel="working on"
+                activityLabel={t('team.members.workingOn')}
                 onOpenTask={onOpenTask}
               />
             ) : null}
@@ -153,7 +156,7 @@ export const MemberCard = ({
               <CurrentTaskIndicator
                 task={reviewTask}
                 borderColor={colors.border}
-                activityLabel="reviewing"
+                activityLabel={t('team.members.reviewing')}
                 onOpenTask={onOpenReviewTask}
               />
             ) : null}
@@ -164,7 +167,7 @@ export const MemberCard = ({
                   style={{ color: colors.border }}
                 />
                 <span className="shrink-0 text-[10px] text-[var(--color-text-muted)]">
-                  awaiting reply
+                  {t('team.members.awaitingReply')}
                 </span>
               </>
             ) : null}
@@ -181,7 +184,7 @@ export const MemberCard = ({
             !isRemoved ? (
               <Loader2
                 className="size-3.5 shrink-0 animate-spin text-[var(--color-text-muted)]"
-                aria-label="connecting"
+                aria-label={t('team.members.connecting')}
               />
             ) : null
           ) : spawnStatus === 'error' ? (
@@ -197,26 +200,32 @@ export const MemberCard = ({
                   </Badge>
                 </span>
               </TooltipTrigger>
-              <TooltipContent side="bottom">{spawnError ?? 'Spawn failed'}</TooltipContent>
+              <TooltipContent side="bottom">
+                {spawnError ?? t('team.members.spawnFailed')}
+              </TooltipContent>
             </Tooltip>
           ) : !activityTask ? (
             <Badge
               variant="secondary"
               className={`shrink-0 px-1.5 py-0.5 text-[10px] font-normal leading-none ${isRemoved ? 'bg-zinc-600 text-zinc-300' : 'text-[var(--color-text-muted)]'}`}
-              title={isRemoved ? 'This member has been removed' : activityTitle}
+              title={isRemoved ? t('team.members.memberRemovedTooltip') : activityTitle}
             >
-              {isRemoved ? 'removed' : presenceLabel}
+              {isRemoved ? t('team.members.removedBadge') : presenceLabel}
             </Badge>
           ) : null}
           <div
             className="shrink-0"
-            title={totalTasks > 0 ? `${completed}/${totalTasks} completed` : undefined}
+            title={
+              totalTasks > 0
+                ? t('team.members.progressTitle', { completed, total: totalTasks })
+                : undefined
+            }
           >
             <Badge
               variant="secondary"
               className="shrink-0 px-1.5 py-0.5 text-[10px] font-normal leading-none"
             >
-              {member.taskCount} {member.taskCount === 1 ? 'task' : 'tasks'}
+              {t('team.members.taskCount', { count: member.taskCount })}
             </Badge>
             {totalTasks > 0 && (
               <div className="mx-0.5 mt-0.5 h-[2px] rounded-full bg-[var(--color-border)]">
@@ -243,7 +252,7 @@ export const MemberCard = ({
                     <MessageSquare size={13} />
                   </button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom">Send message</TooltipContent>
+                <TooltipContent side="bottom">{t('team.members.sendMessage')}</TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -258,7 +267,7 @@ export const MemberCard = ({
                     <Plus size={13} />
                   </button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom">Assign task</TooltipContent>
+                <TooltipContent side="bottom">{t('team.members.assignTask')}</TooltipContent>
               </Tooltip>
             </div>
           )}

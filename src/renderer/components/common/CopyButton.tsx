@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 import { Check, Copy } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface CopyButtonProps {
   /** Text to copy to clipboard */
@@ -26,6 +27,7 @@ export const CopyButton: React.FC<CopyButtonProps> = ({
   bgColor = 'var(--code-bg)',
   inline = false,
 }) => {
+  const { t } = useTranslation();
   const [isCopied, setIsCopied] = useState(false);
 
   const handleCopy = async (): Promise<void> => {
@@ -49,7 +51,7 @@ export const CopyButton: React.FC<CopyButtonProps> = ({
       <button
         onClick={handleCopy}
         className="rounded p-1 transition-colors hover:opacity-80"
-        title="Copy to clipboard"
+        title={t('common.copyToClipboard')}
       >
         {icon}
       </button>
@@ -75,7 +77,7 @@ export const CopyButton: React.FC<CopyButtonProps> = ({
         <button
           onClick={handleCopy}
           className="pointer-events-auto rounded p-1.5"
-          title="Copy to clipboard"
+          title={t('common.copyToClipboard')}
         >
           {icon}
         </button>

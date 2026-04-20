@@ -1,5 +1,6 @@
 import { severityColor } from '@renderer/utils/reportAssessments';
 import { Users } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { ReportSection } from '../ReportSection';
 
@@ -19,23 +20,25 @@ interface SubagentSectionProps {
 }
 
 export const SubagentSection = ({ data, defaultCollapsed }: SubagentSectionProps) => {
+  const { t } = useTranslation();
+
   return (
-    <ReportSection title="Subagents" icon={Users} defaultCollapsed={defaultCollapsed}>
+    <ReportSection title={t('report.subagents')} icon={Users} defaultCollapsed={defaultCollapsed}>
       <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div>
-          <div className="text-xs text-text-muted">Count</div>
+          <div className="text-xs text-text-muted">{t('report.count')}</div>
           <div className="text-sm font-medium text-text">{data.count}</div>
         </div>
         <div>
-          <div className="text-xs text-text-muted">Total Tokens</div>
+          <div className="text-xs text-text-muted">{t('report.totalTokens')}</div>
           <div className="text-sm font-medium text-text">{data.totalTokens.toLocaleString()}</div>
         </div>
         <div>
-          <div className="text-xs text-text-muted">Total Duration</div>
+          <div className="text-xs text-text-muted">{t('report.totalDuration')}</div>
           <div className="text-sm font-medium text-text">{fmtDuration(data.totalDurationMs)}</div>
         </div>
         <div>
-          <div className="text-xs text-text-muted">Total Cost</div>
+          <div className="text-xs text-text-muted">{t('report.totalCost')}</div>
           <div className="text-sm font-medium text-text">{fmtCost(data.totalCostUsd)}</div>
         </div>
       </div>
@@ -45,11 +48,11 @@ export const SubagentSection = ({ data, defaultCollapsed }: SubagentSectionProps
           <table className="w-full text-xs">
             <thead>
               <tr className="border-b border-border text-left text-text-muted">
-                <th className="pb-2 pr-4">Description</th>
-                <th className="pb-2 pr-4">Type</th>
-                <th className="pb-2 pr-4 text-right">Tokens</th>
-                <th className="pb-2 pr-4 text-right">Duration</th>
-                <th className="pb-2 text-right">Cost</th>
+                <th className="pb-2 pr-4">{t('report.description')}</th>
+                <th className="pb-2 pr-4">{t('report.type')}</th>
+                <th className="pb-2 pr-4 text-right">{t('report.tokens')}</th>
+                <th className="pb-2 pr-4 text-right">{t('report.duration')}</th>
+                <th className="pb-2 text-right">{t('report.cost')}</th>
               </tr>
             </thead>
             <tbody>

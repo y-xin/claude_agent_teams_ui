@@ -5,6 +5,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
 import { AlertTriangle, BookOpen, Info, Key, Plus, Puzzle, RefreshCw, Server } from 'lucide-react';
 
@@ -29,6 +30,7 @@ import { SkillsPanel } from './skills/SkillsPanel';
 import { ExtensionsSubTabTrigger } from './ExtensionsSubTabTrigger';
 
 export const ExtensionStoreView = (): React.JSX.Element => {
+  const { t } = useTranslation();
   const tabId = useTabIdOptional();
   const {
     fetchPluginCatalog,
@@ -86,34 +88,30 @@ export const ExtensionStoreView = (): React.JSX.Element => {
     () => [
       {
         value: 'plugins' as const,
-        label: 'Plugins',
+        label: t('extensions.plugins'),
         icon: Puzzle,
-        description:
-          'Small add-ons for Claude. They give the app extra features and integrations you can install when you need them.',
+        description: t('extensions.pluginsDesc'),
       },
       {
         value: 'mcp-servers' as const,
-        label: 'MCP Servers',
+        label: t('extensions.mcpServers'),
         icon: Server,
-        description:
-          'Connections to outside tools and apps. They let Claude read data or do actions beyond this app.',
+        description: t('extensions.mcpServersDesc'),
       },
       {
         value: 'skills' as const,
-        label: 'Skills',
+        label: t('extensions.skills'),
         icon: BookOpen,
-        description:
-          'Ready-made instructions for common jobs. They help Claude do specific tasks better and more consistently.',
+        description: t('extensions.skillsDesc'),
       },
       {
         value: 'api-keys' as const,
-        label: 'API Keys',
+        label: t('extensions.apiKeys'),
         icon: Key,
-        description:
-          'Secret keys for online services. Add them here so plugins, servers, and integrations can connect and work.',
+        description: t('extensions.apiKeysDesc'),
       },
     ],
-    []
+    [t]
   );
 
   // Fetch plugin catalog on mount
@@ -155,10 +153,8 @@ export const ExtensionStoreView = (): React.JSX.Element => {
         <div className="bg-surface/70 mx-4 mt-3 flex items-start gap-3 rounded-md border border-border px-4 py-3">
           <Info className="mt-0.5 size-4 shrink-0 text-text-secondary" />
           <div>
-            <p className="text-sm font-medium text-text">Checking Claude CLI availability</p>
-            <p className="mt-0.5 text-xs text-text-muted">
-              Extensions need Claude CLI to install plugins, run MCP servers, and validate auth.
-            </p>
+            <p className="text-sm font-medium text-text">{t('extensions.checkingCli')}</p>
+            <p className="mt-0.5 text-xs text-text-muted">{t('extensions.checkingCliDesc')}</p>
           </div>
         </div>
       );
@@ -169,14 +165,11 @@ export const ExtensionStoreView = (): React.JSX.Element => {
         <div className="mx-4 mt-3 flex items-start gap-3 rounded-md border border-amber-500/30 bg-amber-500/5 px-4 py-3">
           <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-400" />
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium text-amber-300">Claude CLI is not available</p>
-            <p className="mt-0.5 text-xs text-text-muted">
-              Plugin installs are disabled until Claude CLI is installed. Open the Dashboard to
-              install it and retry.
-            </p>
+            <p className="text-sm font-medium text-amber-300">{t('extensions.cliNotAvailable')}</p>
+            <p className="mt-0.5 text-xs text-text-muted">{t('extensions.cliNotAvailableDesc')}</p>
           </div>
           <Button size="sm" variant="outline" onClick={openDashboard}>
-            Open Dashboard
+            {t('extensions.openDashboard')}
           </Button>
         </div>
       );
@@ -187,15 +180,13 @@ export const ExtensionStoreView = (): React.JSX.Element => {
         <div className="mx-4 mt-3 flex items-start gap-3 rounded-md border border-amber-500/30 bg-amber-500/5 px-4 py-3">
           <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-400" />
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium text-amber-300">Claude CLI needs sign-in</p>
+            <p className="text-sm font-medium text-amber-300">{t('extensions.cliNeedsSignIn')}</p>
             <p className="mt-0.5 text-xs text-text-muted">
-              Claude CLI was found
-              {cliStatus.installedVersion ? ` (${cliStatus.installedVersion})` : ''}, but plugin
-              installs are disabled until you sign in from the Dashboard.
+              {t('extensions.cliNeedsSignInDesc', { version: cliStatus.installedVersion ?? '' })}
             </p>
           </div>
           <Button size="sm" variant="outline" onClick={openDashboard}>
-            Open Dashboard
+            {t('extensions.openDashboard')}
           </Button>
         </div>
       );
@@ -205,10 +196,9 @@ export const ExtensionStoreView = (): React.JSX.Element => {
       <div className="mx-4 mt-3 flex items-start gap-3 rounded-md border border-emerald-500/30 bg-emerald-500/5 px-4 py-3">
         <Info className="mt-0.5 size-4 shrink-0 text-emerald-300" />
         <div>
-          <p className="text-sm font-medium text-emerald-300">Claude CLI is ready</p>
+          <p className="text-sm font-medium text-emerald-300">{t('extensions.cliReady')}</p>
           <p className="mt-0.5 text-xs text-text-muted">
-            Plugins can be installed from this page
-            {cliStatus.installedVersion ? ` using Claude CLI ${cliStatus.installedVersion}` : ''}.
+            {t('extensions.cliReadyDesc', { version: cliStatus.installedVersion ?? '' })}
           </p>
         </div>
       </div>
@@ -221,8 +211,8 @@ export const ExtensionStoreView = (): React.JSX.Element => {
       <div className="flex flex-1 items-center justify-center">
         <div className="text-center">
           <Puzzle className="mx-auto mb-3 size-12 text-text-muted" />
-          <h2 className="text-lg font-semibold text-text">Extensions</h2>
-          <p className="mt-1 text-sm text-text-muted">Available in the desktop app only.</p>
+          <h2 className="text-lg font-semibold text-text">{t('extensions.title')}</h2>
+          <p className="mt-1 text-sm text-text-muted">{t('extensions.desktopOnly')}</p>
         </div>
       </div>
     );
@@ -237,7 +227,7 @@ export const ExtensionStoreView = (): React.JSX.Element => {
           <div className="flex items-center justify-between px-6 py-4">
             <div className="flex items-center gap-3">
               <Puzzle className="size-5 text-text-muted" />
-              <h1 className="text-lg font-semibold text-text">Extensions</h1>
+              <h1 className="text-lg font-semibold text-text">{t('extensions.title')}</h1>
             </div>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -245,7 +235,7 @@ export const ExtensionStoreView = (): React.JSX.Element => {
                   <RefreshCw className={`size-4 ${isRefreshing ? 'animate-spin' : ''}`} />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Refresh catalog</TooltipContent>
+              <TooltipContent>{t('extensions.refreshCatalog')}</TooltipContent>
             </Tooltip>
           </div>
 
@@ -255,14 +245,14 @@ export const ExtensionStoreView = (): React.JSX.Element => {
             {!cliInstalled && (
               <div className="mb-4 flex items-center gap-2 rounded-md border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-sm text-amber-400">
                 <AlertTriangle className="size-4 shrink-0" />
-                Claude CLI is required to install or uninstall extensions. Install it from Settings.
+                {t('extensions.cliRequired')}
               </div>
             )}
             {/* Active sessions warning */}
             {hasOngoingSessions && (
               <div className="mb-4 flex items-center gap-2 rounded-md border border-blue-500/30 bg-blue-500/5 px-4 py-3 text-sm text-blue-400">
                 <Info className="size-4 shrink-0" />
-                Running sessions won&apos;t pick up extension changes until restarted.
+                {t('extensions.restartNotice')}
               </div>
             )}
             <Tabs
@@ -291,7 +281,7 @@ export const ExtensionStoreView = (): React.JSX.Element => {
                     className="mb-1 whitespace-nowrap"
                   >
                     <Plus className="mr-1 size-3.5" />
-                    Add Custom
+                    {t('extensions.addCustom')}
                   </Button>
                 )}
               </div>

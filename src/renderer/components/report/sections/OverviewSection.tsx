@@ -1,5 +1,6 @@
 import { assessmentColor } from '@renderer/utils/reportAssessments';
 import { Activity } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { ReportSection } from '../ReportSection';
 
@@ -10,20 +11,22 @@ interface OverviewSectionProps {
 }
 
 export const OverviewSection = ({ data }: OverviewSectionProps) => {
+  const { t } = useTranslation();
+
   return (
-    <ReportSection title="Overview" icon={Activity}>
+    <ReportSection title={t('report.overview')} icon={Activity}>
       <div className="mb-3 truncate text-xs text-text-muted">{data.firstMessage}</div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div>
-          <div className="text-xs text-text-muted">Duration</div>
+          <div className="text-xs text-text-muted">{t('report.duration')}</div>
           <div className="text-sm font-medium text-text">{data.durationHuman}</div>
         </div>
         <div>
-          <div className="text-xs text-text-muted">Messages</div>
+          <div className="text-xs text-text-muted">{t('report.messages')}</div>
           <div className="text-sm font-medium text-text">{data.totalMessages.toLocaleString()}</div>
         </div>
         <div>
-          <div className="text-xs text-text-muted">Context Usage</div>
+          <div className="text-xs text-text-muted">{t('report.contextUsage')}</div>
           <div
             className="text-sm font-medium"
             style={{ color: assessmentColor(data.contextAssessment) }}
@@ -35,25 +38,27 @@ export const OverviewSection = ({ data }: OverviewSectionProps) => {
           </div>
         </div>
         <div>
-          <div className="text-xs text-text-muted">Compactions</div>
+          <div className="text-xs text-text-muted">{t('report.compactions')}</div>
           <div className="text-sm font-medium text-text">{data.compactionCount}</div>
         </div>
         <div>
-          <div className="text-xs text-text-muted">Branch</div>
+          <div className="text-xs text-text-muted">{t('report.branch')}</div>
           <div className="truncate text-sm font-medium text-text">{data.gitBranch}</div>
         </div>
         <div>
-          <div className="text-xs text-text-muted">Subagents</div>
-          <div className="text-sm font-medium text-text">{data.hasSubagents ? 'Yes' : 'No'}</div>
+          <div className="text-xs text-text-muted">{t('report.subagents')}</div>
+          <div className="text-sm font-medium text-text">
+            {data.hasSubagents ? t('report.yes') : t('report.no')}
+          </div>
         </div>
         <div>
-          <div className="text-xs text-text-muted">Project</div>
+          <div className="text-xs text-text-muted">{t('report.project')}</div>
           <div className="truncate text-sm font-medium text-text" title={data.projectPath}>
             {data.projectPath}
           </div>
         </div>
         <div>
-          <div className="text-xs text-text-muted">Session ID</div>
+          <div className="text-xs text-text-muted">{t('report.sessionId')}</div>
           <div className="truncate text-sm font-medium text-text" title={data.sessionId}>
             {data.sessionId.slice(0, 12)}...
           </div>

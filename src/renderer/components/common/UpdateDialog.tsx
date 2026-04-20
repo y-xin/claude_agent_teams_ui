@@ -7,6 +7,7 @@
  */
 
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 
 import { isElectronMode } from '@renderer/api';
@@ -37,6 +38,8 @@ export const UpdateDialog = (): React.JSX.Element | null => {
       dismissUpdateDialog: s.dismissUpdateDialog,
     }))
   );
+
+  const { t } = useTranslation();
 
   const dialogRef = useRef<HTMLDivElement>(null);
 
@@ -119,7 +122,7 @@ export const UpdateDialog = (): React.JSX.Element | null => {
         className="absolute inset-0 cursor-default"
         style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}
         onClick={dismissUpdateDialog}
-        aria-label="Close dialog"
+        aria-label={t('common.closeDialog')}
         tabIndex={-1}
       />
       <div
@@ -127,7 +130,7 @@ export const UpdateDialog = (): React.JSX.Element | null => {
         className="relative mx-4 w-full max-w-2xl rounded-md border p-5 shadow-lg"
         role="dialog"
         aria-modal="true"
-        aria-label="Update available"
+        aria-label={t('common.updateAvailable')}
         style={{
           backgroundColor: 'var(--color-surface-overlay)',
           borderColor: 'var(--color-border-emphasis)',
@@ -144,7 +147,7 @@ export const UpdateDialog = (): React.JSX.Element | null => {
 
         <div className="mb-3 pr-8">
           <h2 className="text-base font-semibold" style={{ color: 'var(--color-text)' }}>
-            {isDownloaded ? 'Update Ready' : 'Update Available'}
+            {isDownloaded ? t('updates.updateReady') : t('updates.updateAvailable')}
           </h2>
           {availableVersion && (
             <div
@@ -180,7 +183,7 @@ export const UpdateDialog = (): React.JSX.Element | null => {
             </ReactMarkdown>
           ) : (
             <p className="italic" style={{ color: 'var(--color-text-muted)' }}>
-              No release notes available.
+              {t('updates.noReleaseNotes')}
             </p>
           )}
         </div>
@@ -194,7 +197,7 @@ export const UpdateDialog = (): React.JSX.Element | null => {
               style={{ color: 'var(--color-text-muted)' }}
             >
               <ExternalLink className="size-3" />
-              View on GitHub
+              {t('updates.viewOnGithub')}
             </button>
           )}
           <div className="flex-1" />
@@ -206,21 +209,21 @@ export const UpdateDialog = (): React.JSX.Element | null => {
               color: 'var(--color-text-secondary)',
             }}
           >
-            Later
+            {t('updates.later')}
           </button>
           {isDownloaded ? (
             <button
               onClick={installUpdate}
               className="rounded-md bg-green-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-green-500"
             >
-              Restart now
+              {t('updates.restartNow')}
             </button>
           ) : (
             <button
               onClick={downloadUpdate}
               className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-500"
             >
-              Download
+              {t('updates.download')}
             </button>
           )}
         </div>

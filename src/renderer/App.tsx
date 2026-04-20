@@ -7,13 +7,15 @@ import { ContextSwitchOverlay } from './components/common/ContextSwitchOverlay';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { TabbedLayout } from './components/layout/TabbedLayout';
 import { ToolApprovalSheet } from './components/team/ToolApprovalSheet';
+import { useI18n } from './hooks/useI18n';
 import { useTheme } from './hooks/useTheme';
 import { api } from './api';
 import { useStore } from './store';
 
 export const App = (): React.JSX.Element => {
-  // Initialize theme on app load
+  // 初始化主题和国际化
   useTheme();
+  useI18n();
 
   // Dismiss splash screen once React is ready
   useEffect(() => {

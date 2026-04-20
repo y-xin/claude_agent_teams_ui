@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Badge } from '@renderer/components/ui/badge';
 import { DialogDescription, DialogTitle } from '@renderer/components/ui/dialog';
@@ -34,6 +35,7 @@ export const MemberDetailHeader = ({
   onUpdateRole,
   updatingRole,
 }: MemberDetailHeaderProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const [editing, setEditing] = useState(false);
 
   // NOTE: lead context display disabled — usage formula is inaccurate
@@ -86,13 +88,13 @@ export const MemberDetailHeader = ({
               />
             ) : (
               <>
-                <span>{role || 'No role'}</span>
+                <span>{role || t('team.members.noRole')}</span>
                 {canEditRole && (
                   <button
                     type="button"
                     className="inline-flex items-center text-[var(--color-text-muted)] transition-colors hover:text-[var(--color-text-secondary)]"
                     onClick={() => setEditing(true)}
-                    aria-label="Edit role"
+                    aria-label={t('team.members.editRole')}
                   >
                     <Pencil size={12} />
                   </button>

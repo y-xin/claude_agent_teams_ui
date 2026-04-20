@@ -1,5 +1,6 @@
 import { severityColor } from '@renderer/utils/reportAssessments';
 import { AlertTriangle, CheckCircle, ChevronRight, Info, XCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { sectionId } from '../ReportSection';
 

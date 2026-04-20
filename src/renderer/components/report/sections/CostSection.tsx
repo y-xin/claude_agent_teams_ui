@@ -2,6 +2,7 @@ import { Fragment, useState } from 'react';
 
 import { getPricing } from '@renderer/utils/sessionAnalyzer';
 import { DollarSign } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { AssessmentBadge } from '../AssessmentBadge';
 import { ReportSection, sectionId } from '../ReportSection';
@@ -38,18 +39,23 @@ const CostBreakdownCard = ({
   stats: ModelTokenStats;
   pricing: ModelPricing;
 }) => {
+  const { t } = useTranslation();
   const lines: BreakdownLine[] = [
-    { label: 'Input', tokens: stats.inputTokens, ratePerM: pricing.input },
-    { label: 'Output', tokens: stats.outputTokens, ratePerM: pricing.output },
-    { label: 'Cache Read', tokens: stats.cacheRead, ratePerM: pricing.cache_read },
-    { label: 'Cache Write', tokens: stats.cacheCreation, ratePerM: pricing.cache_creation },
+    { label: t('report.input'), tokens: stats.inputTokens, ratePerM: pricing.input },
+    { label: t('report.output'), tokens: stats.outputTokens, ratePerM: pricing.output },
+    { label: t('report.cacheRead'), tokens: stats.cacheRead, ratePerM: pricing.cache_read },
+    {
+      label: t('report.cacheWrite'),
+      tokens: stats.cacheCreation,
+      ratePerM: pricing.cache_creation,
+    },
   ];
   const total = lines.reduce((sum, l) => sum + lineCost(l.tokens, l.ratePerM), 0);
 
   return (
     <div className="rounded-md border border-border bg-surface-raised px-4 py-3">
       <div className="mb-2 text-[10px] font-medium uppercase tracking-wider text-text-muted">
-        Cost Breakdown (per 1M tokens)
+        {t('report.costBreakdownPerMillion')}
       </div>
       <div className="flex flex-col gap-1.5 font-mono text-xs">
         {lines.map((l) => {
@@ -64,7 +70,7 @@ const CostBreakdownCard = ({
           );
         })}
         <div className="mt-1 flex items-baseline justify-between gap-4 border-t border-border pt-1.5">
-          <span className="font-medium text-text">Total</span>
+          <span className="font-medium text-text">{t('report.total')}</span>
           <span className="font-medium text-text">{fmt(total)}</span>
         </div>
       </div>
@@ -87,8 +93,14 @@ export const CostSection = ({
       ? (data.parentCostUsd / data.totalSessionCostUsd) * 100
       : 100;
 
+  const { t } = useTranslation();
+
   return (
-    <ReportSection title="Cost Analysis" icon={DollarSign} defaultCollapsed={defaultCollapsed}>
+    <ReportSection
+      title={t('report.costAnalysis')}
+      icon={DollarSign}
+      defaultCollapsed={defaultCollapsed}
+    >
       <div className="mb-4 text-2xl font-bold text-text">{fmt(data.totalSessionCostUsd)}</div>
 
       {/* Parent/Subagent stacked bar */}
@@ -110,14 +122,18 @@ export const CostSection = ({
                 className="inline-block size-2 rounded-full"
                 style={{ backgroundColor: '#60a5fa' }}
               />
-              <span className="text-text-secondary">Parent: {fmt(data.parentCostUsd)}</span>
+              <span className="text-text-secondary">
+                {t('report.parentLabel')}: {fmt(data.parentCostUsd)}
+              </span>
             </div>
             <div className="flex items-center gap-1.5">
               <span
                 className="inline-block size-2 rounded-full"
                 style={{ backgroundColor: '#c084fc' }}
               />
-              <span className="text-text-secondary">Subagent: {fmt(data.subagentCostUsd)}</span>
+              <span className="text-text-secondary">
+                {t('report.subagentLabel')}: {fmt(data.subagentCostUsd)}
+              </span>
             </div>
           </div>
         </div>
@@ -127,24 +143,25 @@ export const CostSection = ({
         {!showStackedBar && (
           <>
             <div>
-              <div className="text-xs text-text-muted">Parent Cost</div>
+              <div className="text-xs text-text-muted">{t('report.parentCost')}</div>
               <div className="text-sm font-medium text-text">{fmt(data.parentCostUsd)}</div>
             </div>
             <div>
-              <div className="text-xs text-text-muted">Subagent Cost</div>
+              <div className="text-xs text-text-muted">{t('report.subagentCost')}</div>
               <div className="text-sm font-medium text-text">{fmt(data.subagentCostUsd)}</div>
             </div>
           </>
         )}
         <div>
-          <div className="text-xs text-text-muted">Per Commit</div>
+          <div className="text-xs text-text-muted">{t('report.perCommit')}</div>
           <div className="text-[10px] text-text-muted">
             {commitCount > 0 ? (
               <>
-                total cost {'\u00F7'} {commitCount} commit{commitCount !== 1 ? 's' : ''}
+                {t('report.totalCostDivided')} {'\u00F7'} {commitCount} commit
+                {commitCount !== 1 ? 's' : ''}
               </>
             ) : (
-              'no commits'
+              t('report.noCommits')
             )}
           </div>
           <div className="flex items-center gap-2">
@@ -160,15 +177,15 @@ export const CostSection = ({
           </div>
         </div>
         <div>
-          <div className="text-xs text-text-muted">Per Line Changed</div>
+          <div className="text-xs text-text-muted">{t('report.perLineChanged')}</div>
           <div className="text-[10px] text-text-muted">
             {linesChanged > 0 ? (
               <>
-                total cost {'\u00F7'} {linesChanged.toLocaleString()} line
+                {t('report.totalCostDivided')} {'\u00F7'} {linesChanged.toLocaleString()} line
                 {linesChanged !== 1 ? 's' : ''}
               </>
             ) : (
-              'no lines changed'
+              t('report.noLinesChanged')
             )}
           </div>
           <div className="flex items-center gap-2">
@@ -186,12 +203,12 @@ export const CostSection = ({
         <table className="w-full text-xs">
           <thead>
             <tr className="border-b border-border text-left text-text-muted">
-              <th className="pb-2 pr-4">Model</th>
-              <th className="pb-2 pr-4 text-right">Input</th>
-              <th className="pb-2 pr-4 text-right">Output</th>
-              <th className="pb-2 pr-4 text-right">Cache Read</th>
-              <th className="pb-2 pr-4 text-right">Cache Write</th>
-              <th className="pb-2 pr-4 text-right">Cost</th>
+              <th className="pb-2 pr-4">{t('report.model')}</th>
+              <th className="pb-2 pr-4 text-right">{t('report.input')}</th>
+              <th className="pb-2 pr-4 text-right">{t('report.output')}</th>
+              <th className="pb-2 pr-4 text-right">{t('report.cacheRead')}</th>
+              <th className="pb-2 pr-4 text-right">{t('report.cacheWrite')}</th>
+              <th className="pb-2 pr-4 text-right">{t('report.cost')}</th>
             </tr>
           </thead>
           <tbody>

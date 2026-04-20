@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 
 import {
@@ -31,6 +32,7 @@ interface CompactBoundaryProps {
 export const CompactBoundary = ({
   compactGroup,
 }: Readonly<CompactBoundaryProps>): React.JSX.Element => {
+  const { t } = useTranslation();
   const { timestamp, message } = compactGroup;
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -62,7 +64,7 @@ export const CompactBoundary = ({
         onClick={() => setIsExpanded(!isExpanded)}
         className="group flex w-full cursor-pointer items-center transition-opacity hover:opacity-90"
         aria-expanded={isExpanded}
-        aria-label="Toggle compacted content"
+        aria-label={t('chat.toggleCompactedContent')}
       >
         {/* Left line */}
         <div className="h-px flex-1" style={{ backgroundColor: TOOL_CALL_TEXT, opacity: 0.3 }} />
@@ -82,7 +84,7 @@ export const CompactBoundary = ({
             className="whitespace-nowrap text-[11px] font-medium"
             style={{ color: TOOL_CALL_TEXT }}
           >
-            Context compacted
+            {t('chat.contextCompacted')}
           </span>
 
           {/* Token delta */}
@@ -95,7 +97,7 @@ export const CompactBoundary = ({
               {formatTokens(compactGroup.tokenDelta.postCompactionTokens)}
               <span style={{ color: 'var(--diff-added-text)' }}>
                 {' '}
-                ({formatTokens(Math.abs(compactGroup.tokenDelta.delta))} freed)
+                ({formatTokens(Math.abs(compactGroup.tokenDelta.delta))} {t('chat.freed')})
               </span>
             </span>
           )}
@@ -109,7 +111,7 @@ export const CompactBoundary = ({
                 color: 'var(--compact-phase-text)',
               }}
             >
-              Phase {compactGroup.startingPhaseNumber}
+              {t('chat.phase')} {compactGroup.startingPhaseNumber}
             </span>
           )}
 
@@ -152,12 +154,9 @@ export const CompactBoundary = ({
                 <Layers size={14} className="mt-0.5 shrink-0" style={{ color: COLOR_TEXT_MUTED }} />
                 <div className="text-xs leading-relaxed" style={{ color: COLOR_TEXT_MUTED }}>
                   <p className="mb-1 font-medium" style={{ color: COLOR_TEXT_SECONDARY }}>
-                    Conversation Compacted
+                    {t('chat.conversationCompacted')}
                   </p>
-                  <p>
-                    Previous messages were summarized to save context. The full conversation history
-                    is preserved in the session file.
-                  </p>
+                  <p>{t('chat.conversationCompactedDesc')}</p>
                 </div>
               </div>
             )}

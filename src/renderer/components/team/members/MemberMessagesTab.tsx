@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { api } from '@renderer/api';
 import { Button } from '@renderer/components/ui/button';
@@ -25,6 +26,7 @@ export const MemberMessagesTab = ({
   memberName,
   onCreateTask,
 }: MemberMessagesTabProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const [pagedMessages, setPagedMessages] = useState<InboxMessage[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(false);
@@ -39,7 +41,9 @@ export const MemberMessagesTab = ({
 
     void (async () => {
       try {
-        const page = await api.teams.getMessagesPage(teamName, { limit: MEMBER_MESSAGES_PAGE_SIZE });
+        const page = await api.teams.getMessagesPage(teamName, {
+          limit: MEMBER_MESSAGES_PAGE_SIZE,
+        });
         if (cancelled) return;
         const memberPageMessages = page.messages.filter(
           (message) => message.from === memberName || message.to === memberName
@@ -100,10 +104,10 @@ export const MemberMessagesTab = ({
   );
 
   const emptyStateText = loading
-    ? 'Loading messages...'
+    ? t('team.members.loadingMessages')
     : hasMore
-      ? 'No loaded messages for this member yet'
-      : 'No messages with this member';
+      ? t('team.members.noLoadedMessagesYet')
+      : t('team.members.noMessagesWithMember');
 
   return (
     <div className="max-h-[320px] space-y-2 overflow-y-auto">
@@ -123,8 +127,14 @@ export const MemberMessagesTab = ({
       )}
       {hasMore && (
         <div className="flex justify-center pt-2">
-          <Button variant="ghost" size="sm" className="text-xs" disabled={loading} onClick={() => void loadOlderMessages()}>
-            {loading ? 'Loading...' : 'Load older messages'}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-xs"
+            disabled={loading}
+            onClick={() => void loadOlderMessages()}
+          >
+            {loading ? t('team.members.loadingShort') : t('team.members.loadOlderMessages')}
           </Button>
         </div>
       )}

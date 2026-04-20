@@ -10,8 +10,10 @@ import { Combobox } from '@renderer/components/ui/combobox';
 import { cn } from '@renderer/lib/utils';
 import { useStore } from '@renderer/store';
 import { getFullResetState } from '@renderer/store/utils/stateResetHelpers';
+import { UI_LANGUAGE_OPTIONS, resolveUILanguage } from '@renderer/i18n';
 import { AGENT_LANGUAGE_OPTIONS, resolveLanguageName } from '@shared/utils/agentLanguage';
 import { Check, Copy, FolderOpen, Laptop, Loader2, RotateCcw } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
 
 import { SettingRow, SettingsSectionHeader, SettingsToggle } from '../components';
@@ -34,6 +36,7 @@ interface GeneralSectionProps {
   readonly onGeneralToggle: (key: keyof AppConfig['general'], value: boolean) => void;
   readonly onThemeChange: (value: 'dark' | 'light' | 'system') => void;
   readonly onLanguageChange: (value: string) => void;
+  readonly onUILanguageChange: (value: string) => void;
 }
 
 export const GeneralSection = ({
@@ -42,7 +45,9 @@ export const GeneralSection = ({
   onGeneralToggle,
   onThemeChange,
   onLanguageChange,
+  onUILanguageChange,
 }: GeneralSectionProps): React.JSX.Element => {
+  const { t, i18n } = useTranslation();
   const [serverStatus, setServerStatus] = useState<HttpServerStatus>({
     running: false,
     port: 3456,
@@ -168,9 +173,11 @@ export const GeneralSection = ({
 
     if (!selection.isClaudeDirName) {
       const proceed = await confirm({
-        title: 'Selected folder is not .claude',
-        message: `This folder is named "${selection.path.split(/[\\/]/).pop() ?? selection.path}", not ".claude". Continue anyway?`,
-        confirmLabel: 'Use Folder',
+        title: t('settings.general.selectedFolderNotClaude'),
+        message: t('settings.general.selectedFolderNotClaudeMsg', {
+          name: selection.path.split(/[\\/]/).pop() ?? selection.path,
+        }),
+        confirmLabel: t('settings.general.useFolder'),
       });
       if (!proceed) {
         return;
@@ -179,9 +186,9 @@ export const GeneralSection = ({
 
     if (!selection.hasProjectsDir) {
       const proceed = await confirm({
-        title: 'No projects directory found',
-        message: 'This folder does not contain a "projects" directory. Continue anyway?',
-        confirmLabel: 'Use Folder',
+        title: t('settings.general.noProjectsDir'),
+        message: t('settings.general.noProjectsDirMsg'),
+        confirmLabel: t('settings.general.useFolder'),
       });
       if (!proceed) {
         return;
@@ -189,7 +196,7 @@ export const GeneralSection = ({
     }
 
     await applyClaudeRootPath(selection.path);
-  }, [applyClaudeRootPath]);
+  }, [applyClaudeRootPath, t]);
 
   const handleResetClaudeRoot = useCallback(async (): Promise<void> => {
     await applyClaudeRootPath(null);
@@ -199,9 +206,9 @@ export const GeneralSection = ({
     async (candidate: WslClaudeRootCandidate): Promise<void> => {
       if (!candidate.hasProjectsDir) {
         const proceed = await confirm({
-          title: 'WSL path missing projects directory',
-          message: `"${candidate.path}" does not contain a "projects" directory. Continue anyway?`,
-          confirmLabel: 'Use Path',
+          title: t('settings.general.wslPathMissing'),
+          message: t('settings.general.wslPathMissingMsg', { path: candidate.path }),
+          confirmLabel: t('settings.general.usePath'),
         });
         if (!proceed) {
           return;
@@ -211,7 +218,7 @@ export const GeneralSection = ({
       await applyClaudeRootPath(candidate.path);
       setShowWslModal(false);
     },
-    [applyClaudeRootPath]
+    [applyClaudeRootPath, t]
   );
 
   const handleUseWslForClaude = useCallback(async (): Promise<void> => {
@@ -223,10 +230,9 @@ export const GeneralSection = ({
 
       if (candidates.length === 0) {
         const pickManually = await confirm({
-          title: 'No WSL Claude paths found',
-          message:
-            'Could not find WSL distros with Claude data automatically. Select folder manually?',
-          confirmLabel: 'Select Folder',
+          title: t('settings.general.noWslPaths'),
+          message: t('settings.general.noWslPathsMsg'),
+          confirmLabel: t('common.selectFolder'),
         });
         if (pickManually) {
           await handleSelectClaudeRootFolder();
@@ -248,7 +254,7 @@ export const GeneralSection = ({
     } finally {
       setFindingWslRoots(false);
     }
-  }, [applyWslCandidate, handleSelectClaudeRootFolder]);
+  }, [applyWslCandidate, handleSelectClaudeRootFolder, t]);
 
   const isCustomClaudeRoot = Boolean(claudeRootInfo?.customPath);
   const resolvedClaudeRootPath = claudeRootInfo?.resolvedPath ?? '~/.claude';
@@ -258,6 +264,24 @@ export const GeneralSection = ({
 
   const isElectron = useMemo(() => isElectronMode(), []);
 
+  const uiLanguageOptions = useMemo(
+    () =>
+      UI_LANGUAGE_OPTIONS.map((opt) => ({
+        value: opt.value,
+        label: i18n.language === 'zh' ? opt.labelZh : opt.label,
+      })),
+    [i18n.language]
+  );
+
+  const handleUILanguageSelect = useCallback(
+    (value: string) => {
+      onUILanguageChange(value);
+      const resolved = resolveUILanguage(value);
+      void i18n.changeLanguage(resolved);
+    },
+    [onUILanguageChange, i18n]
+  );
+
   const agentLanguageDescription = useMemo(() => {
     const current = safeConfig.general.agentLanguage ?? 'system';
     if (current === 'system') {
@@ -266,10 +290,10 @@ export const GeneralSection = ({
       const detected = resolveLanguageName('system', browserLang);
       const detectedFlag = AGENT_LANGUAGE_OPTIONS.find((o) => o.value === primaryCode)?.flag ?? '';
       const flagPrefix = detectedFlag ? `${detectedFlag} ` : '';
-      return `Language for agent communication (detected: ${flagPrefix}${detected})`;
+      return t('settings.general.languageDescDetected', { detected: `${flagPrefix}${detected}` });
     }
-    return 'Language for agent communication';
-  }, [safeConfig.general.agentLanguage]);
+    return t('settings.general.languageDesc');
+  }, [safeConfig.general.agentLanguage, t]);
 
   const languageComboboxOptions = useMemo(
     () =>
@@ -296,15 +320,40 @@ export const GeneralSection = ({
 
   return (
     <div>
-      <SettingsSectionHeader title="Agent Language" />
-      <SettingRow label="Language" description={agentLanguageDescription}>
+      <SettingsSectionHeader title={t('settings.general.uiLanguage')} />
+      <SettingRow
+        label={t('settings.general.language')}
+        description={t('settings.general.uiLanguageDesc')}
+      >
+        <div className="inline-flex rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] p-0.5">
+          {uiLanguageOptions.map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              disabled={saving}
+              className={cn(
+                'rounded-[3px] px-3 py-1 text-xs font-medium transition-colors disabled:opacity-50',
+                (safeConfig.general.uiLanguage ?? 'system') === opt.value
+                  ? 'bg-[var(--color-surface-raised)] text-[var(--color-text)] shadow-sm'
+                  : 'text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]'
+              )}
+              onClick={() => handleUILanguageSelect(opt.value)}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </SettingRow>
+
+      <SettingsSectionHeader title={t('settings.general.agentLanguage')} />
+      <SettingRow label={t('settings.general.language')} description={agentLanguageDescription}>
         <Combobox
           options={languageComboboxOptions}
           value={safeConfig.general.agentLanguage ?? 'system'}
           onValueChange={onLanguageChange}
-          placeholder="Select language..."
-          searchPlaceholder="Search language..."
-          emptyMessage="No language found."
+          placeholder={t('settings.general.selectLanguage')}
+          searchPlaceholder={t('settings.general.searchLanguage')}
+          emptyMessage={t('settings.general.noLanguageFound')}
           disabled={saving}
           className="min-w-[180px]"
           renderOption={renderLanguageOption}
@@ -313,10 +362,10 @@ export const GeneralSection = ({
 
       {isElectron && (
         <>
-          <SettingsSectionHeader title="Startup" />
+          <SettingsSectionHeader title={t('settings.general.startup')} />
           <SettingRow
-            label="Launch at login"
-            description="Automatically start the app when you log in"
+            label={t('settings.general.launchAtLogin')}
+            description={t('settings.general.launchAtLoginDesc')}
           >
             <SettingsToggle
               enabled={safeConfig.general.launchAtLogin}
@@ -326,8 +375,8 @@ export const GeneralSection = ({
           </SettingRow>
           {window.navigator.userAgent.includes('Macintosh') && (
             <SettingRow
-              label="Show dock icon"
-              description="Display the app icon in the dock (macOS)"
+              label={t('settings.general.showDockIcon')}
+              description={t('settings.general.showDockIconDesc')}
             >
               <SettingsToggle
                 enabled={safeConfig.general.showDockIcon}
@@ -339,8 +388,8 @@ export const GeneralSection = ({
         </>
       )}
 
-      <SettingsSectionHeader title="Appearance" />
-      <SettingRow label="Theme" description="Choose your preferred color theme">
+      <SettingsSectionHeader title={t('settings.general.appearance')} />
+      <SettingRow label={t('settings.general.theme')} description={t('settings.general.themeDesc')}>
         <div className="inline-flex rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] p-0.5">
           {THEME_OPTIONS.map((opt) => (
             <button
@@ -355,14 +404,14 @@ export const GeneralSection = ({
               )}
               onClick={() => onThemeChange(opt.value)}
             >
-              {opt.label}
+              {t(`settings.general.theme${opt.value.charAt(0).toUpperCase() + opt.value.slice(1)}`)}
             </button>
           ))}
         </div>
       </SettingRow>
       <SettingRow
-        label="Expand AI responses by default"
-        description="Automatically expand each response turn when opening a transcript or receiving a new message"
+        label={t('settings.general.expandAIResponses')}
+        description={t('settings.general.expandAIResponsesDesc')}
       >
         <SettingsToggle
           enabled={safeConfig.general.autoExpandAIGroups ?? false}
@@ -372,16 +421,16 @@ export const GeneralSection = ({
       </SettingRow>
       {isElectron && !window.navigator.userAgent.includes('Macintosh') && (
         <SettingRow
-          label="Use native title bar"
-          description="Use the default system window frame instead of the custom title bar"
+          label={t('settings.general.nativeTitleBar')}
+          description={t('settings.general.nativeTitleBarDesc')}
         >
           <SettingsToggle
             enabled={safeConfig.general.useNativeTitleBar}
             onChange={async (v) => {
               const shouldRelaunch = await confirm({
-                title: 'Restart required',
-                message: 'The app needs to restart to apply the title bar change. Restart now?',
-                confirmLabel: 'Restart',
+                title: t('settings.general.restartRequired'),
+                message: t('settings.general.restartRequiredMsg'),
+                confirmLabel: t('settings.general.restart'),
               });
               if (shouldRelaunch) {
                 // Await config write before relaunch to avoid race condition on Windows
@@ -403,21 +452,25 @@ export const GeneralSection = ({
 
       {isElectron && (
         <>
-          <SettingsSectionHeader title="Local Claude Root" />
+          <SettingsSectionHeader title={t('settings.general.localClaudeRoot')} />
           <p className="mb-4 text-sm" style={{ color: 'var(--color-text-muted)' }}>
-            Choose which local folder is treated as your Claude data root
+            {t('settings.general.localClaudeRootDesc')}
           </p>
 
           <SettingRow
-            label="Current Local Root"
-            description={isCustomClaudeRoot ? 'Using custom path' : 'Using auto-detected path'}
+            label={t('settings.general.currentLocalRoot')}
+            description={
+              isCustomClaudeRoot
+                ? t('settings.general.usingCustomPath')
+                : t('settings.general.usingAutoDetected')
+            }
           >
             <div className="max-w-96 text-right">
               <div className="truncate font-mono text-xs" style={{ color: 'var(--color-text)' }}>
                 {resolvedClaudeRootPath}
               </div>
               <div className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>
-                Auto-detected: {defaultClaudeRootPath}
+                {t('settings.general.autoDetected', { path: defaultClaudeRootPath })}
               </div>
             </div>
           </SettingRow>
@@ -438,7 +491,7 @@ export const GeneralSection = ({
                 ) : (
                   <FolderOpen className="size-3" />
                 )}
-                Select Folder
+                {t('common.selectFolder')}
               </span>
             </button>
 
@@ -453,7 +506,7 @@ export const GeneralSection = ({
             >
               <span className="flex items-center gap-2">
                 <RotateCcw className="size-3" />
-                Use Auto-Detect
+                {t('common.useAutoDetect')}
               </span>
             </button>
 
@@ -473,7 +526,7 @@ export const GeneralSection = ({
                   ) : (
                     <Laptop className="size-3" />
                   )}
-                  Using Linux/WSL?
+                  {t('settings.general.usingLinuxWsl')}
                 </span>
               </button>
             )}
@@ -502,10 +555,10 @@ export const GeneralSection = ({
                 }}
               >
                 <h3 className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
-                  Select WSL Claude Root
+                  {t('settings.general.selectWslClaudeRoot')}
                 </h3>
                 <p className="mt-1 text-xs" style={{ color: 'var(--color-text-muted)' }}>
-                  Detected WSL distributions and Claude root candidates
+                  {t('settings.general.detectedWslDists')}
                 </p>
 
                 <div className="mt-4 space-y-2">
@@ -527,7 +580,7 @@ export const GeneralSection = ({
                         </p>
                         {!candidate.hasProjectsDir && (
                           <p className="text-[11px]" style={{ color: 'var(--warning-text)' }}>
-                            No projects directory detected
+                            {t('settings.general.noProjectsDirDetected')}
                           </p>
                         )}
                       </div>
@@ -539,7 +592,7 @@ export const GeneralSection = ({
                           color: 'var(--color-text)',
                         }}
                       >
-                        Use This Path
+                        {t('settings.general.useThisPath')}
                       </button>
                     </div>
                   ))}
@@ -554,7 +607,7 @@ export const GeneralSection = ({
                       color: 'var(--color-text-secondary)',
                     }}
                   >
-                    Cancel
+                    {t('common.cancel')}
                   </button>
                   <button
                     onClick={() => {
@@ -567,7 +620,7 @@ export const GeneralSection = ({
                       color: 'var(--color-text)',
                     }}
                   >
-                    Select Folder Manually
+                    {t('settings.general.selectFolderManually')}
                   </button>
                 </div>
               </div>
@@ -578,10 +631,10 @@ export const GeneralSection = ({
 
       {isElectron ? (
         <>
-          <SettingsSectionHeader title="Browser Access" />
+          <SettingsSectionHeader title={t('settings.general.browserAccess')} />
           <SettingRow
-            label="Enable server mode"
-            description="Start an HTTP server to access the UI from a browser or embed in iframes"
+            label={t('settings.general.enableServerMode')}
+            description={t('settings.general.enableServerModeDesc')}
           >
             {serverLoading ? (
               <Loader2
@@ -610,7 +663,7 @@ export const GeneralSection = ({
                 className="text-xs font-medium"
                 style={{ color: 'var(--color-text-secondary)' }}
               >
-                Running on
+                {t('common.runningOn')}
               </span>
               <code
                 className="rounded px-1.5 py-0.5 font-mono text-xs"
@@ -631,21 +684,21 @@ export const GeneralSection = ({
                 }}
               >
                 {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
-                {copied ? 'Copied' : 'Copy URL'}
+                {copied ? t('common.copied') : t('common.copyUrl')}
               </button>
             </div>
           )}
         </>
       ) : (
         <>
-          <SettingsSectionHeader title="Server" />
+          <SettingsSectionHeader title={t('settings.general.server')} />
           <div
             className="mb-2 flex items-center gap-3 rounded-md px-3 py-2.5"
             style={{ backgroundColor: 'var(--color-surface-raised)' }}
           >
             <div className="size-2 shrink-0 rounded-full" style={{ backgroundColor: '#22c55e' }} />
             <span className="text-xs font-medium" style={{ color: 'var(--color-text-secondary)' }}>
-              Running on
+              {t('common.runningOn')}
             </span>
             <code
               className="rounded px-1.5 py-0.5 font-mono text-xs"
@@ -670,12 +723,11 @@ export const GeneralSection = ({
               }}
             >
               {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
-              {copied ? 'Copied' : 'Copy URL'}
+              {copied ? t('common.copied') : t('common.copyUrl')}
             </button>
           </div>
           <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-            Running in standalone mode. The HTTP server is always active. System notifications are
-            not available — notification triggers are logged in-app only.
+            {t('settings.general.standaloneMode')}
           </p>
         </>
       )}
@@ -683,10 +735,10 @@ export const GeneralSection = ({
       {/* Privacy / Telemetry — only visible when Sentry DSN is baked into the build */}
       {import.meta.env.VITE_SENTRY_DSN && (
         <>
-          <SettingsSectionHeader title="Privacy" />
+          <SettingsSectionHeader title={t('settings.general.privacy')} />
           <SettingRow
-            label="Send crash reports"
-            description="Help improve the app by sending anonymous crash and performance data"
+            label={t('settings.general.sendCrashReports')}
+            description={t('settings.general.sendCrashReportsDesc')}
           >
             <SettingsToggle
               enabled={safeConfig.general.telemetryEnabled ?? true}

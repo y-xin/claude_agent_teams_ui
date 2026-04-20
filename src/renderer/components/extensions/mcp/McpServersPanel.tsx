@@ -3,6 +3,7 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Badge } from '@renderer/components/ui/badge';
 import { Button } from '@renderer/components/ui/button';
@@ -33,10 +34,10 @@ import type {
 
 type McpSortValue = 'name-asc' | 'name-desc' | 'tools-desc';
 
-const MCP_SORT_OPTIONS: { value: McpSortValue; label: string }[] = [
-  { value: 'name-asc', label: 'Name A→Z' },
-  { value: 'name-desc', label: 'Name Z→A' },
-  { value: 'tools-desc', label: 'Most tools' },
+const MCP_SORT_OPTION_KEYS: { value: McpSortValue; labelKey: string }[] = [
+  { value: 'name-asc', labelKey: 'extensions.sortNameAsc' },
+  { value: 'name-desc', labelKey: 'extensions.sortNameDesc' },
+  { value: 'tools-desc', labelKey: 'extensions.sortMostTools' },
 ];
 
 function sortMcpServers(servers: McpCatalogItem[], sort: McpSortValue): McpCatalogItem[] {
@@ -73,6 +74,7 @@ export const McpServersPanel = ({
   selectedMcpServerId,
   setSelectedMcpServerId,
 }: McpServersPanelProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const {
     browseCatalog,
     browseNextCursor,
@@ -190,18 +192,19 @@ export const McpServersPanel = ({
       <div className="rounded-md border border-black/10 bg-surface-raised px-4 py-3 dark:border-white/10">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-sm font-medium text-text">MCP Health Status</p>
+            <p className="text-sm font-medium text-text">{t('extensions.mcpHealthStatus')}</p>
             <p className="text-xs text-text-muted">
               {mcpDiagnosticsLoading ? (
                 <>
-                  Checking installed MCP servers via Claude CLI (<code>claude mcp list</code>) ...
+                  {t('extensions.checkingMcpServers')} (<code>claude mcp list</code>) ...
                 </>
               ) : mcpDiagnosticsLastCheckedAt ? (
-                `Last checked ${formatRelativeTime(new Date(mcpDiagnosticsLastCheckedAt).toISOString())}`
+                t('extensions.lastChecked', {
+                  time: formatRelativeTime(new Date(mcpDiagnosticsLastCheckedAt).toISOString()),
+                })
               ) : (
                 <>
-                  Run diagnostics (<code>claude mcp list</code>) to verify installed MCP
-                  connectivity.
+                  {t('extensions.runDiagnostics')} (<code>claude mcp list</code>)
                 </>
               )}
             </p>
@@ -216,16 +219,18 @@ export const McpServersPanel = ({
             <RefreshCw
               className={`mr-1.5 size-3.5 ${mcpDiagnosticsLoading ? 'animate-spin' : ''}`}
             />
-            {mcpDiagnosticsLoading ? 'Checking...' : 'Check Status'}
+            {mcpDiagnosticsLoading ? t('extensions.checking') : t('extensions.checkStatus')}
           </Button>
         </div>
 
         {(mcpDiagnosticsLoading || allDiagnostics.length > 0) && (
           <div className="mt-4 border-t border-black/10 pt-4 dark:border-white/10">
             <div className="mb-3 flex items-center justify-between gap-3">
-              <p className="text-sm font-medium text-text">Claude MCP List Results</p>
+              <p className="text-sm font-medium text-text">{t('extensions.mcpListResults')}</p>
               {allDiagnostics.length > 0 && (
-                <span className="text-xs text-text-muted">{allDiagnostics.length} servers</span>
+                <span className="text-xs text-text-muted">
+                  {t('extensions.serverCount', { count: allDiagnostics.length })}
+                </span>
               )}
             </div>
             {allDiagnostics.length > 0 ? (
@@ -251,7 +256,7 @@ export const McpServersPanel = ({
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-text-muted">Waiting for `claude mcp list` results...</p>
+              <p className="text-xs text-text-muted">{t('extensions.waitingForResults')}</p>
             )}
           </div>
         )}
@@ -263,7 +268,7 @@ export const McpServersPanel = ({
           <SearchInput
             value={mcpSearchQuery}
             onChange={mcpSearch}
-            placeholder="Search MCP servers..."
+            placeholder={t('extensions.searchMcpServers')}
           />
         </div>
         <Select value={mcpSort} onValueChange={(v) => setMcpSort(v as McpSortValue)}>
@@ -271,9 +276,9 @@ export const McpServersPanel = ({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {MCP_SORT_OPTIONS.map((opt) => (
+            {MCP_SORT_OPTION_KEYS.map((opt) => (
               <SelectItem key={opt.value} value={opt.value}>
-                {opt.label}
+                {t(opt.labelKey)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -335,10 +340,11 @@ export const McpServersPanel = ({
           <div className="flex items-start gap-3 rounded-md border border-amber-500/30 bg-amber-500/5 px-4 py-3">
             <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-400" />
             <div>
-              <p className="text-sm font-medium text-amber-300">Claude CLI not installed</p>
+              <p className="text-sm font-medium text-amber-300">
+                {t('extensions.cliNotInstalled')}
+              </p>
               <p className="mt-0.5 text-xs text-text-muted">
-                MCP health checks require Claude CLI. Go to the Dashboard to install it
-                automatically.
+                {t('extensions.mcpHealthRequiresCli')}
               </p>
             </div>
           </div>
@@ -359,10 +365,12 @@ export const McpServersPanel = ({
             )}
           </div>
           <p className="text-sm text-text-secondary">
-            {isSearching ? 'No servers found' : 'No MCP servers available'}
+            {isSearching ? t('extensions.noServersFound') : t('extensions.noMcpServersAvailable')}
           </p>
           <p className="text-xs text-text-muted">
-            {isSearching ? 'Try a different search term' : 'Check back later for new servers'}
+            {isSearching
+              ? t('extensions.tryDifferentSearch')
+              : t('extensions.checkBackLaterServers')}
           </p>
         </div>
       )}
@@ -391,7 +399,7 @@ export const McpServersPanel = ({
             disabled={browseLoading}
             onClick={() => void mcpBrowse(browseNextCursor)}
           >
-            Load more
+            {t('extensions.loadMore')}
           </Button>
         </div>
       )}

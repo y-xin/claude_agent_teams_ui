@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@renderer/components/ui/button';
 import { Label } from '@renderer/components/ui/label';
@@ -91,6 +92,7 @@ export const MembersEditorSection = ({
   hideContent = false,
   existingMembers,
 }: MembersEditorSectionProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const [jsonEditorOpen, setJsonEditorOpen] = useState(false);
   const [jsonText, setJsonText] = useState('');
   const [jsonError, setJsonError] = useState<string | null>(null);
@@ -174,16 +176,16 @@ export const MembersEditorSection = ({
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
-        <Label>Members</Label>
+        <Label>{t('team.members.label')}</Label>
         {!hideContent && (
           <div className="flex gap-2">
             <Button variant="outline" size="sm" className="gap-1.5" onClick={addMember}>
               <Plus className="size-3.5" />
-              Add member
+              {t('team.members.addMember')}
             </Button>
             {showJsonEditor && !jsonEditorOpen ? (
               <Button variant="ghost" size="sm" onClick={toggleJsonEditor}>
-                Edit as JSON
+                {t('team.members.editAsJson')}
               </Button>
             ) : null}
           </div>
@@ -225,7 +227,7 @@ export const MembersEditorSection = ({
           </div>
           {hasDuplicates ? (
             <p className="text-[11px]" style={{ color: 'var(--field-error-text)' }}>
-              Member names must be unique
+              {t('team.members.namesMustBeUnique')}
             </p>
           ) : fieldError ? (
             <p className="text-[11px]" style={{ color: 'var(--field-error-text)' }}>

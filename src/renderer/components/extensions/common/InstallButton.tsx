@@ -4,6 +4,7 @@
  */
 
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@renderer/components/ui/button';
 import {
@@ -37,6 +38,7 @@ export const InstallButton = ({
   size = 'sm',
   errorMessage,
 }: InstallButtonProps) => {
+  const { t } = useTranslation();
   const { cliStatus, cliStatusLoading } = useStore(
     useShallow((s) => ({
       cliStatus: s.cliStatus,
@@ -47,13 +49,13 @@ export const InstallButton = ({
   const cliMissing = cliStatus?.installed === false;
   const authMissing = cliStatus?.installed === true && !cliStatus.authLoggedIn;
   const disableReason = cliStatusLoading
-    ? 'Checking Claude CLI status...'
+    ? t('extensions.install.checkingCliStatus')
     : cliUnknown
-      ? 'Checking Claude CLI availability...'
+      ? t('extensions.install.checkingCliAvailability')
       : cliMissing
-        ? 'Claude CLI required. Install it from the Dashboard.'
+        ? t('extensions.install.cliRequired')
         : authMissing
-          ? 'Claude CLI is installed but not signed in. Open the Dashboard to sign in.'
+          ? t('extensions.install.cliNotSignedIn')
           : null;
   const isDisabled = disabled || Boolean(disableReason);
   const [lastAction, setLastAction] = useState<'install' | 'uninstall' | null>(null);
@@ -70,7 +72,9 @@ export const InstallButton = ({
       <Button size={size} variant="outline" disabled>
         <Loader2 className="size-3.5 animate-spin" />
         <span className="ml-1.5">
-          {pendingAction === 'uninstall' ? 'Removing...' : 'Installing...'}
+          {pendingAction === 'uninstall'
+            ? t('extensions.install.removing')
+            : t('extensions.install.installing')}
         </span>
       </Button>
     );
@@ -80,7 +84,7 @@ export const InstallButton = ({
     return (
       <Button size={size} variant="outline" disabled className="text-green-400">
         <Check className="size-3.5" />
-        <span className="ml-1.5">Done</span>
+        <span className="ml-1.5">{t('extensions.install.done')}</span>
       </Button>
     );
   }
@@ -104,7 +108,7 @@ export const InstallButton = ({
         }}
         disabled={isDisabled}
       >
-        <span>Retry</span>
+        <span>{t('common.retry')}</span>
       </Button>
     );
 
@@ -145,7 +149,7 @@ export const InstallButton = ({
       disabled={isDisabled}
     >
       <Trash2 className="size-3.5" />
-      <span className="ml-1.5">Uninstall</span>
+      <span className="ml-1.5">{t('extensions.install.uninstall')}</span>
     </Button>
   ) : (
     <Button
@@ -158,7 +162,7 @@ export const InstallButton = ({
       }}
       disabled={isDisabled}
     >
-      Install
+      {t('extensions.install.install')}
     </Button>
   );
 

@@ -5,6 +5,7 @@
 import { useCallback } from 'react';
 
 import { ChevronDown, ChevronUp, Loader2, Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { useAddTriggerFormHandlers } from '../hooks/useAddTriggerFormHandlers';
 import { useAddTriggerFormState } from '../hooks/useAddTriggerFormState';
@@ -32,7 +33,9 @@ export const AddTriggerForm = ({
   saving,
   onAdd,
 }: Readonly<AddTriggerFormProps>): React.JSX.Element => {
-  // Use form state hook
+  const { t } = useTranslation();
+
+  // 使用表单状态 hook
   const formState = useAddTriggerFormState();
   const {
     name,
@@ -131,7 +134,9 @@ export const AddTriggerForm = ({
       >
         <div className="flex items-center gap-2">
           <Plus className="size-4 text-indigo-400" />
-          <span className="text-sm font-medium text-text">Add Custom Trigger</span>
+          <span className="text-sm font-medium text-text">
+            {t('settings.triggers.addCustomTrigger')}
+          </span>
         </div>
         {isExpanded ? (
           <ChevronUp className="size-4 text-text-muted" />
@@ -152,15 +157,15 @@ export const AddTriggerForm = ({
             onToolNameChange={handlers.handleToolNameChange}
           />
 
-          {/* Dot Color */}
+          {/* 圆点颜色 */}
           <div className="space-y-3">
-            <SectionHeader title="Dot Color" />
+            <SectionHeader title={t('settings.triggers.dotColor')} />
             <ColorPaletteSelector value={color} onChange={setColor} disabled={saving} />
           </div>
 
-          {/* Section 2: Trigger Condition */}
+          {/* 触发条件 */}
           <div className="space-y-3">
-            <SectionHeader title="Trigger Condition" />
+            <SectionHeader title={t('settings.triggers.triggerCondition')} />
             <ModeSelector value={mode} onChange={handlers.handleModeChange} disabled={saving} />
           </div>
 
@@ -215,7 +220,7 @@ export const AddTriggerForm = ({
               disabled={saving}
               className={`rounded bg-surface-raised px-3 py-1.5 text-sm text-text-secondary transition-colors hover:bg-surface-overlay ${saving ? 'cursor-not-allowed opacity-50' : ''} `}
             >
-              Cancel
+              {t('common.cancel')}
             </button>
             <button
               type="submit"
@@ -223,7 +228,7 @@ export const AddTriggerForm = ({
               className={`flex items-center gap-2 rounded bg-indigo-500 px-3 py-1.5 text-sm text-white transition-colors hover:bg-indigo-600 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-[#141416] ${saving || !name.trim() || !!patternError ? 'cursor-not-allowed opacity-50' : ''} `}
             >
               {saving && <Loader2 className="size-4 animate-spin" />}
-              Add Trigger
+              {t('settings.triggers.addTrigger')}
             </button>
           </div>
         </form>

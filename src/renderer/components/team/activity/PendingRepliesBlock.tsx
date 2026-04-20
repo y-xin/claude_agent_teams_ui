@@ -12,6 +12,7 @@ import {
 import { nameColorSet } from '@renderer/utils/projectColor';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { ShieldQuestion, Users } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import type { ResolvedTeamMember } from '@shared/types';
 
@@ -33,6 +34,7 @@ export const PendingRepliesBlock = ({
   pendingCrossTeamReplies = [],
   onMemberClick,
 }: PendingRepliesBlockProps): React.JSX.Element | null => {
+  const { t } = useTranslation();
   const { isLight } = useTheme();
   const pendingApprovals = useStore(useShallow((s) => s.pendingApprovals));
   const colorMap = buildMemberColorMap(members);
@@ -114,7 +116,7 @@ export const PendingRepliesBlock = ({
                       border: `1px solid ${colors.border}40`,
                     }}
                     onClick={() => onMemberClick(member)}
-                    title="Open member"
+                    title={t('team.openMember')}
                   >
                     {displayMemberName(member.name)}
                   </button>
@@ -138,7 +140,7 @@ export const PendingRepliesBlock = ({
                 <span
                   className="min-w-0 flex-1 truncate text-[10px]"
                   style={{ color: CARD_ICON_MUTED }}
-                  title="Message sent, awaiting reply"
+                  title={t('team.awaitingReply')}
                 >
                   awaiting reply
                 </span>
@@ -187,7 +189,7 @@ export const PendingRepliesBlock = ({
                 <span
                   className="min-w-0 flex-1 truncate text-[10px]"
                   style={{ color: CARD_ICON_MUTED }}
-                  title="Cross-team message sent, awaiting reply"
+                  title={t('team.awaitingCrossTeamReply')}
                 >
                   awaiting reply
                 </span>

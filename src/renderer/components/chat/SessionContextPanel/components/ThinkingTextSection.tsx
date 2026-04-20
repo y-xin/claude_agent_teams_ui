@@ -3,6 +3,7 @@
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ThinkingTextItem } from '../items/ThinkingTextItem';
 
@@ -25,11 +26,12 @@ export const ThinkingTextSection = ({
   onToggle,
   onNavigateToTurn,
 }: Readonly<ThinkingTextSectionProps>): React.ReactElement | null => {
+  const { t } = useTranslation();
   if (injections.length === 0) return null;
 
   return (
     <CollapsibleSection
-      title="Thinking + Text"
+      title={t('chat.thinkingPlusText')}
       count={injections.length}
       tokenCount={tokenCount}
       isExpanded={isExpanded}

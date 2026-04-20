@@ -2,6 +2,8 @@
  * Error state for file read failures (EACCES, ENOENT, etc.).
  */
 
+import { useTranslation } from 'react-i18next';
+
 import { Button } from '@renderer/components/ui/button';
 import { AlertTriangle } from 'lucide-react';
 
@@ -16,6 +18,7 @@ export const EditorErrorState = ({
   onRetry,
   onClose,
 }: EditorErrorStateProps): React.ReactElement => {
+  const { t } = useTranslation();
   return (
     <div
       role="alert"
@@ -27,12 +30,12 @@ export const EditorErrorState = ({
       <div className="flex gap-2">
         {onRetry && (
           <Button variant="outline" size="sm" onClick={onRetry}>
-            Retry
+            {t('common.retry')}
           </Button>
         )}
         {onClose && (
           <Button variant="outline" size="sm" onClick={onClose}>
-            Close Tab
+            {t('team.editor.closeTab')}
           </Button>
         )}
       </div>

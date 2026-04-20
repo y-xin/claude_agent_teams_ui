@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { computeDiffLineStats, DiffViewer } from '@renderer/components/chat/viewers/DiffViewer';
 import { useToolApprovalDiff } from '@renderer/hooks/useToolApprovalDiff';
@@ -59,6 +60,7 @@ export const ToolApprovalDiffPreview: React.FC<ToolApprovalDiffPreviewProps> = (
   requestId,
   onExpandedChange,
 }) => {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(loadExpandedPref);
   const diff = useToolApprovalDiff(toolName, toolInput, requestId, expanded);
 
@@ -106,7 +108,7 @@ export const ToolApprovalDiffPreview: React.FC<ToolApprovalDiffPreviewProps> = (
         }}
       >
         <FileDiff className="size-3" />
-        <span>Preview changes</span>
+        <span>{t('team.previewChanges')}</span>
         {stats && (
           <>
             {stats.added > 0 && <span style={{ color: 'rgb(46, 160, 67)' }}>+{stats.added}</span>}
@@ -145,7 +147,7 @@ export const ToolApprovalDiffPreview: React.FC<ToolApprovalDiffPreviewProps> = (
               }}
             >
               <AlertTriangle className="size-3.5 shrink-0" />
-              <span>Binary file — cannot preview</span>
+              <span>{t('team.binaryFilePreview')}</span>
             </div>
           )}
 

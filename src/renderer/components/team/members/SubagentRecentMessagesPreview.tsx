@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { MarkdownViewer } from '@renderer/components/chat/viewers/MarkdownViewer';
 import { displayMemberName } from '@renderer/utils/memberHelpers';
@@ -38,6 +39,7 @@ export const SubagentRecentMessagesPreview = ({
   hasMore = false,
   onLoadMore,
 }: SubagentRecentMessagesPreviewProps): React.JSX.Element | null => {
+  const { t } = useTranslation();
   const [expandedAll, setExpandedAll] = useState(false);
 
   // Strip agent-only blocks from message content before display
@@ -58,7 +60,9 @@ export const SubagentRecentMessagesPreview = ({
     <div className="mb-3 rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] p-2">
       <div className="mb-2 flex items-center gap-2">
         <div className="min-w-0 truncate text-[11px] text-[var(--color-text-muted)]">
-          Latest messages{memberName ? ` — ${displayMemberName(memberName)}` : ''}
+          {memberName
+            ? t('team.members.latestMessagesWith', { name: displayMemberName(memberName) })
+            : t('team.members.latestMessages')}
         </div>
       </div>
 
@@ -93,7 +97,7 @@ export const SubagentRecentMessagesPreview = ({
               onClick={onLoadMore}
             >
               <ChevronDown size={12} />
-              Load more
+              {t('team.members.loadMore')}
             </button>
           </div>
         ) : null}
@@ -107,7 +111,7 @@ export const SubagentRecentMessagesPreview = ({
             onClick={() => setExpandedAll(true)}
           >
             <ChevronDown size={12} />
-            Expand
+            {t('team.members.expand')}
           </button>
         ) : (
           <button
@@ -116,7 +120,7 @@ export const SubagentRecentMessagesPreview = ({
             onClick={() => setExpandedAll(false)}
           >
             <ChevronUp size={12} />
-            Collapse
+            {t('team.members.collapse')}
           </button>
         )}
       </div>

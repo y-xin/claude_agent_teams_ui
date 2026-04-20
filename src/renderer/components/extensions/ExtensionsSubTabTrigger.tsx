@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { TabsTrigger } from '@renderer/components/ui/tabs';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@renderer/components/ui/tooltip';
 import { Info } from 'lucide-react';
@@ -17,6 +18,7 @@ export const ExtensionsSubTabTrigger = ({
   description,
   icon: Icon,
 }: ExtensionsSubTabTriggerProps): React.JSX.Element => {
+  const { t } = useTranslation();
   return (
     <TabsTrigger
       value={value}
@@ -30,7 +32,7 @@ export const ExtensionsSubTabTrigger = ({
           <span
             role="button"
             tabIndex={0}
-            aria-label={`What is ${label}?`}
+            aria-label={t('extensions.whatIsLabel', { label })}
             onClick={(event) => event.stopPropagation()}
             onMouseDown={(event) => event.stopPropagation()}
             onKeyDown={(event) => {

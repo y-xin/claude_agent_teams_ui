@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Brain } from 'lucide-react';
 
@@ -41,6 +42,7 @@ export const ThinkingItem: React.FC<ThinkingItemProps> = ({
   highlightStyle,
   notificationDotColor,
 }) => {
+  const { t } = useTranslation();
   const fullContent = step.content.thinkingText ?? preview;
   const summary = searchQueryOverride
     ? highlightQueryInText(preview, searchQueryOverride, `${markdownItemId ?? step.id}:summary`, {
@@ -54,7 +56,7 @@ export const ThinkingItem: React.FC<ThinkingItemProps> = ({
   return (
     <BaseItem
       icon={<Brain className="size-4" />}
-      label="Thinking"
+      label={t('chat.thinking')}
       summary={summary}
       tokenCount={tokenCount}
       timestamp={timestamp}

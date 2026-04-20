@@ -9,6 +9,7 @@ import {
   SELECT_OPTION_BG,
 } from '@renderer/constants/cssVariables';
 import { AlertCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { CONTENT_TYPE_OPTIONS } from '../utils/constants';
 import { getAvailableMatchFields } from '../utils/trigger';
@@ -50,29 +51,28 @@ export const DynamicConfigSection = ({
   onTokenThresholdChange,
   onTokenTypeChange,
 }: Readonly<DynamicConfigSectionProps>): React.JSX.Element => {
-  // Get available match fields based on content type and tool name
+  const { t } = useTranslation();
+  // 根据内容类型和工具名称获取可用的匹配字段
   const availableMatchFields = getAvailableMatchFields(contentType, toolName || undefined);
 
   return (
     <div className="space-y-3">
-      <SectionHeader title="Configuration" />
+      <SectionHeader title={t('settings.triggers.configuration')} />
 
-      {/* Error Status Mode */}
+      {/* 错误状态模式 */}
       {mode === 'error_status' && (
         <div className="py-2">
-          <p className="text-sm text-text-muted">
-            Triggers when a tool execution reports an error (is_error: true).
-          </p>
+          <p className="text-sm text-text-muted">{t('settings.triggers.errorStatusDesc')}</p>
         </div>
       )}
 
-      {/* Content Match Mode */}
+      {/* 内容匹配模式 */}
       {mode === 'content_match' && (
         <div className="space-y-3">
-          {/* Content Type */}
+          {/* 内容类型 */}
           <div className="flex items-center justify-between border-b border-border-subtle py-2">
             <label htmlFor="new-trigger-content-type" className="text-sm text-text-secondary">
-              Content Type
+              {t('settings.triggers.contentType')}
             </label>
             <select
               id="new-trigger-content-type"
@@ -89,11 +89,11 @@ export const DynamicConfigSection = ({
             </select>
           </div>
 
-          {/* Match Field */}
+          {/* 匹配字段 */}
           {availableMatchFields.length > 0 && (
             <div className="flex items-center justify-between border-b border-border-subtle py-2">
               <label htmlFor="new-trigger-match-field" className="text-sm text-text-secondary">
-                Match Field
+                {t('settings.triggers.matchField')}
               </label>
               <select
                 id="new-trigger-match-field"
@@ -111,11 +111,11 @@ export const DynamicConfigSection = ({
             </div>
           )}
 
-          {/* Match Pattern */}
+          {/* 匹配模式 */}
           <div className="border-b border-border-subtle py-2">
             <div className="mb-2 flex items-center justify-between">
               <label htmlFor="new-trigger-match-pattern" className="text-sm text-text-secondary">
-                Match Pattern (Regex)
+                {t('settings.triggers.matchPatternRegex')}
               </label>
             </div>
             <input
@@ -123,7 +123,7 @@ export const DynamicConfigSection = ({
               type="text"
               value={matchPattern}
               onChange={(e) => onMatchPatternChange(e.target.value)}
-              placeholder="e.g., error|failed|exception"
+              placeholder={t('settings.triggers.matchPatternPlaceholder')}
               disabled={saving}
               className={`w-full rounded border bg-transparent px-2 py-1.5 font-mono text-sm text-text placeholder:text-text-muted focus:border-transparent focus:outline-none focus:ring-1 focus:ring-indigo-500 ${patternError ? 'border-red-500' : 'border-border'} ${saving ? 'cursor-not-allowed opacity-50' : ''} `}
             />
@@ -134,18 +134,18 @@ export const DynamicConfigSection = ({
               </p>
             )}
             <p className="mt-1 text-xs text-text-muted">
-              Leave empty to match all content. Uses JavaScript regex syntax.
+              {t('settings.triggers.matchPatternHint')}
             </p>
           </div>
         </div>
       )}
 
-      {/* Token Threshold Mode */}
+      {/* Token 阈值模式 */}
       {mode === 'token_threshold' && (
         <div className="space-y-3">
           <div className="flex items-center justify-between border-b border-border-subtle py-2">
             <label htmlFor="new-trigger-token-type" className="text-sm text-text-secondary">
-              Token Type
+              {t('settings.triggers.tokenType')}
             </label>
             <select
               id="new-trigger-token-type"
@@ -155,22 +155,22 @@ export const DynamicConfigSection = ({
               className={`${SELECT_INPUT_BASE} ${getCursorClass(saving)}`}
             >
               <option value="total" className={SELECT_OPTION_BG}>
-                Total Tokens
+                {t('settings.triggers.totalTokens')}
               </option>
               <option value="input" className={SELECT_OPTION_BG}>
-                Input Tokens
+                {t('settings.triggers.inputTokens')}
               </option>
               <option value="output" className={SELECT_OPTION_BG}>
-                Output Tokens
+                {t('settings.triggers.outputTokens')}
               </option>
             </select>
           </div>
           <div className="flex items-center justify-between border-b border-border-subtle py-2">
             <label htmlFor="new-trigger-threshold" className="text-sm text-text-secondary">
-              Threshold
+              {t('settings.triggers.threshold')}
             </label>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-text-muted">Alert if &gt;</span>
+              <span className="text-xs text-text-muted">{t('settings.triggers.alertIfGt')}</span>
               <input
                 id="new-trigger-threshold"
                 type="text"
@@ -181,7 +181,7 @@ export const DynamicConfigSection = ({
                 disabled={saving}
                 className={`w-20 rounded border border-border bg-transparent px-2 py-1 text-right text-sm text-text focus:border-transparent focus:outline-none focus:ring-1 focus:ring-indigo-500 ${saving ? 'cursor-not-allowed opacity-50' : ''} `}
               />
-              <span className="text-xs text-text-muted">tokens</span>
+              <span className="text-xs text-text-muted">{t('settings.triggers.tokens')}</span>
             </div>
           </div>
         </div>

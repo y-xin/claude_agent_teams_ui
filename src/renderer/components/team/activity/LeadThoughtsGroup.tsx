@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { MemberBadge } from '@renderer/components/team/MemberBadge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@renderer/components/ui/tooltip';
@@ -540,6 +541,7 @@ const LeadThoughtsGroupRowComponent = ({
   onExpand,
   expandItemKey,
 }: LeadThoughtsGroupRowProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -865,7 +867,7 @@ const LeadThoughtsGroupRowComponent = ({
             {onExpand && expandItemKey && (
               <button
                 type="button"
-                aria-label="Expand thoughts"
+                aria-label={t('team.expandThoughts')}
                 className="absolute right-0 top-1/2 -translate-y-1/2 rounded p-0.5 opacity-0 transition-opacity focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500/50 group-hover:opacity-100"
                 style={{ color: CARD_ICON_MUTED }}
                 onClick={(e) => {

@@ -3,6 +3,7 @@
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { UserMessageItem } from '../items/UserMessageItem';
 
@@ -25,11 +26,12 @@ export const UserMessagesSection = ({
   onToggle,
   onNavigateToTurn,
 }: Readonly<UserMessagesSectionProps>): React.ReactElement | null => {
+  const { t } = useTranslation();
   if (injections.length === 0) return null;
 
   return (
     <CollapsibleSection
-      title="User Messages"
+      title={t('chat.userMessages')}
       count={injections.length}
       tokenCount={tokenCount}
       isExpanded={isExpanded}

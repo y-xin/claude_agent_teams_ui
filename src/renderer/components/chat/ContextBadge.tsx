@@ -5,6 +5,7 @@
  */
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { createPortal } from 'react-dom';
 
 import {
@@ -134,6 +135,7 @@ export const ContextBadge = ({
   stats,
   projectRoot,
 }: Readonly<ContextBadgeProps>): React.ReactElement | null => {
+  const { t } = useTranslation();
   const [showPopover, setShowPopover] = useState(false);
   const [popoverStyle, setPopoverStyle] = useState<React.CSSProperties>({});
   const [arrowStyle, setArrowStyle] = useState<React.CSSProperties>({});
@@ -361,7 +363,7 @@ export const ContextBadge = ({
         className="inline-flex cursor-pointer items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium"
         style={badgeStyle}
       >
-        <span>Context</span>
+        <span>{t('chat.context')}</span>
         <span className="font-semibold">+{totalNew}</span>
       </span>
 
@@ -373,7 +375,7 @@ export const ContextBadge = ({
             ref={popoverRef}
             role="dialog"
             aria-modal="false"
-            aria-label="Context injection details"
+            aria-label={t('chat.contextInjectionDetails')}
             className="rounded-lg p-3 shadow-xl"
             style={{
               ...popoverStyle,
@@ -395,7 +397,7 @@ export const ContextBadge = ({
                 borderBottom: `1px solid ${COLOR_BORDER_SUBTLE}`,
               }}
             >
-              New Context Injected In This Turn
+              {t('chat.newContextInjectedTitle')}
             </div>
 
             {/* Sections */}
@@ -403,7 +405,7 @@ export const ContextBadge = ({
               {/* User Messages section */}
               {newUserMessageInjections.length > 0 && (
                 <PopoverSection
-                  title="User Messages"
+                  title={t('chat.userMessages')}
                   count={newUserMessageInjections.length}
                   tokenCount={userMessageTokens}
                 >
@@ -411,10 +413,10 @@ export const ContextBadge = ({
                     <div key={injection.id} className="min-w-0">
                       <div className="flex items-center justify-between text-xs">
                         <span style={{ color: COLOR_TEXT_SECONDARY }}>
-                          Turn {injection.turnIndex + 1}
+                          {t('chat.turn')} {injection.turnIndex + 1}
                         </span>
                         <span style={{ color: COLOR_TEXT_MUTED }}>
-                          ~{formatTokens(injection.estimatedTokens)} tokens
+                          ~{formatTokens(injection.estimatedTokens)} {t('chat.tokens')}
                         </span>
                       </div>
                       {injection.textPreview && (
@@ -433,7 +435,7 @@ export const ContextBadge = ({
               {/* CLAUDE.md Files section */}
               {newClaudeMdInjections.length > 0 && (
                 <PopoverSection
-                  title="CLAUDE.md Files"
+                  title={t('chat.claudeMdFiles')}
                   count={newClaudeMdInjections.length}
                   tokenCount={claudeMdTokens}
                 >
@@ -461,7 +463,7 @@ export const ContextBadge = ({
               {/* Mentioned Files section */}
               {newMentionedFileInjections.length > 0 && (
                 <PopoverSection
-                  title="Mentioned Files"
+                  title={t('chat.mentionedFiles')}
                   count={newMentionedFileInjections.length}
                   tokenCount={mentionedFileTokens}
                 >
@@ -488,7 +490,7 @@ export const ContextBadge = ({
               {/* Tool Outputs section */}
               {newToolOutputInjections.length > 0 && (
                 <PopoverSection
-                  title="Tool Outputs"
+                  title={t('chat.toolOutputs')}
                   count={toolOutputCount}
                   tokenCount={toolOutputTokens}
                 >
@@ -500,7 +502,7 @@ export const ContextBadge = ({
                       >
                         <span style={{ color: COLOR_TEXT_SECONDARY }}>{tool.toolName}</span>
                         <span style={{ color: COLOR_TEXT_MUTED }}>
-                          ~{formatTokens(tool.tokenCount)} tokens
+                          ~{formatTokens(tool.tokenCount)} {t('chat.tokens')}
                         </span>
                       </div>
                     ))
@@ -511,7 +513,7 @@ export const ContextBadge = ({
               {/* Task Coordination section */}
               {newTaskCoordinationInjections.length > 0 && (
                 <PopoverSection
-                  title="Task Coordination"
+                  title={t('chat.taskCoordination')}
                   count={taskCoordinationCount}
                   tokenCount={taskCoordinationTokens}
                 >
@@ -523,7 +525,7 @@ export const ContextBadge = ({
                       >
                         <span style={{ color: COLOR_TEXT_SECONDARY }}>{item.label}</span>
                         <span style={{ color: COLOR_TEXT_MUTED }}>
-                          ~{formatTokens(item.tokenCount)} tokens
+                          ~{formatTokens(item.tokenCount)} {t('chat.tokens')}
                         </span>
                       </div>
                     ))
@@ -534,14 +536,14 @@ export const ContextBadge = ({
               {/* Thinking + Text section */}
               {newThinkingTextInjections.length > 0 && (
                 <PopoverSection
-                  title="Thinking + Text"
+                  title={t('chat.thinkingPlusText')}
                   count={newThinkingTextInjections.length}
                   tokenCount={thinkingTextTokens}
                 >
                   {newThinkingTextInjections.map((injection) => (
                     <div key={injection.id} className="min-w-0">
                       <div className="text-xs" style={{ color: COLOR_TEXT_SECONDARY }}>
-                        Turn {injection.turnIndex + 1}
+                        {t('chat.turn')} {injection.turnIndex + 1}
                       </div>
                       <div className="space-y-0.5 pl-2">
                         {injection.breakdown.map((item, idx) => (
@@ -550,7 +552,7 @@ export const ContextBadge = ({
                             className="flex items-center justify-between text-xs"
                           >
                             <span style={{ color: COLOR_TEXT_MUTED }}>
-                              {item.type === 'thinking' ? 'Thinking' : 'Text'}
+                              {item.type === 'thinking' ? t('chat.thinking') : t('chat.text')}
                             </span>
                             <span style={{ color: COLOR_TEXT_MUTED }}>
                               ~{formatTokens(item.tokenCount)} tokens
@@ -569,9 +571,9 @@ export const ContextBadge = ({
               className="mt-2 flex items-center justify-between pt-2 text-xs"
               style={{ borderTop: `1px solid ${COLOR_BORDER_SUBTLE}` }}
             >
-              <span style={{ color: COLOR_TEXT_MUTED }}>Total new tokens</span>
+              <span style={{ color: COLOR_TEXT_MUTED }}>{t('chat.totalNewTokens')}</span>
               <span style={{ color: COLOR_TEXT_SECONDARY }}>
-                ~{formatTokens(totalNewTokens)} tokens
+                ~{formatTokens(totalNewTokens)} {t('chat.tokens')}
               </span>
             </div>
           </div>,

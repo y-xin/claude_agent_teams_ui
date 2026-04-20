@@ -4,6 +4,7 @@
  */
 
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useStore } from '@renderer/store';
 import { AlertCircle, RefreshCw } from 'lucide-react';
@@ -17,6 +18,7 @@ export const SessionTabContent = ({
   tab,
   isActive,
 }: Readonly<{ tab: Tab; isActive: boolean }>): React.JSX.Element => {
+  const { t } = useTranslation();
   const { fetchSessionDetail, closeTab, initTabUIState } = useStore(
     useShallow((s) => ({
       fetchSessionDetail: s.fetchSessionDetail,
@@ -55,7 +57,9 @@ export const SessionTabContent = ({
       <div className="flex flex-1 items-center justify-center bg-claude-dark-bg">
         <div className="p-8 text-center">
           <AlertCircle className="mx-auto mb-4 size-12 text-red-500/70" />
-          <h3 className="mb-2 text-lg font-medium text-claude-dark-text">Failed to load session</h3>
+          <h3 className="mb-2 text-lg font-medium text-claude-dark-text">
+            {t('errors.failedToLoadSession')}
+          </h3>
           <p className="mb-4 max-w-md text-sm text-claude-dark-text-secondary">
             {sessionDetailError}
           </p>

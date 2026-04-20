@@ -6,6 +6,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { api } from '@renderer/api';
 import { Button } from '@renderer/components/ui/button';
@@ -42,6 +43,7 @@ export const SearchInFilesPanel = ({
   onClose,
   onSelectMatch,
 }: SearchInFilesPanelProps): React.ReactElement => {
+  const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const [caseSensitive, setCaseSensitive] = useState(false);
   const [results, setResults] = useState<SearchInFilesResult | null>(null);
@@ -155,7 +157,9 @@ export const SearchInFilesPanel = ({
     <div className="flex h-full flex-col border-r border-border bg-surface-sidebar">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-border px-3 py-2">
-        <span className="text-xs font-medium text-text-secondary">Search in Files</span>
+        <span className="text-xs font-medium text-text-secondary">
+          {t('team.editor.searchInFiles')}
+        </span>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
@@ -168,7 +172,7 @@ export const SearchInFilesPanel = ({
               <X className="size-3.5" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent side="bottom">Close search (Esc)</TooltipContent>
+          <TooltipContent side="bottom">{t('team.editor.closeSearch')}</TooltipContent>
         </Tooltip>
       </div>
 
@@ -181,7 +185,7 @@ export const SearchInFilesPanel = ({
             type="text"
             value={query}
             onChange={(e) => handleQueryChange(e.target.value)}
-            placeholder="Search..."
+            placeholder={t('team.editor.searchPlaceholder')}
             className="flex-1 bg-transparent text-xs text-text outline-none placeholder:text-text-muted"
           />
           {searching && <Loader2 className="size-3 shrink-0 animate-spin text-text-muted" />}
@@ -202,7 +206,7 @@ export const SearchInFilesPanel = ({
                 Aa
               </button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">Match Case</TooltipContent>
+            <TooltipContent side="bottom">{t('team.editor.matchCase')}</TooltipContent>
           </Tooltip>
         </div>
       </div>
@@ -212,15 +216,19 @@ export const SearchInFilesPanel = ({
         {error && <div className="p-3 text-xs text-red-400">{error}</div>}
 
         {results?.totalMatches === 0 && query.trim() && (
-          <div className="p-4 text-center text-xs text-text-muted">No results found</div>
+          <div className="p-4 text-center text-xs text-text-muted">
+            {t('team.editor.noResultsFound')}
+          </div>
         )}
 
         {results && results.totalMatches > 0 && (
           <>
             <div className="border-b border-border px-3 py-1.5 text-[10px] text-text-muted">
-              {results.totalMatches} match{results.totalMatches !== 1 ? 'es' : ''} in{' '}
-              {results.results.length} file{results.results.length !== 1 ? 's' : ''}
-              {results.truncated && ' (truncated)'}
+              {t('team.editor.matchesInFiles', {
+                matches: results.totalMatches,
+                files: results.results.length,
+              })}
+              {results.truncated && ` (${t('team.editor.truncated')})`}
             </div>
             {results.results.map((fileResult) => (
               <SearchFileGroup

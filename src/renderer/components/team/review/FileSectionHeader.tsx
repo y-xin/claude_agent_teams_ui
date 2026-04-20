@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { FileIcon } from '@renderer/components/team/editor/FileIcon';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@renderer/components/ui/tooltip';
@@ -8,12 +9,13 @@ import { ChevronDown, ChevronRight, FilePlus, Loader2, Save, Undo2 } from 'lucid
 import type { FileChangeWithContent, HunkDecision } from '@shared/types';
 import type { FileChangeSummary } from '@shared/types/review';
 
-const CONTENT_SOURCE_LABELS: Record<string, string> = {
-  'file-history': 'File History',
-  'snippet-reconstruction': 'Reconstructed',
-  'disk-current': 'Current Disk',
-  'git-fallback': 'Git Fallback',
-  unavailable: 'Missing on disk',
+// 内容来源标签的键映射
+const CONTENT_SOURCE_I18N_KEYS: Record<string, string> = {
+  'file-history': 'team.fileSectionHeader.contentSourceFileHistory',
+  'snippet-reconstruction': 'team.fileSectionHeader.contentSourceReconstructed',
+  'disk-current': 'team.fileSectionHeader.contentSourceDiskCurrent',
+  'git-fallback': 'team.fileSectionHeader.contentSourceGitFallback',
+  unavailable: 'team.fileSectionHeader.contentSourceUnavailable',
 };
 
 interface FileSectionHeaderProps {
@@ -55,6 +57,7 @@ export const FileSectionHeader = ({
   onAcceptFile,
   onRejectFile,
 }: FileSectionHeaderProps): React.ReactElement => {
+  const { t } = useTranslation();
   const isMissingOnDisk = fileContent ? fileContent.modifiedFullContent == null : false;
   const isPreviewOnly = isMissingOnDisk || fileContent?.contentSource === 'unavailable';
   const restoreContent =
@@ -69,11 +72,11 @@ export const FileSectionHeader = ({
   const canRestore = !!onRestoreMissingFile && isPreviewOnly && !hasEdits && restoreContent != null;
   const externalChangeLabel =
     externalChange?.type === 'unlink'
-      ? 'Deleted on disk'
+      ? t('team.fileSectionHeader.deletedOnDisk')
       : externalChange?.type === 'add'
-        ? 'Recreated on disk'
+        ? t('team.fileSectionHeader.recreatedOnDisk')
         : externalChange?.type === 'change'
-          ? 'Changed on disk'
+          ? t('team.fileSectionHeader.changedOnDisk')
           : null;
 
   const handleHeaderClick = (e: React.MouseEvent): void => {
@@ -105,13 +108,13 @@ export const FileSectionHeader = ({
 
       {file.isNewFile && (
         <span className="rounded bg-green-500/20 px-1.5 py-0.5 text-[10px] text-green-400">
-          NEW
+          {t('team.fileSectionHeader.new')}
         </span>
       )}
 
       {pathChangeLabel?.kind === 'deleted' && (
         <span className="rounded bg-red-500/20 px-1.5 py-0.5 text-[10px] text-red-300">
-          DELETED
+          {t('team.fileSectionHeader.deleted')}
         </span>
       )}
 
@@ -123,7 +126,10 @@ export const FileSectionHeader = ({
             </span>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="max-w-xs">
-            {pathChangeLabel.direction === 'from' ? 'From' : 'To'} {pathChangeLabel.otherPath}
+            {pathChangeLabel.direction === 'from'
+              ? t('team.fileSectionHeader.directionFrom')
+              : t('team.fileSectionHeader.directionTo')}{' '}
+            {pathChangeLabel.otherPath}
           </TooltipContent>
         </Tooltip>
       )}
@@ -138,31 +144,38 @@ export const FileSectionHeader = ({
               ].join(' ')}
             >
               {isPreviewOnly
-                ? 'Missing on disk'
-                : (CONTENT_SOURCE_LABELS[fileContent.contentSource] ?? fileContent.contentSource)}
+                ? t('team.fileSectionHeader.missingOnDisk')
+                : CONTENT_SOURCE_I18N_KEYS[fileContent.contentSource]
+                  ? t(CONTENT_SOURCE_I18N_KEYS[fileContent.contentSource])
+                  : fileContent.contentSource}
             </span>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="max-w-xs">
             {isPreviewOnly ? (
               <div className="space-y-1">
-                <div className="font-medium text-text">File is missing on disk</div>
-                <div className="text-text-muted">
-                  We can still show a preview from agent logs, but your filesystem is out of sync.
+                <div className="font-medium text-text">
+                  {t('team.fileSectionHeader.fileMissingTitle')}
                 </div>
+                <div className="text-text-muted">{t('team.fileSectionHeader.fileMissingDesc')}</div>
                 {restoreContent != null ? (
                   <div className="text-text-muted">
-                    Use <span className="font-medium text-text">Restore</span> to write the preview
-                    content back to disk.
+                    Use{' '}
+                    <span className="font-medium text-text">
+                      {t('team.fileSectionHeader.restore')}
+                    </span>{' '}
+                    to write the preview content back to disk.
                   </div>
                 ) : (
                   <div className="text-text-muted">
-                    Full file content is not available to restore automatically.
+                    {t('team.fileSectionHeader.noRestoreAvailable')}
                   </div>
                 )}
               </div>
             ) : (
               <span>
-                {CONTENT_SOURCE_LABELS[fileContent.contentSource] ?? fileContent.contentSource}
+                {CONTENT_SOURCE_I18N_KEYS[fileContent.contentSource]
+                  ? t(CONTENT_SOURCE_I18N_KEYS[fileContent.contentSource])
+                  : fileContent.contentSource}
               </span>
             )}
           </TooltipContent>
@@ -197,14 +210,14 @@ export const FileSectionHeader = ({
               disabled={applying}
               className="rounded bg-blue-500/15 px-2 py-1 text-xs font-medium text-blue-300 transition-colors hover:bg-blue-500/25 disabled:opacity-50"
             >
-              Reload from disk
+              {t('team.fileSectionHeader.reloadFromDisk')}
             </button>
             <button
               onClick={() => onKeepDraft(file.filePath)}
               disabled={applying}
               className="rounded bg-amber-500/15 px-2 py-1 text-xs font-medium text-amber-300 transition-colors hover:bg-amber-500/25 disabled:opacity-50"
             >
-              Keep my draft
+              {t('team.fileSectionHeader.keepMyDraft')}
             </button>
           </div>
         )}
@@ -225,13 +238,13 @@ export const FileSectionHeader = ({
                           : 'bg-green-500/15 text-green-400 hover:bg-green-500/25',
                       ].join(' ')}
                     >
-                      Accept
+                      {t('team.fileSectionHeader.accept')}
                     </button>
                   </span>
                 </TooltipTrigger>
                 {isPreviewOnly && (
                   <TooltipContent side="bottom">
-                    Accept/Reject is disabled while the file is missing on disk.
+                    {t('team.fileSectionHeader.acceptRejectDisabled')}
                   </TooltipContent>
                 )}
               </Tooltip>
@@ -250,13 +263,13 @@ export const FileSectionHeader = ({
                           : 'bg-red-500/15 text-red-400 hover:bg-red-500/25',
                       ].join(' ')}
                     >
-                      Reject
+                      {t('team.fileSectionHeader.reject')}
                     </button>
                   </span>
                 </TooltipTrigger>
                 {isPreviewOnly && (
                   <TooltipContent side="bottom">
-                    Accept/Reject is disabled while the file is missing on disk.
+                    {t('team.fileSectionHeader.acceptRejectDisabled')}
                   </TooltipContent>
                 )}
               </Tooltip>
@@ -272,11 +285,11 @@ export const FileSectionHeader = ({
                 className="flex items-center gap-1 rounded bg-blue-500/15 px-2 py-1 text-xs text-blue-300 transition-colors hover:bg-blue-500/25 disabled:opacity-50"
               >
                 <FilePlus className="size-3" />
-                Restore
+                {t('team.fileSectionHeader.restore')}
               </button>
             </TooltipTrigger>
             <TooltipContent side="bottom">
-              Create/restore this file on disk from the preview
+              {t('team.fileSectionHeader.restoreTooltip')}
             </TooltipContent>
           </Tooltip>
         )}
@@ -289,10 +302,12 @@ export const FileSectionHeader = ({
                   className="flex items-center gap-1 rounded bg-orange-500/15 px-2 py-1 text-xs text-orange-400 transition-colors hover:bg-orange-500/25"
                 >
                   <Undo2 className="size-3" />
-                  Discard
+                  {t('team.fileSectionHeader.discardEdits')}
                 </button>
               </TooltipTrigger>
-              <TooltipContent side="bottom">Discard all edits for this file</TooltipContent>
+              <TooltipContent side="bottom">
+                {t('team.fileSectionHeader.discardTooltip')}
+              </TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -306,11 +321,11 @@ export const FileSectionHeader = ({
                   ) : (
                     <Save className="size-3" />
                   )}
-                  Save File
+                  {t('team.fileSectionHeader.saveFile')}
                 </button>
               </TooltipTrigger>
               <TooltipContent side="bottom">
-                <span>Save file to disk</span>
+                <span>{t('team.fileSectionHeader.saveTooltip')}</span>
                 <kbd className="ml-2 rounded border border-border bg-surface-raised px-1 py-0.5 font-mono text-[10px] text-text-muted">
                   {shortcutLabel('⌘ S', 'Ctrl+S')}
                 </kbd>

@@ -6,12 +6,15 @@
  * Only rendered in Electron mode.
  */
 
+import { useTranslation } from 'react-i18next';
+
 import { isElectronMode } from '@renderer/api';
 import { useStore } from '@renderer/store';
 import { useShallow } from 'zustand/react/shallow';
 import { AlertTriangle } from 'lucide-react';
 
 export const CliInstallWarningBanner = (): React.JSX.Element | null => {
+  const { t } = useTranslation();
   const cliStatus = useStore(useShallow((s) => s.cliStatus));
   const openDashboard = useStore((s) => s.openDashboard);
 
@@ -38,9 +41,7 @@ export const CliInstallWarningBanner = (): React.JSX.Element | null => {
       }}
     >
       <AlertTriangle className="size-3.5 shrink-0" />
-      <span className="text-xs">
-        Claude Code is not installed. Install it from the Dashboard to enable all features.
-      </span>
+      <span className="text-xs">{t('cli.notInstalledWarning')}</span>
       <button
         onClick={openDashboard}
         className="ml-auto shrink-0 rounded-md border px-2.5 py-1 text-xs font-medium transition-colors hover:bg-white/5"
@@ -49,7 +50,7 @@ export const CliInstallWarningBanner = (): React.JSX.Element | null => {
           color: 'var(--warning-text)',
         }}
       >
-        Go to Dashboard
+        {t('cli.goToDashboard')}
       </button>
     </div>
   );

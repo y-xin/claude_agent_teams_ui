@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { api } from '@renderer/api';
 import { CodeBlockViewer } from '@renderer/components/chat/viewers/CodeBlockViewer';
@@ -43,6 +44,7 @@ export const SkillDetailDialog = ({
   onEdit,
   onDeleted,
 }: SkillDetailDialogProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const fetchSkillDetail = useStore((s) => s.fetchSkillDetail);
   const deleteSkill = useStore((s) => s.deleteSkill);
   const detail = useStore(useShallow((s) => (skillId ? s.skillsDetailsById[skillId] : undefined)));
@@ -76,13 +78,15 @@ export const SkillDetailDialog = ({
   }
 
   function formatScopeLabel(scope: 'user' | 'project'): string {
-    return scope === 'project' ? 'This project only' : 'Your personal skills';
+    return scope === 'project'
+      ? t('extensions.skills.scopeThisProject')
+      : t('extensions.skills.scopePersonalSkills');
   }
 
   function formatInvocationLabel(invocationMode: 'auto' | 'manual-only'): string {
     return invocationMode === 'manual-only'
-      ? 'Claude will only use this when you explicitly ask for it.'
-      : 'Claude can pick this automatically when it matches the task.';
+      ? t('extensions.skills.invocationManualLabel')
+      : t('extensions.skills.invocationAutoLabel');
   }
 
   async function handleDelete(): Promise<void> {
@@ -97,7 +101,9 @@ export const SkillDetailDialog = ({
       setDeleteConfirmOpen(false);
       onDeleted();
     } catch (error) {
-      setDeleteError(error instanceof Error ? error.message : 'Failed to delete skill');
+      setDeleteError(
+        error instanceof Error ? error.message : t('extensions.skills.failedToDelete')
+      );
     } finally {
       setDeleteLoading(false);
     }
@@ -107,14 +113,14 @@ export const SkillDetailDialog = ({
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
       <DialogContent className="max-w-4xl">
         <DialogHeader>
-          <DialogTitle>{item?.name ?? 'Skill details'}</DialogTitle>
+          <DialogTitle>{item?.name ?? t('extensions.skills.detailTitle')}</DialogTitle>
           <DialogDescription>
-            {item?.description ?? 'Inspect discovered skill metadata and raw instructions.'}
+            {item?.description ?? t('extensions.skills.detailDescription')}
           </DialogDescription>
         </DialogHeader>
 
         {(loading || (open && skillId && detail === undefined)) && (
-          <p className="text-sm text-text-muted">Loading skill details...</p>
+          <p className="text-sm text-text-muted">{t('extensions.skills.loadingDetails')}</p>
         )}
 
         {!loading && detailError && (
@@ -128,7 +134,7 @@ export const SkillDetailDialog = ({
                   void fetchSkillDetail(skillId, projectPath ?? undefined).catch(() => undefined);
                 }}
               >
-                Retry
+                {t('common.retry')}
               </Button>
             )}
           </div>
@@ -136,7 +142,7 @@ export const SkillDetailDialog = ({
 
         {!loading && !detailError && detail === null && (
           <div className="rounded-md border border-red-500/30 bg-red-500/5 p-4 text-sm text-red-400">
-            Unable to load this skill.
+            {t('extensions.skills.unableToLoad')}
           </div>
         )}
 
@@ -149,19 +155,29 @@ export const SkillDetailDialog = ({
             )}
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="outline">{formatScopeLabel(item.scope)}</Badge>
-              <Badge variant="outline">Stored in {formatRootKind(item.rootKind)}</Badge>
-              <Badge variant="secondary">
-                {item.invocationMode === 'manual-only' ? 'Manual use' : 'Auto use'}
+              <Badge variant="outline">
+                {t('extensions.skills.storedIn', { root: formatRootKind(item.rootKind) })}
               </Badge>
-              {item.flags.hasScripts && <Badge variant="destructive">Has scripts</Badge>}
-              {item.flags.hasReferences && <Badge variant="secondary">References</Badge>}
-              {item.flags.hasAssets && <Badge variant="secondary">Assets</Badge>}
+              <Badge variant="secondary">
+                {item.invocationMode === 'manual-only'
+                  ? t('extensions.skills.manualUse')
+                  : t('extensions.skills.autoUse')}
+              </Badge>
+              {item.flags.hasScripts && (
+                <Badge variant="destructive">{t('extensions.skills.hasScripts')}</Badge>
+              )}
+              {item.flags.hasReferences && (
+                <Badge variant="secondary">{t('extensions.skills.references')}</Badge>
+              )}
+              {item.flags.hasAssets && (
+                <Badge variant="secondary">{t('extensions.skills.assets')}</Badge>
+              )}
             </div>
 
             {item.issues.length > 0 && (
               <div className="space-y-2 rounded-md border border-amber-500/30 bg-amber-500/5 p-4">
                 <p className="text-sm font-medium text-amber-700 dark:text-amber-300">
-                  Review this skill carefully before using it
+                  {t('extensions.skills.reviewCarefully')}
                 </p>
                 {item.issues.map((issue, index) => (
                   <div
@@ -178,28 +194,29 @@ export const SkillDetailDialog = ({
             <div className="grid gap-3 rounded-lg border border-border p-4 md:grid-cols-3">
               <div className="space-y-1">
                 <p className="text-xs font-medium uppercase tracking-wide text-text-muted">
-                  Who can use it
+                  {t('extensions.skills.whoCanUseIt')}
                 </p>
                 <p className="text-sm text-text">{formatScopeLabel(item.scope)}</p>
               </div>
               <div className="space-y-1">
                 <p className="text-xs font-medium uppercase tracking-wide text-text-muted">
-                  How Claude uses it
+                  {t('extensions.skills.howClaudeUsesIt')}
                 </p>
                 <p className="text-sm text-text">{formatInvocationLabel(item.invocationMode)}</p>
               </div>
               <div className="space-y-1">
                 <p className="text-xs font-medium uppercase tracking-wide text-text-muted">
-                  What comes with it
+                  {t('extensions.skills.whatComesWithIt')}
                 </p>
                 <p className="text-sm text-text">
                   {[
-                    item.flags.hasReferences ? 'references' : null,
-                    item.flags.hasScripts ? 'scripts' : null,
-                    item.flags.hasAssets ? 'assets' : null,
+                    item.flags.hasReferences ? t('extensions.skills.contentsReferences') : null,
+                    item.flags.hasScripts ? t('extensions.skills.contentsScripts') : null,
+                    item.flags.hasAssets ? t('extensions.skills.contentsAssets') : null,
                   ]
                     .filter(Boolean)
-                    .join(', ') || 'Just the skill instructions'}
+                    .join(t('extensions.skills.contentsSeparator')) ||
+                    t('extensions.skills.justInstructions')}
                 </p>
               </div>
             </div>
@@ -207,7 +224,7 @@ export const SkillDetailDialog = ({
             <div className="flex flex-wrap gap-2">
               <Button variant="secondary" size="sm" onClick={onEdit}>
                 <Pencil className="mr-1.5 size-3.5" />
-                Edit Skill
+                {t('extensions.skills.editButton')}
               </Button>
               <Button
                 variant="outline"
@@ -216,7 +233,7 @@ export const SkillDetailDialog = ({
                 disabled={deleteLoading}
               >
                 <Trash2 className="mr-1.5 size-3.5" />
-                {deleteLoading ? 'Deleting...' : 'Delete'}
+                {deleteLoading ? t('extensions.skills.deleting') : t('common.delete')}
               </Button>
             </div>
 
@@ -233,13 +250,13 @@ export const SkillDetailDialog = ({
               <div className="space-y-4">
                 <div className="rounded-lg border border-border p-3 text-sm text-text-secondary">
                   <div className="space-y-2">
-                    <p className="font-medium text-text">Stored at</p>
+                    <p className="font-medium text-text">{t('extensions.skills.storedAt')}</p>
                     <p className="break-all text-xs text-text-muted">{item.skillDir}</p>
                   </div>
 
                   {detail.scriptFiles.length > 0 && (
                     <div className="mt-4 space-y-1">
-                      <p className="font-medium text-text">Scripts</p>
+                      <p className="font-medium text-text">{t('extensions.skills.scripts')}</p>
                       {detail.scriptFiles.map((file) => (
                         <p key={file} className="text-xs text-text-muted">
                           {file}
@@ -250,7 +267,7 @@ export const SkillDetailDialog = ({
 
                   {detail.referencesFiles.length > 0 && (
                     <div className="mt-4 space-y-1">
-                      <p className="font-medium text-text">References</p>
+                      <p className="font-medium text-text">{t('extensions.skills.references')}</p>
                       {detail.referencesFiles.map((file) => (
                         <p key={file} className="text-xs text-text-muted">
                           {file}
@@ -261,7 +278,7 @@ export const SkillDetailDialog = ({
 
                   {detail.assetFiles.length > 0 && (
                     <div className="mt-4 space-y-1">
-                      <p className="font-medium text-text">Assets</p>
+                      <p className="font-medium text-text">{t('extensions.skills.assets')}</p>
                       {detail.assetFiles.map((file) => (
                         <p key={file} className="text-xs text-text-muted">
                           {file}
@@ -273,7 +290,7 @@ export const SkillDetailDialog = ({
 
                 <details className="rounded-lg border border-border p-3 text-sm text-text-secondary">
                   <summary className="cursor-pointer font-medium text-text">
-                    Advanced file details
+                    {t('extensions.skills.advancedFileDetails')}
                   </summary>
                   <div className="mt-3 space-y-3">
                     <div className="flex flex-wrap gap-2">
@@ -283,7 +300,7 @@ export const SkillDetailDialog = ({
                         onClick={() => void api.showInFolder(item.skillFile)}
                       >
                         <FolderOpen className="mr-1.5 size-3.5" />
-                        Open Folder
+                        {t('extensions.skills.openFolder')}
                       </Button>
                       <Button
                         variant="outline"
@@ -291,7 +308,7 @@ export const SkillDetailDialog = ({
                         onClick={() => void api.openPath(item.skillFile, projectPath ?? undefined)}
                       >
                         <ExternalLink className="mr-1.5 size-3.5" />
-                        Open SKILL.md
+                        {t('extensions.skills.openSkillMd')}
                       </Button>
                     </div>
                     <CodeBlockViewer
@@ -310,17 +327,17 @@ export const SkillDetailDialog = ({
       <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete skill?</AlertDialogTitle>
+            <AlertDialogTitle>{t('extensions.skills.deleteConfirmTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
               {item
-                ? `Delete "${item.name}" and move it to Trash? You can restore it later from Trash if needed.`
-                : 'Delete this skill and move it to Trash?'}
+                ? t('extensions.skills.deleteConfirmWithName', { name: item.name })
+                : t('extensions.skills.deleteConfirmGeneric')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleteLoading}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={deleteLoading}>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction onClick={() => void handleDelete()} disabled={deleteLoading}>
-              {deleteLoading ? 'Deleting...' : 'Delete Skill'}
+              {deleteLoading ? t('extensions.skills.deleting') : t('extensions.skills.deleteSkill')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

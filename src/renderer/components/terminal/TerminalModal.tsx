@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import ReactDOM from 'react-dom';
 
 import { CheckCircle, Terminal, X, XCircle } from 'lucide-react';
@@ -34,9 +35,12 @@ export function TerminalModal({
   onClose,
   onExit,
   autoCloseOnSuccessMs = 0,
-  successMessage = 'Completed successfully',
-  failureMessage = 'Process failed',
+  successMessage,
+  failureMessage,
 }: TerminalModalProps): React.JSX.Element {
+  const { t } = useTranslation();
+  const resolvedSuccessMessage = successMessage ?? t('terminal.completedSuccessfully');
+  const resolvedFailureMessage = failureMessage ?? t('terminal.processFailed');
   const [exited, setExited] = useState<number | null>(null);
   const [countdown, setCountdown] = useState<number>(0);
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -107,7 +111,7 @@ export function TerminalModal({
           </div>
           <button
             onClick={onClose}
-            aria-label="Close"
+            aria-label={t('common.close')}
             className="rounded p-1 text-text-muted transition-colors hover:bg-surface-raised hover:text-text"
           >
             <X size={16} />
@@ -136,9 +140,13 @@ export function TerminalModal({
                   <div className="flex items-center gap-2.5">
                     <CheckCircle size={18} className="shrink-0 text-green-400" aria-hidden="true" />
                     <div className="flex flex-col">
-                      <span className="text-sm font-medium text-green-400">{successMessage}</span>
+                      <span className="text-sm font-medium text-green-400">
+                        {resolvedSuccessMessage}
+                      </span>
                       {countdown > 0 && (
-                        <span className="text-xs text-text-muted">Closing in {countdown}s...</span>
+                        <span className="text-xs text-text-muted">
+                          {t('terminal.closingIn', { seconds: countdown })}
+                        </span>
                       )}
                     </div>
                   </div>
@@ -147,12 +155,10 @@ export function TerminalModal({
                     <XCircle size={18} className="shrink-0 text-red-400" aria-hidden="true" />
                     <div className="flex flex-col">
                       <span className="text-sm font-medium text-red-400">
-                        {failureMessage}{' '}
+                        {resolvedFailureMessage}{' '}
                         <span className="font-mono opacity-75">(exit code {exited})</span>
                       </span>
-                      <span className="text-xs text-text-muted">
-                        Check terminal output above for details
-                      </span>
+                      <span className="text-xs text-text-muted">{t('terminal.checkOutput')}</span>
                     </div>
                   </div>
                 )}
@@ -160,7 +166,7 @@ export function TerminalModal({
                   onClick={onClose}
                   className="shrink-0 rounded-md bg-surface-raised px-4 py-1.5 text-sm text-text transition-colors hover:bg-border-emphasis"
                 >
-                  Close
+                  {t('common.close')}
                 </button>
               </div>
 

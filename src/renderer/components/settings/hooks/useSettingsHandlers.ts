@@ -31,6 +31,7 @@ interface SettingsHandlers {
   handleGeneralToggle: (key: keyof AppConfig['general'], value: boolean) => void;
   handleThemeChange: (value: 'dark' | 'light' | 'system') => void;
   handleLanguageChange: (value: string) => void;
+  handleUILanguageChange: (value: string) => void;
   handleDefaultTabChange: (value: 'dashboard' | 'last-session') => void;
 
   // Notification handlers
@@ -86,6 +87,13 @@ export function useSettingsHandlers({
   const handleLanguageChange = useCallback(
     (value: string) => {
       void updateConfig('general', { agentLanguage: value });
+    },
+    [updateConfig]
+  );
+
+  const handleUILanguageChange = useCallback(
+    (value: string) => {
+      void updateConfig('general', { uiLanguage: value });
     },
     [updateConfig]
   );
@@ -316,6 +324,7 @@ export function useSettingsHandlers({
           defaultTab: 'dashboard',
           claudeRootPath: null,
           agentLanguage: 'system',
+          uiLanguage: 'system',
           autoExpandAIGroups: false,
           useNativeTitleBar: false,
           telemetryEnabled: true,
@@ -406,6 +415,7 @@ export function useSettingsHandlers({
     handleGeneralToggle,
     handleThemeChange,
     handleLanguageChange,
+    handleUILanguageChange,
     handleDefaultTabChange,
     handleNotificationToggle,
     handleStatusChangeStatusesUpdate,

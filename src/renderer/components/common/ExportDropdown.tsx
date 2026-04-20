@@ -6,6 +6,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { triggerDownload } from '@renderer/utils/sessionExporter';
 import { Braces, Download, FileText, Type } from 'lucide-react';
@@ -19,20 +20,21 @@ interface ExportDropdownProps {
 
 interface FormatOption {
   format: ExportFormat;
-  label: string;
+  labelKey: string;
   icon: React.ComponentType<{ className?: string }>;
   ext: string;
 }
 
 const FORMAT_OPTIONS: FormatOption[] = [
-  { format: 'markdown', label: 'Markdown', icon: FileText, ext: '.md' },
-  { format: 'json', label: 'JSON', icon: Braces, ext: '.json' },
-  { format: 'plaintext', label: 'Plain Text', icon: Type, ext: '.txt' },
+  { format: 'markdown', labelKey: 'export.markdown', icon: FileText, ext: '.md' },
+  { format: 'json', labelKey: 'export.json', icon: Braces, ext: '.json' },
+  { format: 'plaintext', labelKey: 'export.plainText', icon: Type, ext: '.txt' },
 ];
 
 export const ExportDropdown = ({
   sessionDetail,
 }: Readonly<ExportDropdownProps>): React.JSX.Element => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [buttonHover, setButtonHover] = useState(false);
   const [hoveredFormat, setHoveredFormat] = useState<ExportFormat | null>(null);
@@ -86,7 +88,7 @@ export const ExportDropdown = ({
           color: buttonHover || isOpen ? 'var(--color-text)' : 'var(--color-text-muted)',
           backgroundColor: buttonHover || isOpen ? 'var(--color-surface-raised)' : 'transparent',
         }}
-        title="Export session"
+        title={t('export.exportSession')}
       >
         <Download className="size-4" />
       </button>
@@ -100,7 +102,7 @@ export const ExportDropdown = ({
             borderColor: 'var(--color-border)',
           }}
         >
-          {/* Header */}
+          {/* 头部 */}
           <div
             className="px-3 py-2 text-xs font-medium"
             style={{
@@ -108,10 +110,10 @@ export const ExportDropdown = ({
               borderBottom: '1px solid var(--color-border)',
             }}
           >
-            Export Session
+            {t('export.exportSession')}
           </div>
 
-          {/* Format options */}
+          {/* 格式选项 */}
           {FORMAT_OPTIONS.map((option) => (
             <button
               key={option.format}
@@ -129,7 +131,7 @@ export const ExportDropdown = ({
               }}
             >
               <option.icon className="size-3.5" />
-              <span className="flex-1">{option.label}</span>
+              <span className="flex-1">{t(option.labelKey)}</span>
               <span className="text-[10px]" style={{ color: 'var(--color-text-muted)' }}>
                 {option.ext}
               </span>

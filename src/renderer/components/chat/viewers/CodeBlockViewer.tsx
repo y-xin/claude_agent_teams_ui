@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { getBaseName } from '@renderer/utils/pathUtils';
 import { createLogger } from '@shared/utils/logger';
@@ -125,6 +126,7 @@ export const CodeBlockViewer: React.FC<CodeBlockViewerProps> = ({
   endLine,
   maxHeight = 'max-h-96',
 }): React.JSX.Element => {
+  const { t } = useTranslation();
   const [isCopied, setIsCopied] = useState(false);
 
   // Infer language from file extension if not provided
@@ -197,7 +199,7 @@ export const CodeBlockViewer: React.FC<CodeBlockViewerProps> = ({
         <button
           onClick={handleCopy}
           className="rounded p-1 transition-colors hover:opacity-80"
-          title="Copy to clipboard"
+          title={t('common.copyToClipboard')}
           style={{ backgroundColor: 'transparent' }}
         >
           {isCopied ? (

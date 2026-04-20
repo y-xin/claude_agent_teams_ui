@@ -8,8 +8,11 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { FilePlus, FolderPlus } from 'lucide-react';
+
+import type { TFunction } from 'i18next';
 
 // =============================================================================
 // Types
@@ -29,12 +32,12 @@ interface NewFileDialogProps {
 // eslint-disable-next-line no-control-regex, sonarjs/no-control-regex -- Intentional: validating filenames against control characters
 const INVALID_CHARS = /[\x00-\x1f/\\:*?"<>|]/;
 
-function validateName(name: string): string | null {
+function validateName(name: string, t: TFunction): string | null {
   const trimmed = name.trim();
-  if (trimmed.length === 0) return 'Name cannot be empty';
-  if (trimmed === '.' || trimmed === '..') return 'Invalid name';
-  if (INVALID_CHARS.test(trimmed)) return 'Name contains invalid characters';
-  if (trimmed.length > 255) return 'Name is too long';
+  if (trimmed.length === 0) return t('team.newFile.nameEmpty');
+  if (trimmed === '.' || trimmed === '..') return t('team.newFile.invalidName');
+  if (INVALID_CHARS.test(trimmed)) return t('team.newFile.invalidChars');
+  if (trimmed.length > 255) return t('team.newFile.nameTooLong');
   return null;
 }
 
@@ -48,6 +51,7 @@ export const NewFileDialog = ({
   onSubmit,
   onCancel,
 }: NewFileDialogProps): React.ReactElement => {
+  const { t } = useTranslation();
   const [value, setValue] = useState('');
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -80,7 +84,7 @@ export const NewFileDialog = ({
 
   const handleSubmit = useCallback(() => {
     const trimmed = value.trim();
-    const validationError = validateName(trimmed);
+    const validationError = validateName(trimmed, t);
     if (validationError) {
       setError(validationError);
       return;

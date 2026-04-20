@@ -1,5 +1,6 @@
 import { severityColor } from '@renderer/utils/reportAssessments';
 import { MessageSquareWarning } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { AssessmentBadge } from '../AssessmentBadge';
 import { ReportSection } from '../ReportSection';

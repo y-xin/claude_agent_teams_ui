@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { FileIcon } from '@renderer/components/team/editor/FileIcon';
 import { isImageMime } from '@renderer/utils/attachmentUtils';
@@ -20,6 +21,7 @@ export const AttachmentDisplay = ({
   messageId,
   attachments,
 }: AttachmentDisplayProps): React.JSX.Element | null => {
+  const { t } = useTranslation();
   const [state, setState] = useState<{
     loaded: AttachmentFileData[];
     loading: boolean;
@@ -56,7 +58,7 @@ export const AttachmentDisplay = ({
     return (
       <div className="flex items-center gap-1.5 py-1 text-[11px] text-[var(--color-text-muted)]">
         <Loader2 size={14} className="animate-spin" />
-        Loading attachments...
+        {t('team.attachments.loadingAttachments')}
       </div>
     );
   }

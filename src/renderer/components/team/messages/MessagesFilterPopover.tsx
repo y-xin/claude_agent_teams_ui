@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { MemberBadge } from '@renderer/components/team/MemberBadge';
 import { Button } from '@renderer/components/ui/button';
@@ -50,6 +51,7 @@ export const MessagesFilterPopover = ({
   onOpenChange,
   onApply,
 }: MessagesFilterPopoverProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const [draft, setDraft] = useState<MessagesFilterState>({
     from: new Set(),
     to: new Set(),
@@ -115,7 +117,7 @@ export const MessagesFilterPopover = ({
               variant="ghost"
               size="sm"
               className="relative h-7 px-2 text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-              aria-label="Filter messages"
+              aria-label={t('team.messages.filter.filterMessages')}
             >
               <Filter size={14} />
               {activeCount > 0 && (
@@ -126,18 +128,20 @@ export const MessagesFilterPopover = ({
             </Button>
           </PopoverTrigger>
         </TooltipTrigger>
-        <TooltipContent side="bottom">Filter messages</TooltipContent>
+        <TooltipContent side="bottom">{t('team.messages.filter.filterMessages')}</TooltipContent>
       </Tooltip>
       <PopoverContent align="end" className="flex max-h-[70vh] w-72 flex-col p-0">
         {/* Scrollable filter sections */}
         <div className="min-h-0 flex-1 overflow-y-auto">
           <div className="border-b border-[var(--color-border)] p-3">
             <p className="mb-2 text-[11px] font-medium uppercase tracking-wider text-[var(--color-text-muted)]">
-              From
+              {t('team.messages.filter.from')}
             </p>
             <div className="space-y-1">
               {fromOptions.length === 0 ? (
-                <p className="text-xs italic text-[var(--color-text-muted)]">No data</p>
+                <p className="text-xs italic text-[var(--color-text-muted)]">
+                  {t('team.messages.filter.noData')}
+                </p>
               ) : (
                 fromOptions.map((name) => (
                   // eslint-disable-next-line jsx-a11y/label-has-associated-control -- wraps Radix Checkbox which renders native input internally
@@ -162,11 +166,13 @@ export const MessagesFilterPopover = ({
           </div>
           <div className="border-b border-[var(--color-border)] p-3">
             <p className="mb-2 text-[11px] font-medium uppercase tracking-wider text-[var(--color-text-muted)]">
-              To
+              {t('team.messages.filter.to')}
             </p>
             <div className="space-y-1">
               {toOptions.length === 0 ? (
-                <p className="text-xs italic text-[var(--color-text-muted)]">No data</p>
+                <p className="text-xs italic text-[var(--color-text-muted)]">
+                  {t('team.messages.filter.noData')}
+                </p>
               ) : (
                 toOptions.map((name) => (
                   // eslint-disable-next-line jsx-a11y/label-has-associated-control -- wraps Radix Checkbox which renders native input internally
@@ -199,7 +205,7 @@ export const MessagesFilterPopover = ({
                   setDraft((prev) => ({ ...prev, showNoise: !prev.showNoise }))
                 }
               />
-              <span>Show status updates (idle/shutdown)</span>
+              <span>{t('team.messages.filter.showStatusUpdates')}</span>
             </label>
           </div>
           <div className="flex justify-between gap-2 p-2">
@@ -210,10 +216,10 @@ export const MessagesFilterPopover = ({
               disabled={draftCount === 0 && !draft.showNoise}
               onClick={handleReset}
             >
-              Reset
+              {t('team.messages.filter.reset')}
             </Button>
             <Button size="sm" className="h-7 px-3 text-[11px]" onClick={handleSave}>
-              Save
+              {t('team.messages.filter.save')}
             </Button>
           </div>
         </div>

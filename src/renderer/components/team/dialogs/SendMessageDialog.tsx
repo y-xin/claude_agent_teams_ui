@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { MarkdownViewer } from '@renderer/components/chat/viewers/MarkdownViewer';
 import { AttachmentPreviewList } from '@renderer/components/team/attachments/AttachmentPreviewList';
@@ -95,6 +96,7 @@ export const SendMessageDialog = ({
   onSend,
   onClose,
 }: SendMessageDialogProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const colorMap = useMemo(() => buildMemberColorMap(members), [members]);
   const projectPath = useStore((s) => s.selectedTeamData?.config.projectPath ?? null);
   const [quote, setQuote] = useState<QuotedMessage | undefined>(undefined);
@@ -370,25 +372,25 @@ export const SendMessageDialog = ({
         />
 
         <DialogHeader>
-          <DialogTitle>Send Message</DialogTitle>
-          <DialogDescription>Send a direct message to a team member.</DialogDescription>
+          <DialogTitle>{t('team.sendMessage.title')}</DialogTitle>
+          <DialogDescription>{t('team.sendMessage.description')}</DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-4 py-2">
           <div className="grid gap-2">
-            <Label htmlFor="smd-recipient">Recipient</Label>
+            <Label htmlFor="smd-recipient">{t('team.sendMessage.recipient')}</Label>
             <MemberSelect
               members={members}
               value={member || null}
               onChange={(v) => setMember(v ?? '')}
-              placeholder="Select member..."
+              placeholder={t('team.sendMessage.selectMember')}
               size="sm"
             />
           </div>
 
           <div className="grid gap-2">
             <div className="flex items-center gap-2">
-              <Label htmlFor="smd-message">Message</Label>
+              <Label htmlFor="smd-message">{t('team.sendMessage.message')}</Label>
               {isLeadRecipient ? (
                 <>
                   <input
@@ -416,10 +418,10 @@ export const SendMessageDialog = ({
                     </TooltipTrigger>
                     <TooltipContent side="top">
                       {!isTeamAlive
-                        ? 'Team must be online to attach files'
+                        ? t('team.sendMessage.teamMustBeOnline')
                         : !canAddMore
-                          ? 'Maximum attachments reached'
-                          : 'Attach files (paste or drag & drop)'}
+                          ? t('team.sendMessage.maxAttachments')
+                          : t('team.sendMessage.attachFiles')}
                     </TooltipContent>
                   </Tooltip>
                 </>
@@ -432,7 +434,7 @@ export const SendMessageDialog = ({
               error={attachmentError ?? fileRestrictionError}
               onDismissError={clearAttachmentError}
               disabled={attachmentsBlocked}
-              disabledHint="File attachments are only supported when sending to the team lead while the team is online. Remove attachments or switch recipient."
+              disabledHint={t('team.sendMessage.disabledAttachmentHint')}
             />
 
             <div className={quote ? 'flex flex-col' : 'contents'}>
@@ -453,12 +455,12 @@ export const SendMessageDialog = ({
                         <X size={12} />
                       </button>
                     </TooltipTrigger>
-                    <TooltipContent side="left">Remove quote</TooltipContent>
+                    <TooltipContent side="left">{t('team.sendMessage.removeQuote')}</TooltipContent>
                   </Tooltip>
 
                   <div className="mb-1 flex items-center gap-1.5">
                     <span className="text-[10px] text-blue-600/70 dark:text-blue-300/60">
-                      Replying to
+                      {t('team.sendMessage.replyingTo')}
                     </span>
                     <MemberBadge name={quote.from} color={colorMap.get(quote.from)} size="sm" />
                   </div>
@@ -477,7 +479,7 @@ export const SendMessageDialog = ({
                       className="mt-0.5 text-[10px] text-blue-500 hover:text-blue-700 dark:text-blue-400/60 dark:hover:text-blue-300"
                       onClick={() => setQuoteExpanded((v) => !v)}
                     >
-                      {quoteExpanded ? 'less' : 'more'}
+                      {quoteExpanded ? t('team.sendMessage.less') : t('team.sendMessage.more')}
                     </button>
                   ) : null}
                 </div>
@@ -485,7 +487,7 @@ export const SendMessageDialog = ({
               <MentionableTextarea
                 id="smd-message"
                 className={quote ? 'rounded-t-none' : undefined}
-                placeholder="Write your message... (Enter to send)"
+                placeholder={t('team.sendMessage.messagePlaceholder')}
                 value={textDraft.value}
                 onValueChange={textDraft.setValue}
                 suggestions={mentionSuggestions}
@@ -515,7 +517,7 @@ export const SendMessageDialog = ({
                     onClick={handleSubmit}
                   >
                     <Send size={12} />
-                    {sending ? 'Sending...' : 'Send'}
+                    {sending ? t('common.sending') : t('team.sendMessage.send')}
                   </button>
                 }
                 footerRight={
@@ -534,7 +536,9 @@ export const SendMessageDialog = ({
                       </span>
                     ) : null}
                     {textDraft.isSaved ? (
-                      <span className="text-[10px] text-[var(--color-text-muted)]">Saved</span>
+                      <span className="text-[10px] text-[var(--color-text-muted)]">
+                        {t('team.sendMessage.saved')}
+                      </span>
                     ) : null}
                   </div>
                 }

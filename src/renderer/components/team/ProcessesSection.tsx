@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import { useStore } from '@renderer/store';
 import { useShallow } from 'zustand/react/shallow';
 import { formatDistanceToNowStrict } from 'date-fns';
@@ -25,6 +27,7 @@ function formatShortTime(date: Date): string {
 }
 
 export const ProcessesSection = (): React.JSX.Element | null => {
+  const { t } = useTranslation();
   const teamName = useStore((s) => s.selectedTeamName);
   const data = useStore(useShallow((s) => s.selectedTeamData));
 
@@ -55,7 +58,7 @@ export const ProcessesSection = (): React.JSX.Element | null => {
             {/* Status indicator */}
             <span
               className="relative inline-flex size-2 shrink-0"
-              title={alive ? 'Running' : 'Stopped'}
+              title={alive ? t('team.processes.running') : t('team.processes.stopped')}
             >
               {alive && (
                 <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-50" />
@@ -98,10 +101,10 @@ export const ProcessesSection = (): React.JSX.Element | null => {
                   type="button"
                   className="flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] text-red-400 transition-colors hover:bg-red-500/10"
                   onClick={() => void window.electronAPI.teams.killProcess(teamName, proc.pid)}
-                  title="Stop process (SIGTERM)"
+                  title={t('team.processes.stopProcess')}
                 >
                   <Square size={8} className="fill-current" />
-                  Kill
+                  {t('team.processes.kill')}
                 </button>
               )}
               {alive && proc.url && (
@@ -109,10 +112,10 @@ export const ProcessesSection = (): React.JSX.Element | null => {
                   type="button"
                   className="flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] text-blue-400 transition-colors hover:bg-blue-500/10"
                   onClick={() => void window.electronAPI.openExternal(proc.url!)}
-                  title="Open in browser"
+                  title={t('team.processes.openInBrowser')}
                 >
                   <ExternalLink size={10} />
-                  Open
+                  {t('team.processes.open')}
                 </button>
               )}
               <span className="font-mono text-[var(--color-text-muted)]">PID{proc.pid}</span>

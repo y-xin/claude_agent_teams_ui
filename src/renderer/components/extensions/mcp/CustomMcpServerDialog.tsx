@@ -4,6 +4,7 @@
  */
 
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { api } from '@renderer/api';
 import { Button } from '@renderer/components/ui/button';
@@ -43,15 +44,15 @@ type TransportMode = 'stdio' | 'http';
 type HttpTransport = 'streamable-http' | 'sse' | 'http';
 type Scope = 'local' | 'user';
 
-const SCOPE_OPTIONS: { value: Scope; label: string }[] = [
-  { value: 'user', label: 'User (global)' },
-  { value: 'local', label: 'Local' },
+const SCOPE_KEYS: { value: Scope; labelKey: string }[] = [
+  { value: 'user', labelKey: 'extensions.mcp.scopeUser' },
+  { value: 'local', labelKey: 'extensions.mcp.scopeLocal' },
 ];
 
-const HTTP_TRANSPORT_OPTIONS: { value: HttpTransport; label: string }[] = [
-  { value: 'streamable-http', label: 'Streamable HTTP' },
-  { value: 'sse', label: 'SSE' },
-  { value: 'http', label: 'HTTP' },
+const HTTP_TRANSPORT_KEYS: { value: HttpTransport; labelKey: string }[] = [
+  { value: 'streamable-http', labelKey: 'extensions.mcp.transportStreamableHttp' },
+  { value: 'sse', labelKey: 'extensions.mcp.transportSse' },
+  { value: 'http', labelKey: 'extensions.mcp.transportHttp' },
 ];
 
 interface EnvEntry {
@@ -63,6 +64,7 @@ export const CustomMcpServerDialog = ({
   open,
   onClose,
 }: CustomMcpServerDialogProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const installCustomMcpServer = useStore((s) => s.installCustomMcpServer);
 
   // Form state
@@ -126,11 +128,11 @@ export const CustomMcpServerDialog = ({
     setError(null);
 
     if (!serverName.trim()) {
-      setError('Server name is required');
+      setError(t('extensions.mcp.serverNameRequired'));
       return;
     }
     if (!SERVER_NAME_RE.test(serverName)) {
-      setError('Invalid server name. Use alphanumeric characters, dashes, underscores, dots.');
+      setError(t('extensions.mcp.serverNameInvalid'));
       return;
     }
 
@@ -138,7 +140,7 @@ export const CustomMcpServerDialog = ({
 
     if (transportMode === 'stdio') {
       if (!npmPackage.trim()) {
-        setError('npm package name is required');
+        setError(t('extensions.mcp.npmPackageRequired'));
         return;
       }
       installSpec = {
@@ -148,7 +150,7 @@ export const CustomMcpServerDialog = ({
       };
     } else {
       if (!httpUrl.trim()) {
-        setError('Server URL is required');
+        setError(t('extensions.mcp.serverUrlRequired'));
         return;
       }
       installSpec = {
@@ -178,7 +180,7 @@ export const CustomMcpServerDialog = ({
       await installCustomMcpServer(request);
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Install failed');
+      setError(err instanceof Error ? err.message : t('extensions.mcp.installFailed'));
     } finally {
       setInstalling(false);
     }
@@ -208,8 +210,8 @@ export const CustomMcpServerDialog = ({
               <Server className="size-4 text-text-muted" />
             </div>
             <div>
-              <DialogTitle>Add Custom MCP Server</DialogTitle>
-              <DialogDescription>Add a server manually without the catalog.</DialogDescription>
+              <DialogTitle>{t('extensions.mcp.addCustomTitle')}</DialogTitle>
+              <DialogDescription>{t('extensions.mcp.addCustomDescription')}</DialogDescription>
             </div>
           </div>
         </DialogHeader>
@@ -218,7 +220,7 @@ export const CustomMcpServerDialog = ({
           {/* Server name */}
           <div className="space-y-1.5">
             <Label htmlFor="custom-name" className="text-xs">
-              Server Name
+              {t('extensions.mcp.serverName')}
             </Label>
             <Input
               id="custom-name"
@@ -232,7 +234,7 @@ export const CustomMcpServerDialog = ({
 
           {/* Transport toggle */}
           <div className="space-y-1.5">
-            <Label className="text-xs">Transport</Label>
+            <Label className="text-xs">{t('extensions.mcp.transport')}</Label>
             <div className="flex gap-2">
               <Button
                 type="button"
@@ -258,7 +260,7 @@ export const CustomMcpServerDialog = ({
             <div className="space-y-3">
               <div className="space-y-1.5">
                 <Label htmlFor="custom-npm" className="text-xs">
-                  npm Package
+                  {t('extensions.mcp.npmPackage')}
                 </Label>
                 <Input
                   id="custom-npm"
@@ -270,7 +272,7 @@ export const CustomMcpServerDialog = ({
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="custom-version" className="text-xs">
-                  Version (optional)
+                  {t('extensions.mcp.versionOptional')}
                 </Label>
                 <Input
                   id="custom-version"
@@ -288,7 +290,7 @@ export const CustomMcpServerDialog = ({
             <div className="space-y-3">
               <div className="space-y-1.5">
                 <Label htmlFor="custom-url" className="text-xs">
-                  Server URL
+                  {t('extensions.mcp.serverUrl')}
                 </Label>
                 <Input
                   id="custom-url"
@@ -299,7 +301,7 @@ export const CustomMcpServerDialog = ({
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs">Transport Type</Label>
+                <Label className="text-xs">{t('extensions.mcp.transportType')}</Label>
                 <Select
                   value={httpTransport}
                   onValueChange={(v) => setHttpTransport(v as HttpTransport)}
@@ -308,9 +310,9 @@ export const CustomMcpServerDialog = ({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {HTTP_TRANSPORT_OPTIONS.map((opt) => (
+                    {HTTP_TRANSPORT_KEYS.map((opt) => (
                       <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
+                        {t(opt.labelKey)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -320,7 +322,7 @@ export const CustomMcpServerDialog = ({
               {/* Headers */}
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <Label className="text-xs">Headers</Label>
+                  <Label className="text-xs">{t('extensions.mcp.headers')}</Label>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -328,7 +330,7 @@ export const CustomMcpServerDialog = ({
                     className="h-6 px-1.5 text-xs"
                   >
                     <Plus className="mr-1 size-3" />
-                    Add
+                    {t('extensions.mcp.add')}
                   </Button>
                 </div>
                 {headers.length > 0 && (
@@ -339,7 +341,7 @@ export const CustomMcpServerDialog = ({
                           value={header.key}
                           onChange={(e) => updateHeader(i, 'key', e.target.value)}
                           className="h-7 w-32 text-xs"
-                          placeholder="Header-Name"
+                          placeholder={t('extensions.headerNamePlaceholder')}
                         />
                         <Input
                           value={header.value}
@@ -365,15 +367,15 @@ export const CustomMcpServerDialog = ({
 
           {/* Scope */}
           <div className="space-y-1.5">
-            <Label className="text-xs">Scope</Label>
+            <Label className="text-xs">{t('extensions.mcp.scope')}</Label>
             <Select value={scope} onValueChange={(v) => setScope(v as Scope)}>
               <SelectTrigger className="h-8 text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {SCOPE_OPTIONS.map((opt) => (
+                {SCOPE_KEYS.map((opt) => (
                   <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
+                    {t(opt.labelKey)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -383,10 +385,10 @@ export const CustomMcpServerDialog = ({
           {/* Environment variables */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <Label className="text-xs">Environment Variables</Label>
+              <Label className="text-xs">{t('extensions.mcp.envVars')}</Label>
               <Button variant="ghost" size="sm" onClick={addEnvVar} className="h-6 px-1.5 text-xs">
                 <Plus className="mr-1 size-3" />
-                Add
+                {t('extensions.mcp.add')}
               </Button>
             </div>
             {envVars.length > 0 && (
@@ -397,7 +399,7 @@ export const CustomMcpServerDialog = ({
                       value={entry.key}
                       onChange={(e) => updateEnvVar(i, 'key', e.target.value)}
                       className="h-7 w-40 font-mono text-xs"
-                      placeholder="ENV_VAR_NAME"
+                      placeholder={t('extensions.envVarPlaceholder')}
                     />
                     <Input
                       type="password"
@@ -430,10 +432,10 @@ export const CustomMcpServerDialog = ({
           {/* Actions */}
           <div className="flex justify-end gap-2 pt-2">
             <Button variant="ghost" size="sm" onClick={onClose}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button size="sm" disabled={!canSubmit} onClick={() => void handleInstall()}>
-              {installing ? 'Installing...' : 'Install'}
+              {installing ? t('extensions.install.installing') : t('extensions.install.install')}
             </Button>
           </div>
         </div>

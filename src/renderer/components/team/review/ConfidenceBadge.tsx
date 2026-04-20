@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import type { TaskScopeConfidence } from '@shared/types';
 
 interface ConfidenceBadgeProps {
@@ -12,20 +14,21 @@ const TIER_COLORS: Record<number, string> = {
   4: 'bg-red-500/20 text-red-400 border-red-500/30',
 };
 
-const TIER_LABELS: Record<number, string> = {
-  1: 'High confidence',
-  2: 'Medium confidence',
-  3: 'Low confidence',
-  4: 'Best effort',
+const TIER_KEYS: Record<number, string> = {
+  1: 'team.review.confidence.high',
+  2: 'team.review.confidence.medium',
+  3: 'team.review.confidence.low',
+  4: 'team.review.confidence.bestEffort',
 };
 
 export const ConfidenceBadge = ({ confidence, showTooltip = true }: ConfidenceBadgeProps) => {
+  const { t } = useTranslation();
   return (
     <span
       className={`inline-flex items-center rounded border px-2 py-0.5 text-xs ${TIER_COLORS[confidence.tier] ?? TIER_COLORS[4]}`}
       title={showTooltip ? confidence.reason : undefined}
     >
-      {TIER_LABELS[confidence.tier] ?? TIER_LABELS[4]}
+      {t(TIER_KEYS[confidence.tier] ?? TIER_KEYS[4])}
     </span>
   );
 };

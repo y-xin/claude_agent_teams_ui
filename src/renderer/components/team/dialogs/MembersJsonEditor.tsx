@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { closeBrackets, closeBracketsKeymap } from '@codemirror/autocomplete';
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
@@ -46,6 +47,7 @@ export const MembersJsonEditor = ({
   error,
   onClose,
 }: MembersJsonEditorProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
   const onChangeRef = useRef(onChange);
@@ -112,7 +114,7 @@ export const MembersJsonEditor = ({
         <div className="flex items-center justify-end border-b border-[var(--color-border)] px-2 py-1.5">
           <Button variant="ghost" size="sm" className="h-7 gap-1.5 px-2 text-xs" onClick={onClose}>
             <X className="size-3.5" />
-            Hide JSON
+            {t('team.hideJson')}
           </Button>
         </div>
         <div ref={containerRef} />

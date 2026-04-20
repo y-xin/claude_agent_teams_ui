@@ -4,6 +4,7 @@
  */
 
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { getTriggerColorDef } from '@shared/constants/triggerColors';
 import { formatDistanceToNow } from 'date-fns';
@@ -174,6 +175,7 @@ const HoverActions = ({
   onDeleteClick,
   onNavigateClick,
 }: HoverActionsProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const [hoveredButton, setHoveredButton] = useState<string | null>(null);
 
   const getButtonStyle = (buttonId: string, isDelete = false): React.CSSProperties => ({
@@ -196,7 +198,7 @@ const HoverActions = ({
           onMouseLeave={() => setHoveredButton(null)}
           className="rounded p-1.5 transition-colors"
           style={getButtonStyle('archive')}
-          title="Mark as read"
+          title={t('notifications.markAsRead')}
         >
           <Check className="size-4" />
         </button>
@@ -208,7 +210,7 @@ const HoverActions = ({
         onMouseLeave={() => setHoveredButton(null)}
         className="rounded p-1.5 transition-colors"
         style={getButtonStyle('delete', true)}
-        title="Delete"
+        title={t('notifications.deleteNotification')}
       >
         <Trash2 className="size-4" />
       </button>
@@ -219,7 +221,7 @@ const HoverActions = ({
         onMouseLeave={() => setHoveredButton(null)}
         className="rounded p-1.5 transition-colors"
         style={getButtonStyle('navigate')}
-        title="View in session"
+        title={t('notifications.viewInSession')}
       >
         <ArrowRight className="size-4" />
       </button>

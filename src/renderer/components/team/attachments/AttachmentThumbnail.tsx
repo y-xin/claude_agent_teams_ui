@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import { cn } from '@renderer/lib/utils';
 
 interface AttachmentThumbnailProps {
@@ -15,14 +17,17 @@ const sizeClasses: Record<string, string> = {
 
 export const AttachmentThumbnail = ({
   src,
-  alt = 'attachment',
+  alt,
   size = 'md',
   onClick,
 }: AttachmentThumbnailProps): React.JSX.Element => {
+  const { t } = useTranslation();
+  // 使用传入的 alt 或回退到翻译的默认值
+  const resolvedAlt = alt ?? t('team.attachments.attachment');
   const img = (
     <img
       src={src}
-      alt={alt}
+      alt={resolvedAlt}
       className={cn(
         'rounded-md border border-[var(--color-border)] object-cover',
         sizeClasses[size],

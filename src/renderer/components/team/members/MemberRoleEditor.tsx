@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { RoleSelect } from '@renderer/components/team/RoleSelect';
 import { Button } from '@renderer/components/ui/button';
@@ -18,6 +19,7 @@ export const MemberRoleEditor = ({
   onCancel,
   saving,
 }: MemberRoleEditorProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const isPreset = currentRole && (PRESET_ROLES as readonly string[]).includes(currentRole);
   const [selectValue, setSelectValue] = useState<string>(
     !currentRole ? NO_ROLE : isPreset ? currentRole : CUSTOM_ROLE
@@ -44,11 +46,11 @@ export const MemberRoleEditor = ({
     }
     const trimmed = customInput.trim();
     if (!trimmed) {
-      setError('Role cannot be empty');
+      setError(t('team.members.roleCannotBeEmpty'));
       return;
     }
     if (FORBIDDEN_ROLES.has(trimmed.toLowerCase())) {
-      setError('This role is reserved');
+      setError(t('team.members.roleReserved'));
       return;
     }
     void onSave(trimmed);
@@ -68,7 +70,7 @@ export const MemberRoleEditor = ({
         inputClassName="h-7 w-28 text-xs"
         customRoleError={error}
         onCustomRoleValidate={(val) => {
-          if (FORBIDDEN_ROLES.has(val.trim().toLowerCase())) return 'This role is reserved';
+          if (FORBIDDEN_ROLES.has(val.trim().toLowerCase())) return t('team.members.roleReserved');
           return null;
         }}
       />

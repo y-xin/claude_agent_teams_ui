@@ -3,6 +3,7 @@
  */
 
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { CLAUDE_MD_GROUP_CONFIG, CLAUDE_MD_GROUP_ORDER } from '../types';
 
@@ -29,6 +30,7 @@ export const ClaudeMdFilesSection = ({
   projectRoot,
   onNavigateToTurn,
 }: Readonly<ClaudeMdFilesSectionProps>): React.ReactElement | null => {
+  const { t } = useTranslation();
   // Group CLAUDE.md injections by category
   const claudeMdGroups = useMemo(() => {
     const groups = new Map<ClaudeMdGroupCategory, ClaudeMdContextInjection[]>();
@@ -65,7 +67,7 @@ export const ClaudeMdFilesSection = ({
 
   return (
     <CollapsibleSection
-      title="CLAUDE.md Files"
+      title={t('chat.claudeMdFiles')}
       count={injections.length}
       tokenCount={tokenCount}
       isExpanded={isExpanded}

@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { DndContext, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
@@ -102,12 +103,12 @@ interface KanbanBoardProps {
 
 type KanbanViewMode = 'grid' | 'columns';
 
-const COLUMNS: { id: KanbanColumnId; title: string }[] = [
-  { id: 'todo', title: 'TODO' },
-  { id: 'in_progress', title: 'IN PROGRESS' },
-  { id: 'review', title: 'REVIEW' },
-  { id: 'done', title: 'DONE' },
-  { id: 'approved', title: 'APPROVED' },
+const COLUMNS: { id: KanbanColumnId; titleKey: string }[] = [
+  { id: 'todo', titleKey: 'team.columns.todo' },
+  { id: 'in_progress', titleKey: 'team.columns.inProgress' },
+  { id: 'review', titleKey: 'team.columns.review' },
+  { id: 'done', titleKey: 'team.columns.done' },
+  { id: 'approved', titleKey: 'team.columns.approved' },
 ];
 
 function getTaskColumn(task: TeamTask, kanbanState: KanbanState): KanbanColumnId | null {
@@ -303,6 +304,7 @@ export const KanbanBoard = ({
   deletedTaskCount,
   onOpenTrash,
 }: KanbanBoardProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const [viewMode, setViewMode] = useState<KanbanViewMode>('grid');
   const enableTaskSorting =
     viewMode === 'columns' && !!onColumnOrderChange && sort.field === 'manual';
@@ -400,7 +402,7 @@ export const KanbanBoard = ({
         className="flex w-full items-center justify-center gap-1.5 rounded-md border border-dashed border-[var(--color-border)] p-3 text-xs text-[var(--color-text-muted)] transition-colors hover:border-[var(--color-border-emphasis)] hover:text-[var(--color-text-secondary)]"
       >
         <Plus size={13} />
-        Add task
+        {t('team.addTask')}
       </button>
     ) : null;
 
@@ -408,7 +410,7 @@ export const KanbanBoard = ({
       return (
         addButton ?? (
           <div className="rounded-md border border-dashed border-[var(--color-border)] p-3 text-xs text-[var(--color-text-muted)]">
-            No tasks
+            {t('team.noTasks')}
           </div>
         )
       );
@@ -517,7 +519,7 @@ export const KanbanBoard = ({
                   <span className="ml-1 text-xs">{deletedTaskCount}</span>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="bottom">Trash</TooltipContent>
+              <TooltipContent side="bottom">{t('team.trash')}</TooltipContent>
             </Tooltip>
           ) : null}
           <div className="inline-flex rounded-md border border-[var(--color-border)]">
@@ -533,12 +535,12 @@ export const KanbanBoard = ({
                       : 'text-[var(--color-text-muted)]'
                   )}
                   onClick={() => setViewMode('grid')}
-                  aria-label="Grid view"
+                  aria-label={t('team.gridView')}
                 >
                   <LayoutGrid size={14} />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="bottom">Grid view</TooltipContent>
+              <TooltipContent side="bottom">{t('team.gridView')}</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -552,12 +554,12 @@ export const KanbanBoard = ({
                       : 'text-[var(--color-text-muted)]'
                   )}
                   onClick={() => setViewMode('columns')}
-                  aria-label="Columns view"
+                  aria-label={t('team.columnsView')}
                 >
                   <Columns3 size={14} />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="bottom">Columns view</TooltipContent>
+              <TooltipContent side="bottom">{t('team.columnsView')}</TooltipContent>
             </Tooltip>
           </div>
         </div>
@@ -572,7 +574,7 @@ export const KanbanBoard = ({
 
             return {
               id: column.id,
-              title: column.title,
+              title: t(column.titleKey),
               count: columnTasks.length,
               icon: accent.icon,
               headerBg: accent.headerBg,
@@ -592,7 +594,7 @@ export const KanbanBoard = ({
               <div key={column.id} className="flex shrink-0">
                 <div style={{ width }}>
                   <KanbanColumn
-                    title={column.title}
+                    title={t(column.titleKey)}
                     count={columnTasks.length}
                     icon={accent.icon}
                     headerBg={accent.headerBg}

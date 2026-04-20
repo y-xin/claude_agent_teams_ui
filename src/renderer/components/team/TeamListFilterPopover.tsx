@@ -1,5 +1,6 @@
 /* eslint-disable react-refresh/only-export-components -- TeamListFilterState and EMPTY_TEAM_FILTER shared with TeamListView */
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@renderer/components/ui/button';
 import { Checkbox } from '@renderer/components/ui/checkbox';
@@ -37,6 +38,7 @@ export const TeamListFilterPopover = ({
   aliveTeams,
   onFilterChange,
 }: TeamListFilterPopoverProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const activeCount = useMemo(() => {
     let count = 0;
     if (filter.selectedStatuses.size > 0) count += 1;
@@ -95,7 +97,7 @@ export const TeamListFilterPopover = ({
               variant="ghost"
               size="sm"
               className="relative h-8 px-2 text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-              aria-label="Filter teams"
+              aria-label={t('team.filterTeams')}
             >
               <Filter size={14} />
               {activeCount > 0 && (

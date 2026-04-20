@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import { Badge } from '@renderer/components/ui/badge';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@renderer/components/ui/hover-card';
 import {
@@ -44,6 +46,7 @@ export const MemberHoverCard = ({
   onOpenTask,
   children,
 }: MemberHoverCardProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const { isLight } = useTheme();
   const { member, isTeamAlive, teamName, leadActivity, openMemberProfile, tasks } = useStore(
     useShallow((s) => {
@@ -142,7 +145,7 @@ export const MemberHoverCard = ({
                 task={currentTask}
                 borderColor={colors.border}
                 maxSubjectLength={28}
-                activityLabel="working on"
+                activityLabel={t('team.members.workingOn')}
                 onOpenTask={onOpenTask ? () => onOpenTask(currentTask) : undefined}
               />
             </div>
@@ -155,7 +158,7 @@ export const MemberHoverCard = ({
                 task={reviewTask}
                 borderColor={colors.border}
                 maxSubjectLength={28}
-                activityLabel="reviewing"
+                activityLabel={t('team.members.reviewing')}
                 onOpenTask={onOpenTask ? () => onOpenTask(reviewTask) : undefined}
               />
             </div>
@@ -171,7 +174,7 @@ export const MemberHoverCard = ({
             }}
           >
             <ExternalLink size={12} />
-            Open profile
+            {t('team.members.openProfile')}
           </button>
         </div>
       </HoverCardContent>

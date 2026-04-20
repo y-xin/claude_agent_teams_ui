@@ -3,6 +3,7 @@
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { redo, undo } from '@codemirror/commands';
 import { Button } from '@renderer/components/ui/button';
@@ -46,6 +47,7 @@ export const EditorToolbar = ({
   );
   const saveFile = useStore((s) => s.saveFile);
   const toggleLineWrap = useStore((s) => s.toggleLineWrap);
+  const { t } = useTranslation();
 
   if (!activeTabId) return null;
 
@@ -70,27 +72,27 @@ export const EditorToolbar = ({
     <div className="flex h-8 shrink-0 items-center gap-1 border-b border-border bg-surface px-2">
       <ToolbarButton
         icon={<Save className="size-3.5" />}
-        label="Save"
+        label={t('common.save')}
         shortcut={shortcutLabel('⌘ S', 'Ctrl+S')}
         onClick={handleSave}
         disabled={!isDirty || isSaving}
       />
       <ToolbarButton
         icon={<Undo2 className="size-3.5" />}
-        label="Undo"
+        label={t('team.editor.undo')}
         shortcut={shortcutLabel('⌘ Z', 'Ctrl+Z')}
         onClick={handleUndo}
       />
       <ToolbarButton
         icon={<Redo2 className="size-3.5" />}
-        label="Redo"
+        label={t('team.editor.redo')}
         shortcut={shortcutLabel('⌘ ⇧ Z', 'Ctrl+Y')}
         onClick={handleRedo}
       />
       <div className="mx-1 h-4 w-px bg-border" />
       <ToolbarButton
         icon={<WrapText className="size-3.5" />}
-        label={lineWrap ? 'Disable word wrap' : 'Enable word wrap'}
+        label={lineWrap ? t('team.editor.disableWordWrap') : t('team.editor.enableWordWrap')}
         shortcut={shortcutLabel('⌘ ⇧ W', 'Ctrl+Shift+W')}
         onClick={toggleLineWrap}
         active={lineWrap}
@@ -100,14 +102,22 @@ export const EditorToolbar = ({
           <div className="mx-1 h-4 w-px bg-border" />
           <ToolbarButton
             icon={<Columns2 className="size-3.5" />}
-            label={mdPreviewMode === 'split' ? 'Close split preview' : 'Split preview'}
+            label={
+              mdPreviewMode === 'split'
+                ? t('team.editor.closeSplitPreview')
+                : t('team.editor.splitPreview')
+            }
             shortcut={shortcutLabel('⌘ ⇧ M', 'Ctrl+Shift+M')}
             onClick={onToggleSplit ?? (() => {})}
             active={mdPreviewMode === 'split'}
           />
           <ToolbarButton
             icon={<Eye className="size-3.5" />}
-            label={mdPreviewMode === 'preview' ? 'Close preview' : 'Full preview'}
+            label={
+              mdPreviewMode === 'preview'
+                ? t('team.editor.closePreview')
+                : t('team.editor.fullPreview')
+            }
             shortcut={shortcutLabel('⌘ ⇧ V', 'Ctrl+Shift+V')}
             onClick={onToggleFullPreview ?? (() => {})}
             active={mdPreviewMode === 'preview'}

@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Loader2 } from 'lucide-react';
 
@@ -23,19 +24,21 @@ interface OngoingIndicatorProps {
 export const OngoingIndicator = ({
   size = 'sm',
   showLabel = false,
-  label = 'Session in progress...',
+  label,
 }: Readonly<OngoingIndicatorProps>): React.JSX.Element => {
+  const { t } = useTranslation();
   const dotSize = size === 'sm' ? 'h-2 w-2' : 'h-2.5 w-2.5';
+  const displayLabel = label ?? t('common.sessionInProgress');
 
   return (
-    <span className="inline-flex items-center gap-2" title="Session in progress">
+    <span className="inline-flex items-center gap-2" title={t('common.sessionInProgress')}>
       <span className={`relative flex ${dotSize} shrink-0`}>
         <span className="absolute inline-flex size-full animate-ping rounded-full bg-green-400 opacity-75" />
         <span className={`relative inline-flex rounded-full ${dotSize} bg-green-500`} />
       </span>
       {showLabel && (
         <span className="text-sm" style={{ color: 'var(--info-text)' }}>
-          {label}
+          {displayLabel}
         </span>
       )}
     </span>
@@ -47,6 +50,7 @@ export const OngoingIndicator = ({
  * Shows animated spinner and text.
  */
 export const OngoingBanner = (): React.JSX.Element => {
+  const { t } = useTranslation();
   return (
     <div
       className="flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3"
@@ -57,7 +61,7 @@ export const OngoingBanner = (): React.JSX.Element => {
     >
       <Loader2 className="size-4 shrink-0 animate-spin" style={{ color: 'var(--info-text)' }} />
       <span className="text-sm font-medium" style={{ color: 'var(--info-text)' }}>
-        Session is in progress...
+        {t('common.sessionIsInProgress')}
       </span>
     </div>
   );

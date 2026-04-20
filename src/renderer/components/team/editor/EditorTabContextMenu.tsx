@@ -4,6 +4,7 @@
  */
 
 import * as ContextMenu from '@radix-ui/react-context-menu';
+import { useTranslation } from 'react-i18next';
 
 interface EditorTabContextMenuProps {
   children: React.ReactNode;
@@ -28,6 +29,7 @@ export const EditorTabContextMenu = ({
   onCloseToRight,
   onCloseAll,
 }: EditorTabContextMenuProps): React.ReactElement => {
+  const { t } = useTranslation();
   const hasLeft = tabIndex > 0;
   const hasRight = tabIndex < totalTabs - 1;
   const hasOthers = totalTabs > 1;
@@ -44,7 +46,7 @@ export const EditorTabContextMenu = ({
             className="flex cursor-pointer items-center rounded px-2 py-1.5 text-xs text-text outline-none hover:bg-surface-raised focus:bg-surface-raised"
             onSelect={() => onClose(tabId)}
           >
-            Close
+            {t('common.close')}
           </ContextMenu.Item>
 
           <ContextMenu.Item
@@ -52,7 +54,7 @@ export const EditorTabContextMenu = ({
             disabled={!hasOthers}
             onSelect={() => onCloseOthers(tabId)}
           >
-            Close Others
+            {t('team.editorTab.closeOthers')}
           </ContextMenu.Item>
 
           <ContextMenu.Separator className="my-1 h-px bg-border" />
@@ -62,7 +64,7 @@ export const EditorTabContextMenu = ({
             disabled={!hasLeft}
             onSelect={() => onCloseToLeft(tabId)}
           >
-            Close Tabs to the Left
+            {t('team.editorTab.closeToLeft')}
           </ContextMenu.Item>
 
           <ContextMenu.Item
@@ -70,7 +72,7 @@ export const EditorTabContextMenu = ({
             disabled={!hasRight}
             onSelect={() => onCloseToRight(tabId)}
           >
-            Close Tabs to the Right
+            {t('team.editorTab.closeToRight')}
           </ContextMenu.Item>
 
           <ContextMenu.Separator className="my-1 h-px bg-border" />
@@ -79,7 +81,7 @@ export const EditorTabContextMenu = ({
             className="flex cursor-pointer items-center rounded px-2 py-1.5 text-xs text-text outline-none hover:bg-surface-raised focus:bg-surface-raised"
             onSelect={onCloseAll}
           >
-            Close All
+            {t('team.editorTab.closeAll')}
           </ContextMenu.Item>
         </ContextMenu.Content>
       </ContextMenu.Portal>

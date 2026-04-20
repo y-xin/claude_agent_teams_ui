@@ -2,6 +2,7 @@
  * PluginCard — grid card for a single plugin in the catalog.
  */
 
+import { useTranslation } from 'react-i18next';
 import { Badge } from '@renderer/components/ui/badge';
 import { useStore } from '@renderer/store';
 import {
@@ -23,6 +24,7 @@ interface PluginCardProps {
 }
 
 export const PluginCard = ({ plugin, index, onClick }: PluginCardProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const capabilities = inferCapabilities(plugin);
   const category = normalizeCategory(plugin.category);
   const installProgress = useStore((s) => s.pluginInstallProgress[plugin.pluginId] ?? 'idle');
@@ -55,7 +57,7 @@ export const PluginCard = ({ plugin, index, onClick }: PluginCardProps): React.J
       {plugin.source === 'official' && (
         <div className="pointer-events-none absolute -left-px -top-px size-16 overflow-hidden">
           <div className="absolute left-[-24px] top-[4px] w-[80px] -rotate-45 bg-blue-500/90 text-center text-[9px] font-semibold leading-[18px] text-white shadow-sm">
-            Official
+            {t('extensions.official')}
           </div>
         </div>
       )}
@@ -86,7 +88,7 @@ export const PluginCard = ({ plugin, index, onClick }: PluginCardProps): React.J
               className="shrink-0 border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
               variant="outline"
             >
-              Installed
+              {t('extensions.installed')}
             </Badge>
           )}
         </div>
@@ -100,7 +102,7 @@ export const PluginCard = ({ plugin, index, onClick }: PluginCardProps): React.J
       {/* Footer: author + version + install button */}
       <div className="flex items-start justify-between gap-2">
         <div className="flex min-w-0 items-center gap-3 text-xs text-text-muted">
-          <span className="truncate">{plugin.author?.name ?? 'Unknown author'}</span>
+          <span className="truncate">{plugin.author?.name ?? t('extensions.unknownAuthor')}</span>
           {plugin.version && (
             <span className="inline-flex shrink-0 items-center gap-1">
               <Tag className="size-3" />

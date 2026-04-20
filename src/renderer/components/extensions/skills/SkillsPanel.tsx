@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { api } from '@renderer/api';
 import { Badge } from '@renderer/components/ui/badge';
@@ -60,25 +61,15 @@ function formatRootKind(rootKind: SkillCatalogItem['rootKind']): string {
   return `.${rootKind}`;
 }
 
-function getScopeLabel(skill: SkillCatalogItem): string {
-  return skill.scope === 'project' ? 'This project' : 'Personal';
-}
-
-function getInvocationLabel(skill: SkillCatalogItem): string {
-  return skill.invocationMode === 'manual-only'
-    ? 'Only runs when you explicitly ask for it'
-    : 'Claude can use this automatically when it fits';
-}
-
-function getSkillStatus(skill: SkillCatalogItem): string {
-  if (!skill.isValid) {
-    return 'Needs attention before you rely on it';
-  }
-  if (skill.flags.hasScripts) {
-    return 'Includes scripts, so review it carefully';
-  }
-  return 'Ready to use';
-}
+/** 这些辅助函数的翻译在组件内通过 t() 调用 */
+const SCOPE_LABEL_KEYS: Record<string, string> = {
+  project: 'extensions.skills.scopeProject',
+  user: 'extensions.skills.scopePersonal',
+};
+const INVOCATION_LABEL_KEYS: Record<string, string> = {
+  'manual-only': 'extensions.skills.invocationManual',
+  auto: 'extensions.skills.invocationAuto',
+};
 
 export const SkillsPanel = ({
   projectPath,
@@ -90,6 +81,7 @@ export const SkillsPanel = ({
   selectedSkillId,
   setSelectedSkillId,
 }: SkillsPanelProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const catalogKey = projectPath ?? USER_SKILLS_CATALOG_KEY;
   const fetchSkillsCatalog = useStore((s) => s.fetchSkillsCatalog);
   const fetchSkillDetail = useStore((s) => s.fetchSkillDetail);
@@ -217,18 +209,20 @@ export const SkillsPanel = ({
           <div className="min-w-0 flex-1 space-y-1 xl:max-w-2xl">
             <div className="flex items-center gap-2">
               <BookOpen className="size-4 text-text-muted" />
-              <h2 className="text-sm font-semibold text-text">Teach Claude repeatable work</h2>
+              <h2 className="text-sm font-semibold text-text">
+                {t('extensions.skills.teachTitle')}
+              </h2>
             </div>
             <p className="max-w-2xl text-sm leading-5 text-text-muted">
-              Skills are reusable instructions that help Claude handle the same kind of task more
-              consistently.{' '}
+              {t('extensions.skills.teachDescription')}{' '}
               {projectPath
-                ? `You are seeing skills for ${projectLabel ?? projectPath} plus your personal skills.`
-                : 'You are seeing only your personal skills right now.'}
+                ? t('extensions.skills.seeingProjectSkills', {
+                    project: projectLabel ?? projectPath,
+                  })
+                : t('extensions.skills.seeingPersonalOnly')}
             </p>
             <p className="max-w-2xl text-xs leading-5 text-text-muted">
-              Use personal skills for habits you want everywhere. Use project skills for workflows
-              that only make sense inside one codebase.
+              {t('extensions.skills.personalVsProject')}
             </p>
           </div>
 
@@ -238,17 +232,17 @@ export const SkillsPanel = ({
                 <SearchInput
                   value={skillsSearchQuery}
                   onChange={setSkillsSearchQuery}
-                  placeholder="Search by skill name or what it helps with..."
+                  placeholder={t('extensions.skills.searchPlaceholder')}
                 />
               </div>
               <div className="flex flex-wrap gap-2">
                 <Button variant="outline" size="sm" onClick={() => setCreateOpen(true)}>
                   <Plus className="mr-1.5 size-3.5" />
-                  Create Skill
+                  {t('extensions.skills.createSkill')}
                 </Button>
                 <Button variant="outline" size="sm" onClick={() => setImportOpen(true)}>
                   <Download className="mr-1.5 size-3.5" />
-                  Import
+                  {t('extensions.skills.import')}
                 </Button>
                 <Popover open={sortMenuOpen} onOpenChange={setSortMenuOpen}>
                   <Tooltip>
@@ -258,13 +252,13 @@ export const SkillsPanel = ({
                           variant="outline"
                           size="icon"
                           className="size-9 shrink-0"
-                          aria-label="Sort skills"
+                          aria-label={t('extensions.sortSkills')}
                         >
                           <ArrowUpDown className="size-4" />
                         </Button>
                       </PopoverTrigger>
                     </TooltipTrigger>
-                    <TooltipContent>Sort skills</TooltipContent>
+                    <TooltipContent>{t('extensions.skills.sortSkills')}</TooltipContent>
                   </Tooltip>
                   <PopoverContent align="end" className="w-44 p-1">
                     <button
@@ -276,7 +270,7 @@ export const SkillsPanel = ({
                       }}
                     >
                       <ArrowUpAZ className="mr-2 size-3.5" />
-                      Name
+                      {t('extensions.skills.sortName')}
                       {skillsSort === 'name-asc' && <Check className="ml-auto size-3.5" />}
                     </button>
                     <button
@@ -288,7 +282,7 @@ export const SkillsPanel = ({
                       }}
                     >
                       <Clock3 className="mr-2 size-3.5" />
-                      Recent
+                      {t('extensions.skills.sortRecent')}
                       {skillsSort === 'recent-desc' && <Check className="ml-auto size-3.5" />}
                     </button>
                   </PopoverContent>
@@ -298,13 +292,13 @@ export const SkillsPanel = ({
 
             <div className="flex flex-wrap gap-2 text-[11px] text-text-muted xl:justify-end">
               <Badge variant="secondary" className="font-normal">
-                {mergedSkills.length} total
+                {t('extensions.skills.countTotal', { count: mergedSkills.length })}
               </Badge>
               <Badge variant="secondary" className="font-normal">
-                {projectSkills.length} project
+                {t('extensions.skills.countProject', { count: projectSkills.length })}
               </Badge>
               <Badge variant="secondary" className="font-normal">
-                {userSkills.length} personal
+                {t('extensions.skills.countPersonal', { count: userSkills.length })}
               </Badge>
             </div>
           </div>
@@ -314,11 +308,11 @@ export const SkillsPanel = ({
       <div className="flex flex-wrap gap-2">
         {(
           [
-            ['all', 'All skills'],
-            ['project', 'Project'],
-            ['personal', 'Personal'],
-            ['needs-attention', 'Needs attention'],
-            ['has-scripts', 'Has scripts'],
+            ['all', t('extensions.skills.filterAll')],
+            ['project', t('extensions.skills.filterProject')],
+            ['personal', t('extensions.skills.filterPersonal')],
+            ['needs-attention', t('extensions.skills.filterNeedsAttention')],
+            ['has-scripts', t('extensions.skills.filterHasScripts')],
           ] as [SkillsQuickFilter, string][]
         ).map(([value, label]) => (
           <Button
@@ -348,13 +342,13 @@ export const SkillsPanel = ({
 
       {isRefreshing && (
         <div className="rounded-md border border-blue-500/20 bg-blue-500/10 p-3 text-sm text-blue-700 dark:text-blue-300">
-          Refreshing skills...
+          {t('extensions.skills.refreshing')}
         </div>
       )}
 
       {skillsLoading && visibleSkills.length === 0 && (
         <div className="rounded-lg border border-border p-6 text-sm text-text-muted">
-          Loading skills...
+          {t('common.loading')}
         </div>
       )}
 
@@ -364,12 +358,14 @@ export const SkillsPanel = ({
             <Search className="size-5 text-text-muted" />
           </div>
           <p className="text-sm text-text-secondary">
-            {skillsSearchQuery ? 'No skills match your search' : 'No skills yet'}
+            {skillsSearchQuery
+              ? t('extensions.skills.noSearchResults')
+              : t('extensions.skills.noSkillsYet')}
           </p>
           <p className="text-xs text-text-muted">
             {skillsSearchQuery
-              ? 'Try a different search term or switch filters.'
-              : 'Create your first skill to teach Claude a repeatable workflow, or import one you already use.'}
+              ? t('extensions.skills.tryDifferentSearch')
+              : t('extensions.skills.createFirstHint')}
           </p>
         </div>
       )}
@@ -380,9 +376,11 @@ export const SkillsPanel = ({
             <section className="space-y-3">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <h3 className="text-sm font-semibold text-text">Project skills</h3>
+                  <h3 className="text-sm font-semibold text-text">
+                    {t('extensions.skills.projectSkills')}
+                  </h3>
                   <p className="text-xs text-text-muted">
-                    Workflows that only make sense for this codebase.
+                    {t('extensions.skills.projectSkillsDesc')}
                   </p>
                 </div>
                 <Badge variant="secondary" className="font-normal">
@@ -410,7 +408,7 @@ export const SkillsPanel = ({
                               variant="outline"
                               className="border-amber-500/40 text-amber-700 dark:text-amber-300"
                             >
-                              Needs attention
+                              {t('extensions.skills.needsAttention')}
                             </Badge>
                           )}
                         </div>
@@ -418,31 +416,44 @@ export const SkillsPanel = ({
                           {skill.description}
                         </p>
                       </div>
-                      <Badge variant="outline">{getScopeLabel(skill)}</Badge>
+                      <Badge variant="outline">
+                        {t(SCOPE_LABEL_KEYS[skill.scope] ?? 'extensions.skills.scopePersonal')}
+                      </Badge>
                     </div>
 
                     <div className="mt-3 space-y-2 text-xs text-text-muted">
-                      <p>{getInvocationLabel(skill)}</p>
-                      <p>{getSkillStatus(skill)}</p>
+                      <p>
+                        {t(
+                          INVOCATION_LABEL_KEYS[skill.invocationMode] ??
+                            'extensions.skills.invocationAuto'
+                        )}
+                      </p>
+                      <p>
+                        {!skill.isValid
+                          ? t('extensions.skills.statusNeedsAttention')
+                          : skill.flags.hasScripts
+                            ? t('extensions.skills.statusHasScripts')
+                            : t('extensions.skills.statusReady')}
+                      </p>
                     </div>
 
                     <div className="mt-3 flex flex-wrap gap-2">
                       <Badge variant="secondary" className="font-normal">
-                        Stored in {formatRootKind(skill.rootKind)}
+                        {t('extensions.skills.storedIn', { root: formatRootKind(skill.rootKind) })}
                       </Badge>
                       {skill.flags.hasScripts && (
                         <Badge variant="destructive" className="font-normal">
-                          Has scripts
+                          {t('extensions.skills.hasScripts')}
                         </Badge>
                       )}
                       {skill.flags.hasReferences && (
                         <Badge variant="secondary" className="font-normal">
-                          References
+                          {t('extensions.skills.references')}
                         </Badge>
                       )}
                       {skill.flags.hasAssets && (
                         <Badge variant="secondary" className="font-normal">
-                          Assets
+                          {t('extensions.skills.assets')}
                         </Badge>
                       )}
                     </div>
@@ -463,9 +474,11 @@ export const SkillsPanel = ({
             <section className="space-y-3">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <h3 className="text-sm font-semibold text-text">Personal skills</h3>
+                  <h3 className="text-sm font-semibold text-text">
+                    {t('extensions.skills.personalSkills')}
+                  </h3>
                   <p className="text-xs text-text-muted">
-                    Habits and instructions you want Claude to remember everywhere.
+                    {t('extensions.skills.personalSkillsDesc')}
                   </p>
                 </div>
                 <Badge variant="secondary" className="font-normal">
@@ -493,7 +506,7 @@ export const SkillsPanel = ({
                               variant="outline"
                               className="border-amber-500/40 text-amber-700 dark:text-amber-300"
                             >
-                              Needs attention
+                              {t('extensions.skills.needsAttention')}
                             </Badge>
                           )}
                         </div>
@@ -501,31 +514,44 @@ export const SkillsPanel = ({
                           {skill.description}
                         </p>
                       </div>
-                      <Badge variant="outline">{getScopeLabel(skill)}</Badge>
+                      <Badge variant="outline">
+                        {t(SCOPE_LABEL_KEYS[skill.scope] ?? 'extensions.skills.scopePersonal')}
+                      </Badge>
                     </div>
 
                     <div className="mt-3 space-y-2 text-xs text-text-muted">
-                      <p>{getInvocationLabel(skill)}</p>
-                      <p>{getSkillStatus(skill)}</p>
+                      <p>
+                        {t(
+                          INVOCATION_LABEL_KEYS[skill.invocationMode] ??
+                            'extensions.skills.invocationAuto'
+                        )}
+                      </p>
+                      <p>
+                        {!skill.isValid
+                          ? t('extensions.skills.statusNeedsAttention')
+                          : skill.flags.hasScripts
+                            ? t('extensions.skills.statusHasScripts')
+                            : t('extensions.skills.statusReady')}
+                      </p>
                     </div>
 
                     <div className="mt-3 flex flex-wrap gap-2">
                       <Badge variant="secondary" className="font-normal">
-                        Stored in {formatRootKind(skill.rootKind)}
+                        {t('extensions.skills.storedIn', { root: formatRootKind(skill.rootKind) })}
                       </Badge>
                       {skill.flags.hasScripts && (
                         <Badge variant="destructive" className="font-normal">
-                          Has scripts
+                          {t('extensions.skills.hasScripts')}
                         </Badge>
                       )}
                       {skill.flags.hasReferences && (
                         <Badge variant="secondary" className="font-normal">
-                          References
+                          {t('extensions.skills.references')}
                         </Badge>
                       )}
                       {skill.flags.hasAssets && (
                         <Badge variant="secondary" className="font-normal">
-                          Assets
+                          {t('extensions.skills.assets')}
                         </Badge>
                       )}
                     </div>
@@ -567,7 +593,7 @@ export const SkillsPanel = ({
         onClose={() => setCreateOpen(false)}
         onSaved={(skillId) => {
           setCreateOpen(false);
-          setSuccessMessage('Skill created successfully.');
+          setSuccessMessage(t('extensions.skills.skillCreated'));
           setHighlightedSkillId(skillId);
           setSelectedSkillId(null);
         }}
@@ -586,7 +612,7 @@ export const SkillsPanel = ({
         onSaved={(skillId) => {
           setEditOpen(false);
           setEditingDetail(null);
-          setSuccessMessage('Skill saved successfully.');
+          setSuccessMessage(t('extensions.skills.skillSaved'));
           setSelectedSkillId(skillId);
         }}
       />
@@ -598,7 +624,7 @@ export const SkillsPanel = ({
         onClose={() => setImportOpen(false)}
         onImported={(skillId) => {
           setImportOpen(false);
-          setSuccessMessage('Skill imported successfully.');
+          setSuccessMessage(t('extensions.skills.skillImported'));
           setSelectedSkillId(skillId);
         }}
       />

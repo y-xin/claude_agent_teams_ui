@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { getTeamColorSet, getThemedBadge } from '@renderer/constants/teamColors';
 import { useTheme } from '@renderer/hooks/useTheme';
@@ -142,6 +143,7 @@ function useElapsed(receivedAt: string): number {
 const RESPOND_TIMEOUT_MS = 10_000;
 
 export const ToolApprovalSheet: React.FC = () => {
+  const { t } = useTranslation();
   const {
     pendingApprovals,
     respondToToolApproval,
@@ -207,7 +209,7 @@ export const ToolApprovalSheet: React.FC = () => {
       // re-enable the button so the user isn't stuck forever.
       const safetyTimer = setTimeout(() => {
         setDisabled(false);
-        setError('Response timed out — process may be unresponsive. Try again or stop the team.');
+        setError(t('team.approval.responseTimedOut'));
       }, RESPOND_TIMEOUT_MS);
 
       respondToToolApproval(
@@ -391,7 +393,7 @@ export const ToolApprovalSheet: React.FC = () => {
                 });
               }}
             >
-              {isAskQuestion ? 'Submit' : 'Allow'}
+              {isAskQuestion ? t('common.submit') : t('team.approval.allow')}
             </button>
             <button
               type="button"
@@ -412,7 +414,7 @@ export const ToolApprovalSheet: React.FC = () => {
                 Object.assign(e.currentTarget.style, { backgroundColor: 'transparent' });
               }}
             >
-              Deny
+              {t('team.approval.deny')}
             </button>
 
             <div className="mx-1 h-4 w-px" style={{ backgroundColor: 'var(--color-border)' }} />
@@ -440,13 +442,13 @@ export const ToolApprovalSheet: React.FC = () => {
                 });
               }}
             >
-              Allow all
+              {t('team.approval.allowAll')}
             </button>
           </div>
           <div className="flex items-center gap-2">
             {pendingApprovals.length > 1 && (
               <span className="text-[11px] text-[var(--color-text-muted)]">
-                {pendingApprovals.length - 1} pending
+                {t('team.approval.pendingCount', { count: pendingApprovals.length - 1 })}
               </span>
             )}
             <ToolApprovalSettingsToggle
@@ -618,6 +620,7 @@ const ToolInputPreview = ({
 // ---------------------------------------------------------------------------
 
 const TimeoutProgress = ({ receivedAt }: { receivedAt: string }): React.JSX.Element | null => {
+  const { t } = useTranslation();
   const settings = useStore(useShallow((s) => s.toolApprovalSettings));
   const elapsed = useElapsed(receivedAt);
 
@@ -645,7 +648,10 @@ const TimeoutProgress = ({ receivedAt }: { receivedAt: string }): React.JSX.Elem
         />
       </div>
       <span className="text-[10px] tabular-nums" style={{ color: 'var(--color-text-muted)' }}>
-        Auto-{settings.timeoutAction} in {formatElapsed(remaining)}
+        {t('team.approval.autoAction', {
+          action: settings.timeoutAction,
+          time: formatElapsed(remaining),
+        })}
       </span>
     </div>
   );

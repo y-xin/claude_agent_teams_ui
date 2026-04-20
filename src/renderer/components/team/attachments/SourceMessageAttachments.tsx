@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import { Tooltip, TooltipContent, TooltipTrigger } from '@renderer/components/ui/tooltip';
 import { Info } from 'lucide-react';
 
@@ -16,6 +18,7 @@ export const SourceMessageAttachments = ({
   sourceMessageId,
   sourceMessage,
 }: SourceMessageAttachmentsProps): React.JSX.Element | null => {
+  const { t } = useTranslation();
   if (!sourceMessage.attachments?.length) return null;
 
   const attachments: AttachmentMeta[] = sourceMessage.attachments.map((a) => ({
@@ -41,7 +44,7 @@ export const SourceMessageAttachments = ({
     <div className="mb-2">
       <div className="mb-1 flex items-center gap-1.5">
         <span className="text-[11px] font-medium text-[var(--color-text-muted)]">
-          From original message
+          {t('team.attachments.fromOriginalMessage')}
         </span>
         <Tooltip>
           <TooltipTrigger asChild>

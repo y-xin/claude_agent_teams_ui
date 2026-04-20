@@ -3,6 +3,8 @@
  * Shows subtle, muted colors for each worktree type.
  */
 
+import { useTranslation } from 'react-i18next';
+
 import { WORKTREE_BADGE_BG, WORKTREE_BADGE_TEXT } from '@renderer/constants/cssVariables';
 
 import type { WorktreeSource } from '@renderer/types/data';
@@ -86,6 +88,8 @@ export const WorktreeBadge = ({
   isMain = false,
   className = '',
 }: Readonly<WorktreeBadgeProps>): React.ReactElement | null => {
+  const { t } = useTranslation();
+
   // Show Default badge if isMain is true (the default/primary worktree)
   if (isMain) {
     return (
@@ -96,7 +100,7 @@ export const WorktreeBadge = ({
           color: DEFAULT_CONFIG.textColor,
         }}
       >
-        {DEFAULT_CONFIG.label}
+        {t('common.worktreeDefault')}
       </span>
     );
   }
@@ -115,7 +119,7 @@ export const WorktreeBadge = ({
         backgroundColor: config.bgColor,
         color: config.textColor,
       }}
-      title={`Created by ${config.label}`}
+      title={t('common.createdBy', { name: config.label })}
     >
       {config.label}
     </span>

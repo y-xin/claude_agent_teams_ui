@@ -1,5 +1,6 @@
 import { assessmentColor } from '@renderer/utils/reportAssessments';
 import { Wrench } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { AssessmentBadge } from '../AssessmentBadge';
 import { ReportSection, sectionId } from '../ReportSection';
@@ -12,15 +13,19 @@ interface ToolSectionProps {
 }
 
 export const ToolSection = ({ data, defaultCollapsed }: ToolSectionProps) => {
+  const { t } = useTranslation();
   const toolEntries = Object.entries(data.successRates).sort(
     (a, b) => b[1].totalCalls - a[1].totalCalls
   );
 
   return (
-    <ReportSection title="Tool Usage" icon={Wrench} defaultCollapsed={defaultCollapsed}>
+    <ReportSection title={t('report.toolUsage')} icon={Wrench} defaultCollapsed={defaultCollapsed}>
       <div className="mb-2 flex items-center gap-2">
         <span className="text-xs text-text-muted">
-          {data.totalCalls.toLocaleString()} total calls across {toolEntries.length} tools
+          {t('report.toolCallsSummary', {
+            total: data.totalCalls.toLocaleString(),
+            count: toolEntries.length,
+          })}
         </span>
         <AssessmentBadge assessment={data.overallToolHealth} metricKey="toolHealth" />
       </div>
@@ -28,11 +33,11 @@ export const ToolSection = ({ data, defaultCollapsed }: ToolSectionProps) => {
         <table className="w-full text-xs">
           <thead>
             <tr className="border-b border-border text-left text-text-muted">
-              <th className="pb-2 pr-4">Tool</th>
-              <th className="pb-2 pr-4 text-right">Calls</th>
-              <th className="pb-2 pr-4 text-right">Errors</th>
-              <th className="pb-2 pr-4 text-right">Success %</th>
-              <th className="pb-2 text-right">Health</th>
+              <th className="pb-2 pr-4">{t('report.tool')}</th>
+              <th className="pb-2 pr-4 text-right">{t('report.calls')}</th>
+              <th className="pb-2 pr-4 text-right">{t('report.errors')}</th>
+              <th className="pb-2 pr-4 text-right">{t('report.successPct')}</th>
+              <th className="pb-2 text-right">{t('report.health')}</th>
             </tr>
           </thead>
           <tbody>

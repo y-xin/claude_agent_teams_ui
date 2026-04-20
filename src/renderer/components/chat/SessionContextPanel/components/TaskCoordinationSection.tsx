@@ -3,6 +3,7 @@
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { TaskCoordinationItem } from '../items/TaskCoordinationItem';
 
@@ -25,11 +26,12 @@ export const TaskCoordinationSection = ({
   onToggle,
   onNavigateToTurn,
 }: Readonly<TaskCoordinationSectionProps>): React.ReactElement | null => {
+  const { t } = useTranslation();
   if (injections.length === 0) return null;
 
   return (
     <CollapsibleSection
-      title="Task Coordination"
+      title={t('chat.taskCoordination')}
       count={injections.length}
       tokenCount={tokenCount}
       isExpanded={isExpanded}

@@ -7,6 +7,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useStore } from '@renderer/store';
 import { Check, ChevronDown } from 'lucide-react';
@@ -15,6 +16,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { ConnectionStatusBadge } from './ConnectionStatusBadge';
 
 export const WorkspaceIndicator = (): React.JSX.Element | null => {
+  const { t } = useTranslation();
   const { activeContextId, isContextSwitching, availableContexts, switchContext } = useStore(
     useShallow((s) => ({
       activeContextId: s.activeContextId,
@@ -53,7 +55,7 @@ export const WorkspaceIndicator = (): React.JSX.Element | null => {
   if (availableContexts.length <= 1) return null;
 
   const getContextLabel = (contextId: string): string => {
-    if (contextId === 'local') return 'Local';
+    if (contextId === 'local') return t('workspace.local');
     return contextId.startsWith('ssh-') ? contextId.slice(4) : contextId;
   };
 
@@ -104,12 +106,12 @@ export const WorkspaceIndicator = (): React.JSX.Element | null => {
               borderColor: 'var(--color-border)',
             }}
           >
-            {/* Header */}
+            {/* 头部 */}
             <div
               className="px-3 py-2 text-[10px] font-semibold uppercase tracking-wider"
               style={{ color: 'var(--color-text-muted)' }}
             >
-              Switch Workspace
+              {t('workspace.switchWorkspace')}
             </div>
 
             {/* Context list */}

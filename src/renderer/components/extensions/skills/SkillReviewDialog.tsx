@@ -1,3 +1,5 @@
+import { Trans, useTranslation } from 'react-i18next';
+
 import { DiffViewer } from '@renderer/components/chat/viewers/DiffViewer';
 import { Badge } from '@renderer/components/ui/badge';
 import { Button } from '@renderer/components/ui/button';
@@ -5,7 +7,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@renderer/components/ui/dialog';
@@ -34,41 +35,61 @@ export const SkillReviewDialog = ({
   onConfirm,
   confirmLabel,
   reviewLabel,
-  backLabel = 'Back To Editor',
+  backLabel,
 }: SkillReviewDialogProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const hasChanges = Boolean(preview && preview.changes.length > 0);
+  const resolvedBackLabel = backLabel ?? t('extensions.skills.backToEditor');
+
+  function formatActionLabel(action: string): string {
+    if (action === 'create') return t('extensions.skills.actionCreate');
+    if (action === 'update') return t('extensions.skills.actionUpdate');
+    if (action === 'delete') return t('extensions.skills.actionDelete');
+    return action;
+  }
 
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
       <DialogContent className="max-w-[min(96vw,80rem)] gap-0 overflow-hidden p-0">
         <div className="flex max-h-[85vh] min-h-0 min-w-0 flex-col">
           <DialogHeader className="border-b border-border px-6 py-5">
-            <DialogTitle>Review skill changes</DialogTitle>
+            <DialogTitle>{t('extensions.skills.reviewDialogTitle')}</DialogTitle>
             <DialogDescription>
-              {reviewLabel} previews the filesystem changes first. Nothing is written until you
-              confirm below.
+              {t('extensions.skills.reviewDialogDescription', { label: reviewLabel })}
             </DialogDescription>
           </DialogHeader>
 
           <div className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden px-6 py-5">
-            {!preview && <p className="text-sm text-text-muted">No preview available.</p>}
+            {!preview && (
+              <p className="text-sm text-text-muted">{t('extensions.skills.noPreview')}</p>
+            )}
 
             {preview && (
               <div className="space-y-4">
                 <div className="bg-surface-raised/10 rounded-lg border border-border p-4">
                   <div className="flex flex-wrap items-center gap-2">
-                    <Badge variant="secondary">{preview.changes.length} file changes</Badge>
+                    <Badge variant="secondary">
+                      {t('extensions.skills.countFileChanges', { count: preview.changes.length })}
+                    </Badge>
                     {preview.summary.created > 0 && (
-                      <Badge variant="secondary">{preview.summary.created} new</Badge>
+                      <Badge variant="secondary">
+                        {t('extensions.skills.countNew', { count: preview.summary.created })}
+                      </Badge>
                     )}
                     {preview.summary.updated > 0 && (
-                      <Badge variant="outline">{preview.summary.updated} updated</Badge>
+                      <Badge variant="outline">
+                        {t('extensions.skills.countUpdated', { count: preview.summary.updated })}
+                      </Badge>
                     )}
                     {preview.summary.deleted > 0 && (
-                      <Badge variant="destructive">{preview.summary.deleted} removed</Badge>
+                      <Badge variant="destructive">
+                        {t('extensions.skills.countRemoved', { count: preview.summary.deleted })}
+                      </Badge>
                     )}
                     {preview.summary.binary > 0 && (
-                      <Badge variant="destructive">{preview.summary.binary} binary</Badge>
+                      <Badge variant="destructive">
+                        {t('extensions.skills.countBinary', { count: preview.summary.binary })}
+                      </Badge>
                     )}
                   </div>
                   <div className="mt-3 break-all rounded-md border border-border bg-surface px-3 py-2 font-mono text-xs text-text-muted">

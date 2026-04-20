@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   CODE_BG,
@@ -80,6 +81,7 @@ export const DisplayItemList = ({
   registerToolRef,
   previewMaxLength,
 }: Readonly<DisplayItemListProps>): React.JSX.Element => {
+  const { t } = useTranslation();
   // Reply-link highlight: when hovering a reply badge, dim everything except the linked pair
   const [replyLinkToolId, setReplyLinkToolId] = useState<string | null>(null);
 
@@ -251,7 +253,7 @@ export const DisplayItemList = ({
             element = (
               <BaseItem
                 icon={<MailOpen className="size-4" />}
-                label="Input"
+                label={t('chat.inputLabel')}
                 summary={truncateText(inputContent, previewMaxLength ?? 80)}
                 tokenCount={inputTokenCount}
                 timestamp={item.timestamp}

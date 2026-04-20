@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { DisplayItemList } from '@renderer/components/chat/DisplayItemList';
 import { LastOutputDisplay } from '@renderer/components/chat/LastOutputDisplay';
@@ -25,13 +26,11 @@ export const MemberExecutionLog = ({
   chunks,
   memberName,
 }: MemberExecutionLogProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const conversation = useMemo(() => transformChunksToConversation(chunks, [], false), [chunks]);
 
   // Show newest groups first — most recent activity is most relevant in execution logs.
-  const orderedItems = useMemo(
-    () => [...conversation.items].reverse(),
-    [conversation.items]
-  );
+  const orderedItems = useMemo(() => [...conversation.items].reverse(), [conversation.items]);
 
   // Store collapsed groups instead of expanded: by default, everything is expanded.
   // This avoids resetting state in an effect when conversation changes.
@@ -43,7 +42,7 @@ export const MemberExecutionLog = ({
   if (!orderedItems.length) {
     return (
       <div className="py-6 text-center text-xs text-[var(--color-text-muted)]">
-        Nothing to display
+        {t('team.members.nothingToDisplay')}
       </div>
     );
   }
@@ -104,6 +103,7 @@ function splitAgentBlocks(raw: string): { humanText: string; agentInfo: string[]
 }
 
 const UserLogItem = ({ group }: { group: UserGroup }): React.JSX.Element => {
+  const { t } = useTranslation();
   const text = group.content.rawText ?? group.content.text ?? '';
   const { humanText, agentInfo } = useMemo(() => splitAgentBlocks(text), [text]);
   const [agentInfoOpen, setAgentInfoOpen] = useState(false);
@@ -111,7 +111,7 @@ const UserLogItem = ({ group }: { group: UserGroup }): React.JSX.Element => {
   if (!humanText && agentInfo.length === 0) {
     return (
       <div className="py-1 text-[10px] text-[var(--color-text-muted)]">
-        {format(group.timestamp, 'h:mm:ss a')} — (empty)
+        {format(group.timestamp, 'h:mm:ss a')} — {t('team.members.empty')}
       </div>
     );
   }
@@ -138,7 +138,7 @@ const UserLogItem = ({ group }: { group: UserGroup }): React.JSX.Element => {
               className={`shrink-0 transition-transform ${agentInfoOpen ? 'rotate-90' : ''}`}
             />
             <Bot size={10} className="shrink-0" />
-            Agent instructions
+            {t('team.members.agentInstructions')}
           </button>
           {agentInfoOpen && (
             <pre className="overflow-x-auto border-t border-[var(--color-border)] px-2 py-1.5 text-[10px] leading-relaxed text-[var(--color-text-muted)]">

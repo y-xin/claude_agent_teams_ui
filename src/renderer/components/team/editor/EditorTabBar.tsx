@@ -6,6 +6,7 @@
  */
 
 import { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   closestCenter,
@@ -163,6 +164,7 @@ const SortableEditorTab = ({
   onCloseToRight,
   onCloseAll,
 }: SortableEditorTabProps): React.ReactElement => {
+  const { t } = useTranslation();
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: tab.id,
   });
@@ -224,7 +226,7 @@ const SortableEditorTab = ({
               {isModified && (
                 <span
                   className="size-1.5 shrink-0 rounded-full bg-amber-400"
-                  aria-label="Unsaved changes"
+                  aria-label={t('team.editorTab.unsavedChanges')}
                 />
               )}
               <FileIcon fileName={tab.fileName} className="size-3.5" />
@@ -239,7 +241,7 @@ const SortableEditorTab = ({
                 onPointerDown={(e) => e.stopPropagation()}
                 className="ml-1 rounded p-0.5 opacity-0 transition-opacity hover:bg-surface-raised group-hover:opacity-100"
                 role="button"
-                aria-label={`Close ${tab.fileName}`}
+                aria-label={t('team.editorTab.closeFile', { name: tab.fileName })}
                 tabIndex={-1}
               >
                 <X className="size-3" />

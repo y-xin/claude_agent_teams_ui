@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@renderer/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@renderer/components/ui/popover';
@@ -56,6 +57,7 @@ const ScheduleRow = ({
   onResume,
   onTriggerNow,
 }: ScheduleRowProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const [selectedRun, setSelectedRun] = useState<ScheduleRun | null>(null);
   const runs = useStore(useShallow((s) => s.scheduleRuns[schedule.id] ?? []));
@@ -95,7 +97,9 @@ const ScheduleRow = ({
             {schedule.label ? <span>{getCronDescription(schedule.cronExpression)}</span> : null}
             <Tooltip>
               <TooltipTrigger asChild>
-                <span className="cursor-default">Next: {formatNextRun(schedule.nextRunAt)}</span>
+                <span className="cursor-default">
+                  {t('team.schedule.next', { time: formatNextRun(schedule.nextRunAt) })}
+                </span>
               </TooltipTrigger>
               {schedule.nextRunAt ? (
                 <TooltipContent side="top" className="text-xs">
@@ -121,7 +125,7 @@ const ScheduleRow = ({
                 <Zap className="size-3.5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="top">Run now</TooltipContent>
+            <TooltipContent side="top">{t('team.schedule.runNow')}</TooltipContent>
           </Tooltip>
 
           <Popover>
@@ -137,7 +141,7 @@ const ScheduleRow = ({
                 onClick={() => onEdit(schedule)}
               >
                 <Pencil className="mr-2 size-3.5" />
-                Edit
+                {t('team.schedule.edit')}
               </button>
               {schedule.status === 'active' ? (
                 <button
@@ -146,7 +150,7 @@ const ScheduleRow = ({
                   onClick={() => onPause(schedule.id)}
                 >
                   <Pause className="mr-2 size-3.5" />
-                  Pause
+                  {t('team.schedule.pause')}
                 </button>
               ) : (
                 <button
@@ -155,7 +159,7 @@ const ScheduleRow = ({
                   onClick={() => onResume(schedule.id)}
                 >
                   <Play className="mr-2 size-3.5" />
-                  Resume
+                  {t('team.schedule.resume')}
                 </button>
               )}
               <button
@@ -164,7 +168,7 @@ const ScheduleRow = ({
                 onClick={() => onDelete(schedule.id)}
               >
                 <Trash2 className="mr-2 size-3.5" />
-                Delete
+                {t('team.schedule.delete')}
               </button>
             </PopoverContent>
           </Popover>
@@ -176,11 +180,11 @@ const ScheduleRow = ({
         <div className="border-t border-[var(--color-border)]">
           {runsLoading ? (
             <div className="flex items-center justify-center py-3 text-[11px] text-[var(--color-text-muted)]">
-              Loading run history...
+              {t('team.schedule.loadingRunHistory')}
             </div>
           ) : runs.length === 0 ? (
             <div className="flex items-center justify-center py-3 text-[11px] text-[var(--color-text-muted)]">
-              No runs yet
+              {t('team.schedule.noRunsYet')}
             </div>
           ) : (
             <div className="max-h-[200px] overflow-y-auto">
@@ -208,6 +212,7 @@ const ScheduleRow = ({
 // =============================================================================
 
 export const ScheduleSection = ({ teamName }: ScheduleSectionProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const { schedules, pauseSchedule, resumeSchedule, deleteSchedule, triggerNow, fetchSchedules } =
     useStore(
       useShallow((s) => ({
@@ -271,7 +276,7 @@ export const ScheduleSection = ({ teamName }: ScheduleSectionProps): React.JSX.E
       <div className="flex items-center justify-between">
         <span className="text-[11px] font-medium text-[var(--color-text-muted)]">
           {schedules.length > 0
-            ? `${schedules.length} schedule${schedules.length > 1 ? 's' : ''}`
+            ? t('team.schedule.scheduleCount', { count: schedules.length })
             : ''}
         </span>
         <Button
@@ -281,7 +286,7 @@ export const ScheduleSection = ({ teamName }: ScheduleSectionProps): React.JSX.E
           onClick={handleCreate}
         >
           <Plus className="size-3" />
-          Add Schedule
+          {t('team.schedule.addSchedule')}
         </Button>
       </div>
 

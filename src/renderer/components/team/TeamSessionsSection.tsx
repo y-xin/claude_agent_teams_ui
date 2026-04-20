@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Tooltip, TooltipContent, TooltipTrigger } from '@renderer/components/ui/tooltip';
 import { useStore } from '@renderer/store';
@@ -38,6 +39,7 @@ export const TeamSessionsSection = ({
   onSelectSession,
   projectPath,
 }: TeamSessionsSectionProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const { openTab, selectSession, projects, repositoryGroups } = useStore(
     useShallow((s) => ({
       openTab: s.openTab,
@@ -84,7 +86,7 @@ export const TeamSessionsSection = ({
       <div className="py-6 text-center text-xs text-[var(--color-text-muted)]">
         <Monitor size={20} className="mx-auto mb-2 opacity-40" />
         No project path linked
-        <p className="mt-1 text-[10px] opacity-60">Sessions will appear after team provisioning</p>
+        <p className="mt-1 text-[10px] opacity-60">{t('team.sessionsAfterProvisioning')}</p>
       </div>
     );
   }
@@ -173,6 +175,7 @@ const SessionRow = ({
   onClick,
   onToggleFilter,
 }: SessionRowProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const timeAgo = formatShortTime(new Date(session.createdAt));
   const label = formatSessionLabel(session.firstMessage);
 
@@ -241,7 +244,7 @@ const SessionRow = ({
               <ExternalLink size={12} />
             </button>
           </TooltipTrigger>
-          <TooltipContent side="left">Open session</TooltipContent>
+          <TooltipContent side="left">{t('team.openSession')}</TooltipContent>
         </Tooltip>
       </div>
     </div>

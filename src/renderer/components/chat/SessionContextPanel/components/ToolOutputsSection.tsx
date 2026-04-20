@@ -3,6 +3,7 @@
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ToolOutputItem } from '../items/ToolOutputItem';
 
@@ -25,11 +26,12 @@ export const ToolOutputsSection = ({
   onToggle,
   onNavigateToTurn,
 }: Readonly<ToolOutputsSectionProps>): React.ReactElement | null => {
+  const { t } = useTranslation();
   if (injections.length === 0) return null;
 
   return (
     <CollapsibleSection
-      title="Tool Outputs"
+      title={t('chat.toolOutputs')}
       count={injections.length}
       tokenCount={tokenCount}
       isExpanded={isExpanded}

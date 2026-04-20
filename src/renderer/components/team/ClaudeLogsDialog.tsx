@@ -8,6 +8,7 @@
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@renderer/components/ui/dialog';
 import { Terminal } from 'lucide-react';
@@ -35,6 +36,8 @@ export const ClaudeLogsDialog = ({
   onOpenChange,
   ctrl,
 }: ClaudeLogsDialogProps): React.JSX.Element => {
+  const { t } = useTranslation();
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="flex h-[90vh] w-[80vw] max-w-none flex-col overflow-hidden">
@@ -43,7 +46,7 @@ export const ClaudeLogsDialog = ({
             <span className="inline-flex size-5 items-center justify-center rounded-md border border-[var(--color-border)] bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] shadow-sm">
               <Terminal size={12} />
             </span>
-            Claude logs
+            {t('team.claudeLogs.title')}
             {ctrl.badge != null && (
               <span className="font-mono text-[11px] text-[var(--color-text-muted)]">
                 ({ctrl.badge})

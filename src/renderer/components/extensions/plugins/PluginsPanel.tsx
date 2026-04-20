@@ -3,6 +3,7 @@
  */
 
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Badge } from '@renderer/components/ui/badge';
 import { Button } from '@renderer/components/ui/button';
@@ -48,11 +49,11 @@ interface PluginsPanelProps {
   setPluginSort: (sort: { field: PluginSortField; order: 'asc' | 'desc' }) => void;
 }
 
-const SORT_OPTIONS: { value: string; label: string }[] = [
-  { value: 'popularity:desc', label: 'Popular' },
-  { value: 'name:asc', label: 'Name A-Z' },
-  { value: 'name:desc', label: 'Name Z-A' },
-  { value: 'category:asc', label: 'Category' },
+const SORT_OPTION_KEYS: { value: string; labelKey: string }[] = [
+  { value: 'popularity:desc', labelKey: 'extensions.sortPopular' },
+  { value: 'name:asc', labelKey: 'extensions.sortNameAZ' },
+  { value: 'name:desc', labelKey: 'extensions.sortNameZA' },
+  { value: 'category:asc', labelKey: 'extensions.sortCategory' },
 ];
 
 /** Pure function: filter + sort the catalog */
@@ -123,6 +124,7 @@ export const PluginsPanel = ({
   hasActiveFilters,
   setPluginSort,
 }: PluginsPanelProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const { catalog, loading, error } = useStore(
     useShallow((s) => ({
       catalog: s.pluginCatalog,
@@ -170,7 +172,7 @@ export const PluginsPanel = ({
           <SearchInput
             value={pluginFilters.search}
             onChange={updatePluginSearch}
-            placeholder="Search plugins..."
+            placeholder={t('extensions.searchPlugins')}
           />
         </div>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -186,9 +188,9 @@ export const PluginsPanel = ({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {SORT_OPTIONS.map((opt) => (
+              {SORT_OPTION_KEYS.map((opt) => (
                 <SelectItem key={opt.value} value={opt.value}>
-                  {opt.label}
+                  {t(opt.labelKey)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -202,7 +204,7 @@ export const PluginsPanel = ({
               checked={pluginFilters.installedOnly}
               onCheckedChange={toggleInstalledOnly}
             />
-            Installed only
+            {t('extensions.installedOnly')}
           </Label>
         </div>
       </div>
@@ -218,25 +220,25 @@ export const PluginsPanel = ({
                 </div>
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <h2 className="text-sm font-semibold text-text">Browse by fit</h2>
+                    <h2 className="text-sm font-semibold text-text">
+                      {t('extensions.browseByFit')}
+                    </h2>
                     <Badge variant="outline" className="text-[11px] text-text-muted">
-                      {activeFilterCount} active
+                      {t('extensions.activeCount', { count: activeFilterCount })}
                     </Badge>
                   </div>
-                  <p className="text-xs text-text-muted">
-                    Narrow the catalog by category, capability, or installed state.
-                  </p>
+                  <p className="text-xs text-text-muted">{t('extensions.narrowCatalog')}</p>
                 </div>
               </div>
               <div className="flex flex-wrap gap-2 text-[11px] text-text-muted">
                 <Badge variant="secondary" className="font-normal">
-                  {catalog.length} plugins
+                  {t('extensions.pluginCount', { count: catalog.length })}
                 </Badge>
                 <Badge variant="secondary" className="font-normal">
-                  {totalCategoryCount} categories
+                  {t('extensions.categoryCount', { count: totalCategoryCount })}
                 </Badge>
                 <Badge variant="secondary" className="font-normal">
-                  {totalCapabilityCount} capabilities
+                  {t('extensions.capabilityCount', { count: totalCapabilityCount })}
                 </Badge>
               </div>
             </div>
@@ -247,7 +249,7 @@ export const PluginsPanel = ({
                 onClick={clearFilters}
                 className="justify-start rounded-lg border border-border px-3 text-xs text-text-secondary hover:text-text lg:justify-center"
               >
-                Clear all filters
+                {t('extensions.clearAllFilters')}
               </Button>
             )}
           </div>
@@ -257,10 +259,10 @@ export const PluginsPanel = ({
               <section className="space-y-3 p-3 xl:border-r xl:border-border">
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-text-muted">
-                    Categories
+                    {t('extensions.categories')}
                   </span>
                   <span className="text-[11px] text-text-muted">
-                    {pluginFilters.categories.length} selected
+                    {t('extensions.selectedCount', { count: pluginFilters.categories.length })}
                   </span>
                 </div>
                 <CategoryChips
@@ -273,10 +275,10 @@ export const PluginsPanel = ({
               <section className="space-y-3 border-t border-border p-3 xl:border-t-0">
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-text-muted">
-                    Capabilities
+                    {t('extensions.capabilities')}
                   </span>
                   <span className="text-[11px] text-text-muted">
-                    {pluginFilters.capabilities.length} selected
+                    {t('extensions.selectedCount', { count: pluginFilters.capabilities.length })}
                   </span>
                 </div>
                 <CapabilityChips
@@ -294,12 +296,10 @@ export const PluginsPanel = ({
       {!loading && !error && filtered.length > 0 && (
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-xs text-text-muted">
-            Showing {filtered.length} of {catalog.length} plugin{catalog.length !== 1 ? 's' : ''}
+            {t('extensions.showingOf', { shown: filtered.length, total: catalog.length })}
           </p>
           {hasActiveFilters && (
-            <p className="text-xs text-text-muted">
-              Results update instantly as you refine filters.
-            </p>
+            <p className="text-xs text-text-muted">{t('extensions.resultsUpdateInstantly')}</p>
           )}
         </div>
       )}
@@ -350,16 +350,16 @@ export const PluginsPanel = ({
             )}
           </div>
           <p className="text-sm text-text-secondary">
-            {hasActiveFilters ? 'No plugins match your filters' : 'No plugins available'}
+            {hasActiveFilters ? t('extensions.noPluginsMatch') : t('extensions.noPluginsAvailable')}
           </p>
           <p className="text-xs text-text-muted">
             {hasActiveFilters
-              ? 'Try adjusting your search or filter criteria'
-              : 'Check back later for new plugins'}
+              ? t('extensions.tryAdjustingFilters')
+              : t('extensions.checkBackLater')}
           </p>
           {hasActiveFilters && (
             <Button variant="outline" size="sm" onClick={clearFilters}>
-              Clear filters
+              {t('extensions.clearFilters')}
             </Button>
           )}
         </div>

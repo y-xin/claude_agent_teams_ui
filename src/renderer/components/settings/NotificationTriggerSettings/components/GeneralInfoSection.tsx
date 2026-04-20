@@ -2,6 +2,8 @@
  * GeneralInfoSection - Name input and tool select for AddTriggerForm.
  */
 
+import { useTranslation } from 'react-i18next';
+
 import { TOOL_NAME_OPTIONS } from '../utils/constants';
 
 import { SectionHeader } from './SectionHeader';
@@ -21,15 +23,17 @@ export const GeneralInfoSection = ({
   onNameChange,
   onToolNameChange,
 }: Readonly<GeneralInfoSectionProps>): React.JSX.Element => {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-3">
-      <SectionHeader title="General Info" />
+      <SectionHeader title={t('settings.triggers.generalInfo')} />
 
-      {/* Trigger Name */}
+      {/* 触发器名称 */}
       <div className="border-b border-border-subtle py-2">
         <div className="mb-2 flex items-center justify-between">
           <label htmlFor="new-trigger-name" className="text-sm text-text-secondary">
-            Trigger Name *
+            {t('settings.triggers.triggerName')}
           </label>
         </div>
         <input
@@ -37,7 +41,7 @@ export const GeneralInfoSection = ({
           type="text"
           value={name}
           onChange={(e) => onNameChange(e.target.value)}
-          placeholder="e.g., Build Failure Alert"
+          placeholder={t('settings.triggers.triggerNamePlaceholder')}
           disabled={saving}
           required
           className={`w-full rounded border border-border bg-transparent px-2 py-1.5 text-sm text-text placeholder:text-text-muted focus:border-transparent focus:outline-none focus:ring-1 focus:ring-indigo-500 ${saving ? 'cursor-not-allowed opacity-50' : ''} `}
@@ -47,7 +51,7 @@ export const GeneralInfoSection = ({
       {/* Scope/Tool Name */}
       <div className="flex items-center justify-between border-b border-border-subtle py-2">
         <label htmlFor="new-trigger-tool-name" className="label-optional text-sm">
-          Scope / Tool Name (optional)
+          {t('settings.triggers.scopeToolNameOptional')}
         </label>
         <select
           id="new-trigger-tool-name"

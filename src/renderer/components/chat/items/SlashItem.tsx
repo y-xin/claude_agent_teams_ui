@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Slash } from 'lucide-react';
 
@@ -41,6 +42,7 @@ export const SlashItem: React.FC<SlashItemProps> = ({
   highlightStyle,
   notificationDotColor,
 }) => {
+  const { t } = useTranslation();
   const hasInstructions = !!slash.instructions;
 
   // Display args or message as the description
@@ -65,7 +67,7 @@ export const SlashItem: React.FC<SlashItemProps> = ({
       {hasInstructions && (
         <MarkdownViewer
           content={slash.instructions!}
-          label="Slash Output"
+          label={t('chat.slashOutput')}
           maxHeight="max-h-96"
           copyable
         />

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { confirm } from '@renderer/components/common/ConfirmDialog';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@renderer/components/ui/tooltip';
@@ -71,11 +72,11 @@ export type TaskSortMode = 'time' | 'project' | 'team' | 'unread';
 
 const TASK_SORT_STORAGE_KEY = 'sidebarTasksSort';
 
-const SORT_OPTIONS: { id: TaskSortMode; label: string }[] = [
-  { id: 'time', label: 'By time' },
-  { id: 'unread', label: 'By unread' },
-  { id: 'project', label: 'By project' },
-  { id: 'team', label: 'By team' },
+const SORT_OPTION_KEYS: { id: TaskSortMode; key: string }[] = [
+  { id: 'time', key: 'sidebar.byTime' },
+  { id: 'unread', key: 'sidebar.byUnread' },
+  { id: 'project', key: 'sidebar.byProject' },
+  { id: 'team', key: 'sidebar.byTeam' },
 ];
 
 function loadSortMode(): TaskSortMode {
@@ -141,9 +142,9 @@ export interface GlobalTaskListProps {
   onFiltersPopoverOpenChange?: (open: boolean) => void;
 }
 
-const dateCategoryLabels: Record<string, string> = {
-  'Previous 7 Days': 'Last 7 Days',
-  Older: 'Earlier',
+const dateCategoryKeys: Record<string, string> = {
+  'Previous 7 Days': 'sidebar.last7Days',
+  Older: 'sidebar.earlier',
 };
 
 function applySearch(tasks: GlobalTask[], query: string): GlobalTask[] {
@@ -170,6 +171,7 @@ export const GlobalTaskList = ({
   filtersPopoverOpen: externalFiltersPopoverOpen,
   onFiltersPopoverOpenChange: externalOnFiltersPopoverOpenChange,
 }: GlobalTaskListProps = {}): React.JSX.Element => {
+  const { t } = useTranslation();
   const {
     globalTasks,
     globalTasksLoading,
@@ -267,10 +269,10 @@ export const GlobalTaskList = ({
 
   const handleDeleteTask = async (teamName: string, taskId: string): Promise<void> => {
     const confirmed = await confirm({
-      title: 'Delete task',
-      message: `Move task #${deriveTaskDisplayId(taskId)} to trash?`,
-      confirmLabel: 'Delete',
-      cancelLabel: 'Cancel',
+      title: t('common.delete'),
+      message: t('sidebar.moveToTrash', { id: deriveTaskDisplayId(taskId) }),
+      confirmLabel: t('common.delete'),
+      cancelLabel: t('common.cancel'),
       variant: 'danger',
     });
     if (confirmed) {
@@ -279,7 +281,7 @@ export const GlobalTaskList = ({
         await fetchAllTasks();
       } catch (err) {
         void confirm({
-          title: 'Failed to delete task',
+          title: t('sidebar.failedToDelete'),
           message: err instanceof Error ? err.message : 'An unexpected error occurred',
           confirmLabel: 'OK',
           variant: 'danger',
@@ -418,7 +420,9 @@ export const GlobalTaskList = ({
           className="flex shrink-0 items-center gap-2 border-b px-3 py-1.5"
           style={{ borderColor: 'var(--color-border)' }}
         >
-          <span className="text-[12px] font-semibold text-text-secondary">Tasks</span>
+          <span className="text-[12px] font-semibold text-text-secondary">
+            {t('sidebar.tasks')}
+          </span>
         </div>
       )}
 
@@ -431,7 +435,7 @@ export const GlobalTaskList = ({
         <input
           ref={searchInputRef}
           type="text"
-          placeholder="Search tasks..."
+          placeholder={t('sidebar.searchTasks')}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="min-w-0 flex-1 bg-transparent text-[12px] text-text placeholder:text-text-muted focus:outline-none"
@@ -459,7 +463,7 @@ export const GlobalTaskList = ({
           </PopoverTrigger>
           <PopoverContent className="w-40 p-1" align="end" sideOffset={6}>
             <div className="flex flex-col">
-              {SORT_OPTIONS.map((opt) => (
+              {SORT_OPTION_KEYS.map((opt) => (
                 <button
                   key={opt.id}
                   type="button"
@@ -480,7 +484,7 @@ export const GlobalTaskList = ({
                       sortMode === opt.id ? 'opacity-100' : 'opacity-0'
                     )}
                   />
-                  {opt.label}
+                  {t(opt.key)}
                 </button>
               ))}
             </div>
@@ -502,7 +506,7 @@ export const GlobalTaskList = ({
         <div className="shrink-0 border-b" style={{ borderColor: 'var(--color-border)' }}>
           <div className="flex items-center gap-1 px-2 py-1">
             <Pin className="size-3 text-text-muted" />
-            <span className="text-[11px] text-text-muted">Pinned</span>
+            <span className="text-[11px] text-text-muted">{t('sidebar.pinned')}</span>
           </div>
           {sortTasksByFreshness(pinnedTasks).map((task) => (
             <TaskContextMenu
@@ -532,10 +536,19 @@ export const GlobalTaskList = ({
 
       {/* Grouping mode — compact text toggle */}
       <div className="flex shrink-0 items-center gap-1.5 px-2 py-1">
-        <span className="shrink-0 text-[11px] text-text-muted">Group by:</span>
-        <div className="inline-flex gap-1 text-[11px]" role="group" aria-label="Group by">
+        <span className="shrink-0 text-[11px] text-text-muted">{t('sidebar.groupBy')}</span>
+        <div
+          className="inline-flex gap-1 text-[11px]"
+          role="group"
+          aria-label={t('sidebar.groupBy')}
+        >
           {(['none', 'project', 'time'] as const).map((mode) => {
-            const label = mode === 'none' ? 'None' : mode === 'project' ? 'Project' : 'Time';
+            const label =
+              mode === 'none'
+                ? t('sidebar.groupNone')
+                : mode === 'project'
+                  ? t('sidebar.groupProject')
+                  : t('sidebar.groupTime');
             return (
               <button
                 key={mode}
@@ -570,7 +583,7 @@ export const GlobalTaskList = ({
                 </button>
               </TooltipTrigger>
               <TooltipContent side="top">
-                {showArchived ? 'Hide archived' : 'Show archived'}
+                {showArchived ? t('sidebar.hideArchived') : t('sidebar.showArchived')}
               </TooltipContent>
             </Tooltip>
           </div>
@@ -591,7 +604,9 @@ export const GlobalTaskList = ({
           <div className="flex flex-col items-center gap-2 px-4 py-8 text-text-muted">
             <ListTodo className="size-8 opacity-40" />
             <span className="text-[12px]">
-              {searchQuery || selectedProjectPath ? 'No matching tasks' : 'No tasks found'}
+              {searchQuery || selectedProjectPath
+                ? t('sidebar.noMatchingTasks')
+                : t('sidebar.noTasksFound')}
             </span>
           </div>
         )}
@@ -661,7 +676,7 @@ export const GlobalTaskList = ({
                       <div key={`${task.teamName}-${task.id}`}>
                         {showTeamHeader && (
                           <div className="px-3 pb-0.5 pt-1.5 text-[10px] font-medium text-text-muted">
-                            Team: {task.teamDisplayName}
+                            {t('sidebar.teamLabel', { teamName: task.teamDisplayName })}
                           </div>
                         )}
                         <TaskContextMenu
@@ -714,7 +729,9 @@ export const GlobalTaskList = ({
                   ) : (
                     <ChevronDown className="size-3 shrink-0 text-text-muted" />
                   )}
-                  <span className="truncate">{dateCategoryLabels[category] ?? category}</span>
+                  <span className="truncate">
+                    {dateCategoryKeys[category] ? t(dateCategoryKeys[category]) : category}
+                  </span>
                   <span className="ml-auto shrink-0 text-[10px] font-normal text-text-muted">
                     {tasks.length}
                   </span>
@@ -729,7 +746,7 @@ export const GlobalTaskList = ({
                       <div key={`${task.teamName}-${task.id}`}>
                         {showTeamHeader && (
                           <div className="px-3 pb-0.5 pt-1.5 text-[10px] font-medium text-text-muted">
-                            Team: {task.teamDisplayName}
+                            {t('sidebar.teamLabel', { teamName: task.teamDisplayName })}
                           </div>
                         )}
                         <TaskContextMenu

@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@renderer/components/ui/button';
 import { Checkbox } from '@renderer/components/ui/checkbox';
@@ -79,6 +80,7 @@ export const AdvancedCliSection: React.FC<AdvancedCliSectionProps> = ({
   customArgs,
   onCustomArgsChange,
 }) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [validationState, setValidationState] = useState<ValidationState>('idle');
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
@@ -214,7 +216,7 @@ export const AdvancedCliSection: React.FC<AdvancedCliSectionProps> = ({
                 htmlFor={`worktree-${teamName}`}
                 className="cursor-pointer text-xs font-normal text-text-secondary"
               >
-                Use worktree
+                {t('team.useWorktree')}
               </Label>
             </div>
 
@@ -268,7 +270,7 @@ export const AdvancedCliSection: React.FC<AdvancedCliSectionProps> = ({
           {/* Command preview */}
           <div className="space-y-1">
             <span className="text-[10px] font-medium uppercase tracking-wider text-text-muted">
-              Command preview
+              {t('team.commandPreview')}
             </span>
             <div className="overflow-x-auto rounded border border-border bg-surface-sidebar px-2.5 py-1.5">
               <code className="flex flex-wrap gap-x-1 gap-y-0.5 font-mono text-[11px] leading-relaxed">
@@ -284,7 +286,7 @@ export const AdvancedCliSection: React.FC<AdvancedCliSectionProps> = ({
           {/* Custom arguments */}
           <div className="space-y-1.5">
             <span className="text-[10px] font-medium uppercase tracking-wider text-text-muted">
-              Custom arguments
+              {t('team.customArguments')}
             </span>
             <div className="flex items-center gap-2">
               <Input
@@ -305,7 +307,7 @@ export const AdvancedCliSection: React.FC<AdvancedCliSectionProps> = ({
                   {validationState === 'loading' ? (
                     <Loader2 className="mr-1 size-3 animate-spin" />
                   ) : null}
-                  Validate
+                  {t('team.validate')}
                 </Button>
               )}
             </div>

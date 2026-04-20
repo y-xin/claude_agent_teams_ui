@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import { FileIcon } from '@renderer/components/team/editor/FileIcon';
 import { formatFileSize, isImageMime } from '@renderer/utils/attachmentUtils';
 import { Ban, X } from 'lucide-react';
@@ -19,6 +21,7 @@ export const AttachmentPreviewItem = ({
   onPreview,
   disabled,
 }: AttachmentPreviewItemProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const isImage = isImageMime(attachment.mimeType);
   const dataUrl = isImage ? `data:${attachment.mimeType};base64,${attachment.data}` : undefined;
 
@@ -53,7 +56,7 @@ export const AttachmentPreviewItem = ({
         type="button"
         className="absolute -right-1.5 -top-1.5 flex size-4 items-center justify-center rounded-full bg-red-500 text-white opacity-0 transition-opacity group-hover/att:opacity-100"
         onClick={() => onRemove(attachment.id)}
-        aria-label={`Remove ${attachment.filename}`}
+        aria-label={t('team.attachments.removeFile', { filename: attachment.filename })}
       >
         <X size={10} />
       </button>

@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { TeamModelSelector } from '@renderer/components/team/dialogs/TeamModelSelector';
 import { RoleSelect } from '@renderer/components/team/RoleSelect';
@@ -54,6 +55,7 @@ export const MemberDraftRow = ({
   taskSuggestions,
   teamSuggestions,
 }: MemberDraftRowProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const { isLight } = useTheme();
   const memberColorSet = getTeamColorSet(
     resolvedColor ?? getMemberColorByName(member.name.trim() || `member-${index}`)
@@ -142,9 +144,9 @@ export const MemberDraftRow = ({
         <Input
           className="h-8 text-xs"
           value={member.name}
-          aria-label={`Member ${index + 1} name`}
+          aria-label={t('team.members.memberNameAria', { index: index + 1 })}
           onChange={(event) => onNameChange(member.id, event.target.value)}
-          placeholder="member-name"
+          placeholder={t('team.members.memberNamePlaceholder')}
           style={
             member.name.trim()
               ? {
@@ -178,7 +180,7 @@ export const MemberDraftRow = ({
             ) : (
               <ChevronRight className="size-3.5" />
             )}
-            Workflow
+            {t('team.members.workflow')}
             {!workflowExpanded && workflowDraft.value.trim() ? (
               <span className="absolute -right-1 -top-1 size-2 rounded-full bg-blue-500" />
             ) : null}
@@ -195,14 +197,16 @@ export const MemberDraftRow = ({
           ) : (
             <ChevronRight className="size-3.5" />
           )}
-          Model
+          {t('team.members.model')}
         </Button>
         <Button
           variant="outline"
           size="sm"
           className="size-8 shrink-0 border-red-500/40 px-0 text-red-300 hover:bg-red-500/10 hover:text-red-200"
-          aria-label={`Remove ${member.name || `member ${index + 1}`}`}
-          title="Remove member"
+          aria-label={t('team.members.removeAria', {
+            name: member.name || t('team.members.memberFallback', { index: index + 1 }),
+          })}
+          title={t('team.members.removeMember')}
           onClick={() => onRemove(member.id)}
         >
           <Trash2 className="size-3.5" />
@@ -214,7 +218,7 @@ export const MemberDraftRow = ({
             htmlFor={`member-${member.id}-workflow`}
             className="block text-[10px] font-medium text-[var(--color-text-muted)]"
           >
-            Workflow (optional)
+            {t('team.members.workflowOptional')}
           </label>
           <MentionableTextarea
             id={`member-${member.id}-workflow`}
@@ -230,10 +234,12 @@ export const MemberDraftRow = ({
             onChipRemove={handleChipRemove}
             projectPath={projectPath ?? undefined}
             onFileChipInsert={handleFileChipInsert}
-            placeholder="How this agent should behave, interact with others..."
+            placeholder={t('team.members.workflowPlaceholder')}
             footerRight={
               workflowDraft.isSaved ? (
-                <span className="text-[10px] text-[var(--color-text-muted)]">Saved</span>
+                <span className="text-[10px] text-[var(--color-text-muted)]">
+                  {t('team.saved')}
+                </span>
               ) : null
             }
           />
@@ -247,8 +253,7 @@ export const MemberDraftRow = ({
           <div className="flex items-start gap-2 rounded-md border border-sky-500/20 bg-sky-500/5 px-3 py-2">
             <Info className="mt-0.5 size-3.5 shrink-0 text-sky-400" />
             <p className="text-[11px] leading-relaxed text-sky-300">
-              Claude Code doesn&apos;t support per-member model selection yet &mdash; all teammates
-              inherit the team launch model. We plan to solve this via a local proxy.
+              {t('team.members.modelSelectorInfo')}
             </p>
           </div>
         </div>

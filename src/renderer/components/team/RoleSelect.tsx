@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Combobox } from '@renderer/components/ui/combobox';
 import { Input } from '@renderer/components/ui/input';
@@ -42,7 +43,8 @@ interface RoleSelectProps {
   disabled?: boolean;
 }
 
-const roleOptions: ComboboxOption[] = [
+/** 基础角色选项（标签在组件内通过 i18n 动态覆盖） */
+const BASE_ROLE_OPTIONS: ComboboxOption[] = [
   { value: NO_ROLE, label: 'No role' },
   ...PRESET_ROLES.map((role) => ({
     value: role,
@@ -85,8 +87,20 @@ export const RoleSelect = ({
   onCustomRoleValidate,
   disabled,
 }: RoleSelectProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const [internalError, setInternalError] = useState<string | null>(null);
   const error = externalError ?? internalError;
+
+  // 使用 i18n 覆盖静态标签
+  const roleOptions = useMemo<ComboboxOption[]>(
+    () =>
+      BASE_ROLE_OPTIONS.map((opt) => {
+        if (opt.value === NO_ROLE) return { ...opt, label: t('team.roleSelect.noRole') };
+        if (opt.value === CUSTOM_ROLE) return { ...opt, label: t('team.roleSelect.customRole') };
+        return opt;
+      }),
+    [t]
+  );
 
   const handleValueChange = useCallback(
     (newValue: string) => {
@@ -106,7 +120,7 @@ export const RoleSelect = ({
       if (onCustomRoleValidate) {
         setInternalError(onCustomRoleValidate(val));
       } else if (FORBIDDEN_ROLES.has(val.trim().toLowerCase())) {
-        setInternalError('This role is reserved');
+        setInternalError(t('team.roleSelect.reservedRole'));
       } else {
         setInternalError(null);
       }
@@ -119,23 +133,20 @@ export const RoleSelect = ({
     return opt?.label;
   }, [value]);
 
-  const renderTriggerLabel = useCallback(
-    (option: ComboboxOption) => {
-      const Icon =
-        option.value === CUSTOM_ROLE
-          ? CUSTOM_ICON
-          : option.value === NO_ROLE
-            ? null
-            : (ROLE_ICONS[option.value] ?? null);
-      return (
-        <span className="flex items-center gap-1.5">
-          {Icon ? <Icon className="size-3 text-[var(--color-text-muted)]" /> : null}
-          {option.label}
-        </span>
-      );
-    },
-    []
-  );
+  const renderTriggerLabel = useCallback((option: ComboboxOption) => {
+    const Icon =
+      option.value === CUSTOM_ROLE
+        ? CUSTOM_ICON
+        : option.value === NO_ROLE
+          ? null
+          : (ROLE_ICONS[option.value] ?? null);
+    return (
+      <span className="flex items-center gap-1.5">
+        {Icon ? <Icon className="size-3 text-[var(--color-text-muted)]" /> : null}
+        {option.label}
+      </span>
+    );
+  }, []);
 
   return (
     <div className="space-y-1">
@@ -144,8 +155,8 @@ export const RoleSelect = ({
         value={value}
         onValueChange={handleValueChange}
         placeholder={selectedLabel ?? 'No role'}
-        searchPlaceholder="Search roles..."
-        emptyMessage="No roles found."
+        searchPlaceholder={t('team.searchRoles')}
+        emptyMessage={t('team.noRolesFound')}
         disabled={disabled}
         className={triggerClassName}
         renderOption={renderRoleOption}
@@ -157,7 +168,7 @@ export const RoleSelect = ({
             className={inputClassName ?? 'h-8 text-xs'}
             value={customRole}
             onChange={handleCustomChange}
-            placeholder="Enter custom role..."
+            placeholder={t('team.enterCustomRole')}
             autoFocus
           />
           {error ? <span className="mt-0.5 block text-[10px] text-red-400">{error}</span> : null}

@@ -10,6 +10,7 @@ import React, { useCallback, useRef, useState } from 'react';
 
 import * as ContextMenu from '@radix-ui/react-context-menu';
 import { lastSeparatorIndex } from '@shared/utils/platformPath';
+import { useTranslation } from 'react-i18next';
 import {
   ClipboardCopy,
   FilePlus,
@@ -58,6 +59,7 @@ export const EditorContextMenu = ({
   onCreateTask,
   onSendMessage,
 }: EditorContextMenuProps): React.ReactElement => {
+  const { t } = useTranslation();
   const [target, setTarget] = useState<TargetEntry | null>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
 
@@ -105,7 +107,7 @@ export const EditorContextMenu = ({
                 onSelect={() => onNewFile(parentDir)}
               >
                 <FilePlus className="size-3.5 text-text-muted" />
-                New File
+                {t('team.editor.newFile')}
               </ContextMenu.Item>
 
               <ContextMenu.Item
@@ -113,7 +115,7 @@ export const EditorContextMenu = ({
                 onSelect={() => onNewFolder(parentDir)}
               >
                 <FolderPlus className="size-3.5 text-text-muted" />
-                New Folder
+                {t('team.editor.newFolder')}
               </ContextMenu.Item>
 
               <ContextMenu.Separator className="my-1 h-px bg-border" />
@@ -128,7 +130,7 @@ export const EditorContextMenu = ({
                 onSelect={() => onRename(target.path)}
               >
                 <Pencil className="size-3.5 text-text-muted" />
-                Rename
+                {t('team.editor.rename')}
               </ContextMenu.Item>
 
               <ContextMenu.Item
@@ -137,7 +139,7 @@ export const EditorContextMenu = ({
                 onSelect={() => onDelete(target.path)}
               >
                 <Trash2 className="size-3.5" />
-                Delete
+                {t('team.editor.delete')}
               </ContextMenu.Item>
 
               <ContextMenu.Separator className="my-1 h-px bg-border" />
@@ -151,7 +153,7 @@ export const EditorContextMenu = ({
                 onSelect={() => void navigator.clipboard.writeText(target.path)}
               >
                 <ClipboardCopy className="size-3.5 text-text-muted" />
-                Copy Path
+                {t('team.editor.copyPath')}
               </ContextMenu.Item>
 
               {projectPath && target.path.startsWith(projectPath) && (
@@ -163,7 +165,7 @@ export const EditorContextMenu = ({
                   }}
                 >
                   <ClipboardCopy className="size-3.5 text-text-muted" />
-                  Copy Relative Path
+                  {t('team.editor.copyRelativePath')}
                 </ContextMenu.Item>
               )}
 
@@ -176,7 +178,7 @@ export const EditorContextMenu = ({
                 }}
               >
                 <FolderOpen className="size-3.5 text-text-muted" />
-                Reveal in Finder
+                {t('team.editor.revealInFinder')}
               </ContextMenu.Item>
             </>
           )}

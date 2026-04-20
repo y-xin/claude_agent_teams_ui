@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { MarkdownViewer } from '@renderer/components/chat/viewers/MarkdownViewer';
 import { MemberBadge } from '@renderer/components/team/MemberBadge';
@@ -70,6 +71,7 @@ export const TaskTooltip = ({
   children,
   side = 'top',
 }: TaskTooltipProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const { selectedTeamName, selectedTeamData, globalTasks, teamByName } = useStore(
     useShallow((s) => ({
       selectedTeamName: s.selectedTeamName,
@@ -170,7 +172,9 @@ export const TaskTooltip = ({
           ) : task.owner ? (
             <span className="text-[10px] text-[var(--color-text-secondary)]">{task.owner}</span>
           ) : (
-            <span className="text-[10px] text-[var(--color-text-muted)]">Unassigned</span>
+            <span className="text-[10px] text-[var(--color-text-muted)]">
+              {t('team.unassigned')}
+            </span>
           )}
         </div>
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { api } from '@renderer/api';
 import {
@@ -222,6 +223,7 @@ export const CreateTeamDialog = ({
   onCreate,
   onOpenTeam,
 }: CreateTeamDialogProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const { isLight } = useTheme();
 
   // ── Persisted draft state (survives tab navigation) ──────────────────
@@ -916,7 +918,7 @@ export const CreateTeamDialog = ({
                       htmlFor="solo-team"
                       className="cursor-pointer text-xs font-normal text-text-secondary"
                     >
-                      Solo team
+                      {t('team.soloTeam')}
                     </Label>
                   </div>
                   {soloTeam && (
@@ -952,7 +954,7 @@ export const CreateTeamDialog = ({
               />
               <div className="space-y-1">
                 <Label htmlFor="launch-team" className="cursor-pointer text-sm font-semibold">
-                  Run command after create
+                  {t('team.runCommandAfterCreate')}
                 </Label>
                 <p
                   className="text-xs"
@@ -1010,7 +1012,7 @@ export const CreateTeamDialog = ({
                         footerRight={
                           promptDraft.isSaved ? (
                             <span className="text-[10px] text-[var(--color-text-muted)]">
-                              Saved
+                              {t('team.saved')}
                             </span>
                           ) : null
                         }
@@ -1149,7 +1151,7 @@ export const CreateTeamDialog = ({
                       onClick={() => setPrepareState('ready')}
                       className="rounded px-1.5 py-0.5 text-[10px] transition-colors hover:bg-[var(--color-surface-raised)] hover:text-[var(--color-text-secondary)]"
                     >
-                      Skip
+                      {t('team.skip')}
                     </button>
                   </p>
                 </div>
@@ -1194,11 +1196,11 @@ export const CreateTeamDialog = ({
                   onClose();
                 }}
               >
-                Open Existing Team
+                {t('team.openExistingTeam')}
               </Button>
             ) : null}
             <Button variant="outline" size="sm" onClick={onClose}>
-              Close
+              {t('common.close')}
             </Button>
             <Button
               size="sm"

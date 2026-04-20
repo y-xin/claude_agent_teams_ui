@@ -4,6 +4,8 @@
  * Visible during download and after the update is ready to install.
  */
 
+import { useTranslation } from 'react-i18next';
+
 import { useStore } from '@renderer/store';
 import { CheckCircle, Loader2, X } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
@@ -26,6 +28,8 @@ export const UpdateBanner = (): React.JSX.Element | null => {
       dismissUpdateBanner: s.dismissUpdateBanner,
     }))
   );
+
+  const { t } = useTranslation();
 
   if (!showUpdateBanner || (updateStatus !== 'downloading' && updateStatus !== 'downloaded')) {
     return null;
@@ -50,7 +54,7 @@ export const UpdateBanner = (): React.JSX.Element | null => {
             style={{ color: 'var(--color-text-secondary)' }}
           >
             <Loader2 className="size-3.5 shrink-0 animate-spin text-blue-600 dark:text-blue-400" />
-            <span>Updating app</span>
+            <span>{t('updates.updatingApp')}</span>
             <span className="tabular-nums" style={{ color: 'var(--color-text-muted)' }}>
               {clampedPercent}%
             </span>
@@ -69,7 +73,7 @@ export const UpdateBanner = (): React.JSX.Element | null => {
         <div className="flex items-center gap-2 pr-8">
           <CheckCircle className="size-4 shrink-0 text-green-400" />
           <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-            Update ready
+            {t('updates.updateReadyShort')}
             {availableVersion ? (
               <span className="ml-1 text-xs" style={{ color: 'var(--color-text-muted)' }}>
                 v{availableVersion}
@@ -84,7 +88,7 @@ export const UpdateBanner = (): React.JSX.Element | null => {
               color: 'var(--color-text)',
             }}
           >
-            Restart now
+            {t('updates.restartNow')}
           </button>
         </div>
       )}

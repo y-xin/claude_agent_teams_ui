@@ -31,6 +31,7 @@ export interface SafeConfig {
     defaultTab: 'dashboard' | 'last-session';
     claudeRootPath: string | null;
     agentLanguage: string;
+    uiLanguage: string;
     autoExpandAIGroups: boolean;
     useNativeTitleBar: boolean;
     telemetryEnabled: boolean;
@@ -171,6 +172,7 @@ export function useSettingsConfig(): UseSettingsConfigReturn {
         defaultTab: displayConfig?.general?.defaultTab ?? 'dashboard',
         claudeRootPath: displayConfig?.general?.claudeRootPath ?? null,
         agentLanguage: displayConfig?.general?.agentLanguage ?? 'system',
+        uiLanguage: displayConfig?.general?.uiLanguage ?? 'system',
         autoExpandAIGroups: displayConfig?.general?.autoExpandAIGroups ?? false,
         useNativeTitleBar: displayConfig?.general?.useNativeTitleBar ?? false,
         telemetryEnabled: displayConfig?.general?.telemetryEnabled ?? true,

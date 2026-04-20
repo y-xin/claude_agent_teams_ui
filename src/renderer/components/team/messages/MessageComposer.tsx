@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { api } from '@renderer/api';
 import { AttachmentPreviewList } from '@renderer/components/team/attachments/AttachmentPreviewList';
@@ -75,6 +76,7 @@ export const MessageComposer = ({
   onSend,
   onCrossTeamSend,
 }: MessageComposerProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const internalTextareaRef = useRef<HTMLTextAreaElement>(null);
   const textareaRef = useMemo(() => {
     // Merge internal and external refs into a single callback ref
@@ -478,10 +480,10 @@ export const MessageComposer = ({
                 </TooltipTrigger>
                 <TooltipContent side="top">
                   {!isTeamAlive
-                    ? 'Team must be online to attach files'
+                    ? t('team.messages.composer.teamMustBeOnline')
                     : !draft.canAddMore
-                      ? 'Maximum attachments reached'
-                      : 'Attach files (paste or drag & drop)'}
+                      ? t('team.messages.composer.maxAttachments')
+                      : t('team.messages.composer.attachFiles')}
                 </TooltipContent>
               </Tooltip>
             </>
@@ -490,7 +492,7 @@ export const MessageComposer = ({
           <div className="ml-auto flex shrink-0 items-center gap-2">
             {!isTeamAlive && !isProvisioning && (
               <span className="text-[10px]" style={{ color: 'var(--warning-text)' }}>
-                Team offline
+                {t('team.messages.composer.teamOffline')}
               </span>
             )}
 
@@ -540,7 +542,9 @@ export const MessageComposer = ({
                               style={{ backgroundColor: currentTeamColor }}
                             />
                           ) : null}
-                          <span className="text-[var(--color-text-secondary)]">This team</span>
+                          <span className="text-[var(--color-text-secondary)]">
+                            {t('team.messages.composer.thisTeam')}
+                          </span>
                         </>
                       )}
                       <ChevronDown size={12} className="shrink-0 text-[var(--color-text-muted)]" />
@@ -566,9 +570,11 @@ export const MessageComposer = ({
                             style={{ backgroundColor: currentTeamColor }}
                           />
                         ) : null}
-                        <span className="truncate text-[var(--color-text)]">This team</span>
+                        <span className="truncate text-[var(--color-text)]">
+                          {t('team.messages.composer.thisTeam')}
+                        </span>
                         <span className="shrink-0 text-[10px] text-[var(--color-text-muted)]">
-                          current
+                          {t('team.messages.composer.current')}
                         </span>
                         {!isCrossTeam ? (
                           <Check size={12} className="ml-auto shrink-0 text-blue-400" />
@@ -607,7 +613,11 @@ export const MessageComposer = ({
                                     ? getTeamColorSet(target.color).border
                                     : nameColorSet(target.displayName).border,
                               }}
-                              title={target.isOnline ? 'Online' : 'Offline'}
+                              title={
+                                target.isOnline
+                                  ? t('team.messages.composer.online')
+                                  : t('team.messages.composer.offline')
+                              }
                             />
                             <div className="min-w-0 flex-1">
                               <div className="flex items-center gap-1.5">
@@ -622,7 +632,9 @@ export const MessageComposer = ({
                                       : 'text-[var(--color-text-muted)]'
                                   )}
                                 >
-                                  {target.isOnline ? 'online' : 'offline'}
+                                  {target.isOnline
+                                    ? t('team.messages.composer.online')
+                                    : t('team.messages.composer.offline')}
                                 </span>
                               </div>
                               {target.description ? (
@@ -665,7 +677,7 @@ export const MessageComposer = ({
                           disableHoverCard
                         />
                       ) : (
-                        <span className="text-[var(--color-text-muted)]">Select...</span>
+                        <span className="text-[var(--color-text-muted)]">{t('common.select')}</span>
                       )}
                       <ChevronDown size={12} className="shrink-0 text-[var(--color-text-muted)]" />
                     </button>
@@ -689,7 +701,7 @@ export const MessageComposer = ({
                           ref={recipientSearchRef}
                           type="text"
                           className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] py-1 pl-6 pr-2 text-xs text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-border-emphasis)] focus:outline-none"
-                          placeholder="Search..."
+                          placeholder={t('common.search')}
                           value={recipientSearch}
                           onChange={(e) => setRecipientSearch(e.target.value)}
                         />
@@ -705,7 +717,7 @@ export const MessageComposer = ({
                         if (filtered.length === 0) {
                           return (
                             <div className="px-2 py-3 text-center text-xs text-[var(--color-text-muted)]">
-                              No results
+                              {t('common.noResults')}
                             </div>
                           );
                         }
@@ -771,7 +783,7 @@ export const MessageComposer = ({
                         disableHoverCard
                       />
                     ) : (
-                      <span className="text-[var(--color-text-muted)]">Select...</span>
+                      <span className="text-[var(--color-text-muted)]">{t('common.select')}</span>
                     )}
                     <ChevronDown size={12} className="shrink-0 text-[var(--color-text-muted)]" />
                   </button>
@@ -795,7 +807,7 @@ export const MessageComposer = ({
                         ref={recipientSearchRef}
                         type="text"
                         className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] py-1 pl-6 pr-2 text-xs text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-border-emphasis)] focus:outline-none"
-                        placeholder="Search..."
+                        placeholder={t('team.searchPlaceholder')}
                         value={recipientSearch}
                         onChange={(e) => setRecipientSearch(e.target.value)}
                       />
@@ -811,7 +823,7 @@ export const MessageComposer = ({
                       if (filtered.length === 0) {
                         return (
                           <div className="px-2 py-3 text-center text-xs text-[var(--color-text-muted)]">
-                            No results
+                            {t('common.noResults')}
                           </div>
                         );
                       }
@@ -871,7 +883,7 @@ export const MessageComposer = ({
             error={draft.attachmentError ?? fileRestrictionError}
             onDismissError={draft.clearAttachmentError}
             disabled={attachmentsBlocked}
-            disabledHint="File attachments are only supported when sending to the team lead while the team is online. Remove attachments or switch recipient."
+            disabledHint={t('team.messages.composer.attachmentsDisabledHint')}
           />
         ) : null}
       </div>
@@ -887,10 +899,12 @@ export const MessageComposer = ({
           id={`compose-${teamName}`}
           placeholder={
             isProvisioning
-              ? 'Team is launching... message will be queued for inbox delivery.'
+              ? t('team.messages.composer.teamLaunching')
               : isCrossTeam
-                ? `Cross-team message to ${targetDisplayName ?? 'team'}...`
-                : 'Write a message... (Enter to send, Shift+Enter for new line)'
+                ? t('team.messages.composer.crossTeamPlaceholder', {
+                    team: targetDisplayName ?? 'team',
+                  })
+                : t('team.messages.composer.placeholder')
           }
           value={draft.text}
           onValueChange={draft.setText}
@@ -931,7 +945,9 @@ export const MessageComposer = ({
                     <Mic size={14} />
                   </button>
                 </TooltipTrigger>
-                <TooltipContent side="top">Voice to text</TooltipContent>
+                <TooltipContent side="top">
+                  {t('team.messages.composer.voiceToText')}
+                </TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -943,7 +959,7 @@ export const MessageComposer = ({
                       onClick={handleSend}
                     >
                       <Send size={12} />
-                      Send
+                      {t('team.messages.composer.send')}
                     </button>
                   </span>
                 </TooltipTrigger>
@@ -951,7 +967,7 @@ export const MessageComposer = ({
                   <TooltipContent side="top">{slashCommandRestrictionReason}</TooltipContent>
                 ) : isProvisioning && !sending ? (
                   <TooltipContent side="top">
-                    Sending unavailable while team is launching
+                    {t('team.messages.composer.sendingUnavailable')}
                   </TooltipContent>
                 ) : null}
               </Tooltip>
@@ -972,18 +988,20 @@ export const MessageComposer = ({
               ) : lastResult?.deduplicated ? (
                 <span className="inline-flex items-center gap-1 rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] text-amber-300">
                   <Check size={10} className="shrink-0" />
-                  Reused recent cross-team request
+                  {t('team.messages.composer.reusedCrossTeam')}
                 </span>
               ) : null}
               {remaining < 200 ? (
                 <span
                   className={`text-[10px] ${remaining < 100 ? 'text-yellow-400' : 'text-[var(--color-text-muted)]'}`}
                 >
-                  {remaining} chars left
+                  {t('common.charsLeft', { count: remaining })}
                 </span>
               ) : null}
               {draft.isSaved ? (
-                <span className="text-[10px] text-[var(--color-text-muted)]">Saved</span>
+                <span className="text-[10px] text-[var(--color-text-muted)]">
+                  {t('team.createTask.saved')}
+                </span>
               ) : null}
             </div>
           }

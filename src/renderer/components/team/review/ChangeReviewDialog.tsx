@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { undo } from '@codemirror/commands';
 import { rejectChunk } from '@codemirror/merge';
@@ -117,6 +118,8 @@ export const ChangeReviewDialog = ({
     hunkContextHashesByFile,
     globalTasks,
   } = useStore();
+
+  const { t } = useTranslation();
 
   // Build scope keys (pure values — safe to compute before hooks that depend on them)
   const scopeKey = mode === 'task' ? `task:${taskId ?? ''}` : `agent:${memberName ?? ''}`;
@@ -1183,12 +1186,15 @@ export const ChangeReviewDialog = ({
   }, [activeChangeSet, activeFilePath]);
 
   const title = useMemo(() => {
-    if (mode === 'agent') return `Changes by ${displayMemberName(memberName ?? 'unknown')}`;
-    const task = taskId ? globalTasks.find((t) => t.id === taskId) : undefined;
+    if (mode === 'agent')
+      return t('team.review.changesByAgent', { name: displayMemberName(memberName ?? 'unknown') });
+    const task = taskId ? globalTasks.find((tk) => tk.id === taskId) : undefined;
     const shortId = task?.displayId ?? taskId?.slice(0, 8) ?? '?';
     const subject = task?.subject;
-    return subject ? `Changes for task #${shortId} — ${subject}` : `Changes for task #${shortId}`;
-  }, [mode, memberName, taskId, globalTasks]);
+    return subject
+      ? t('team.review.changesForTaskWithSubject', { id: shortId, subject })
+      : t('team.review.changesForTask', { id: shortId });
+  }, [mode, memberName, taskId, globalTasks, t]);
 
   const isMacElectron =
     isElectronMode() && window.navigator.userAgent.toLowerCase().includes('mac');
@@ -1306,7 +1312,9 @@ export const ChangeReviewDialog = ({
                     className="flex w-full items-center gap-1.5 px-3 py-2 text-xs text-text-secondary hover:text-text"
                   >
                     <Clock className="size-3.5" />
-                    <span>Edit Timeline ({activeFile.timeline.events.length})</span>
+                    <span>
+                      {t('team.review.editTimeline', { count: activeFile.timeline.events.length })}
+                    </span>
                     <ChevronDown
                       className={cn(
                         'ml-auto size-3 transition-transform',
@@ -1390,7 +1398,7 @@ export const ChangeReviewDialog = ({
 
         {!changeSetLoading && !changeSetError && activeChangeSet?.files.length === 0 && (
           <div className="flex w-full items-center justify-center text-sm text-text-muted">
-            No file changes detected
+            {t('team.review.noFileChanges')}
           </div>
         )}
       </div>

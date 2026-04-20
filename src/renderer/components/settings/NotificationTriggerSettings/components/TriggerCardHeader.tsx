@@ -5,6 +5,7 @@
 import { SettingsToggle } from '@renderer/components/settings/components';
 import { getTriggerColorDef } from '@shared/constants/triggerColors';
 import { ChevronDown, ChevronUp, Pencil, Shield, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { CONTENT_TYPE_OPTIONS, MODE_OPTIONS } from '../utils/constants';
 
@@ -39,6 +40,8 @@ export const TriggerCardHeader = ({
   onToggleExpanded,
   onRemove,
 }: Readonly<TriggerCardHeaderProps>): React.JSX.Element => {
+  const { t } = useTranslation();
+
   return (
     <div className="flex items-center justify-between py-3">
       {/* Left side: Name and badges */}
@@ -70,7 +73,7 @@ export const TriggerCardHeader = ({
               {trigger.isBuiltin && (
                 <span className="flex items-center gap-1 rounded bg-indigo-500/10 px-1.5 py-0.5 text-[10px] text-indigo-400">
                   <Shield className="size-2.5" />
-                  Builtin
+                  {t('settings.triggers.builtin')}
                 </span>
               )}
               {!trigger.isBuiltin && (
@@ -78,7 +81,7 @@ export const TriggerCardHeader = ({
                   onClick={() => onSetEditingName(true)}
                   disabled={saving}
                   className="rounded p-0.5 text-text-muted transition-colors hover:bg-surface-raised hover:text-text-secondary"
-                  aria-label="Edit name"
+                  aria-label={t('settings.triggers.editName')}
                 >
                   <Pencil className="size-3" />
                 </button>
@@ -104,7 +107,7 @@ export const TriggerCardHeader = ({
         <button
           onClick={onToggleExpanded}
           className="rounded p-1 text-text-muted transition-colors hover:bg-surface-raised hover:text-text-secondary"
-          aria-label={isExpanded ? 'Collapse' : 'Expand'}
+          aria-label={isExpanded ? t('settings.triggers.collapse') : t('settings.triggers.expand')}
         >
           {isExpanded ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
         </button>
@@ -114,7 +117,7 @@ export const TriggerCardHeader = ({
             onClick={onRemove}
             disabled={saving}
             className={`rounded p-1 text-text-muted transition-colors hover:bg-red-500/10 hover:text-red-400 ${saving ? 'cursor-not-allowed opacity-50' : ''} `}
-            aria-label="Delete trigger"
+            aria-label={t('settings.triggers.deleteTrigger')}
           >
             <X className="size-4" />
           </button>

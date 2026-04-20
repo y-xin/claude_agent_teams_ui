@@ -3,6 +3,7 @@
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { MentionedFileItem } from '../items/MentionedFileItem';
 
@@ -27,11 +28,12 @@ export const MentionedFilesSection = ({
   projectRoot,
   onNavigateToTurn,
 }: Readonly<MentionedFilesSectionProps>): React.ReactElement | null => {
+  const { t } = useTranslation();
   if (injections.length === 0) return null;
 
   return (
     <CollapsibleSection
-      title="Mentioned Files"
+      title={t('chat.mentionedFiles')}
       count={injections.length}
       tokenCount={tokenCount}
       isExpanded={isExpanded}

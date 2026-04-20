@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { MarkdownPreviewPane } from '@renderer/components/team/editor/MarkdownPreviewPane';
 import { Badge } from '@renderer/components/ui/badge';
@@ -79,6 +80,7 @@ export const SkillEditorDialog = ({
   onClose,
   onSaved,
 }: SkillEditorDialogProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const editorScrollRef = useRef<HTMLElement | null>(null);
   const rawContentRef = useRef('');
@@ -269,24 +271,25 @@ export const SkillEditorDialog = ({
 
   const canUseProjectScope = Boolean(projectPath);
   const instructionsLocked = manualRawEdit || customMarkdownDetected;
-  const title = mode === 'create' ? 'Create skill' : 'Edit skill';
+  const title =
+    mode === 'create' ? t('extensions.skills.createSkill') : t('extensions.skills.editSkill');
   const descriptionText =
     mode === 'create'
-      ? 'Describe the workflow in plain language, review the files that will be created, then save it.'
-      : 'Update this skill, review the resulting file changes, then save it.';
+      ? t('extensions.skills.createDescription')
+      : t('extensions.skills.editDescription');
 
   function validateBeforeReview(): string | null {
     if (!name.trim()) {
-      return 'Add a skill name so people know what this workflow is for.';
+      return t('extensions.skills.validationNameRequired');
     }
     if (!description.trim()) {
-      return 'Add a short description so it is clear what this skill helps with.';
+      return t('extensions.skills.validationDescriptionRequired');
     }
     if (!folderName.trim()) {
-      return 'Choose a folder name for this skill.';
+      return t('extensions.skills.validationFolderRequired');
     }
     if (scope === 'project' && !projectPath) {
-      return 'Project skills need an active project.';
+      return t('extensions.skills.validationProjectRequired');
     }
     return null;
   }
@@ -332,7 +335,9 @@ export const SkillEditorDialog = ({
       setReviewPreview(preview);
       setReviewOpen(true);
     } catch (error) {
-      setMutationError(error instanceof Error ? error.message : 'Failed to review skill changes');
+      setMutationError(
+        error instanceof Error ? error.message : t('extensions.skills.failedToReviewChanges')
+      );
     } finally {
       setReviewLoading(false);
     }
@@ -350,7 +355,9 @@ export const SkillEditorDialog = ({
       onSaved(saved?.item.id ?? detail?.item.id ?? null);
       onClose();
     } catch (error) {
-      setMutationError(error instanceof Error ? error.message : 'Failed to save skill');
+      setMutationError(
+        error instanceof Error ? error.message : t('extensions.skills.failedToSave')
+      );
     } finally {
       setSaveLoading(false);
     }
@@ -369,16 +376,17 @@ export const SkillEditorDialog = ({
             <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
               <div className="space-y-5">
                 <section className="space-y-1">
-                  <h3 className="text-sm font-semibold text-text">1. Basics</h3>
+                  <h3 className="text-sm font-semibold text-text">
+                    {t('extensions.skills.basicsTitle')}
+                  </h3>
                   <p className="text-sm text-text-muted">
-                    Give this skill a clear name, choose who can use it, and decide where it should
-                    live.
+                    {t('extensions.skills.basicsDescription')}
                   </p>
                 </section>
 
                 <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
                   <div className="space-y-2">
-                    <Label htmlFor="skill-scope">Who can use it</Label>
+                    <Label htmlFor="skill-scope">{t('extensions.skills.whoCanUseIt')}</Label>
                     <Select
                       value={scope}
                       onValueChange={(value) => setScope(value as 'user' | 'project')}
@@ -388,18 +396,20 @@ export const SkillEditorDialog = ({
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="user">User</SelectItem>
+                        <SelectItem value="user">{t('extensions.skills.scopeUser')}</SelectItem>
                         <SelectItem value="project" disabled={!canUseProjectScope}>
                           {canUseProjectScope
-                            ? `Project: ${projectLabel ?? projectPath}`
-                            : 'Project unavailable'}
+                            ? t('extensions.skills.scopeProjectWithLabel', {
+                                label: projectLabel ?? projectPath,
+                              })
+                            : t('extensions.skills.scopeProjectUnavailable')}
                         </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="skill-root">Where to store it</Label>
+                    <Label htmlFor="skill-root">{t('extensions.skills.whereToStoreIt')}</Label>
                     <Select
                       value={rootKind}
                       onValueChange={(value) =>
@@ -419,7 +429,7 @@ export const SkillEditorDialog = ({
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="skill-folder">Folder name</Label>
+                    <Label htmlFor="skill-folder">{t('extensions.skills.folderName')}</Label>
                     <Input
                       id="skill-folder"
                       value={folderName}
@@ -431,14 +441,15 @@ export const SkillEditorDialog = ({
                     />
                     {mode === 'create' && (
                       <p className="text-xs text-text-muted">
-                        We suggest this automatically from the skill name so review works right
-                        away.
+                        {t('extensions.skills.folderNameHint')}
                       </p>
                     )}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="skill-invocation">How Claude should use it</Label>
+                    <Label htmlFor="skill-invocation">
+                      {t('extensions.skills.howClaudeShouldUseIt')}
+                    </Label>
                     <Select
                       value={invocationMode}
                       onValueChange={(value) => {
@@ -451,8 +462,12 @@ export const SkillEditorDialog = ({
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="auto">Claude can use it automatically</SelectItem>
-                        <SelectItem value="manual-only">Only when you ask for it</SelectItem>
+                        <SelectItem value="auto">
+                          {t('extensions.skills.invocationAuto')}
+                        </SelectItem>
+                        <SelectItem value="manual-only">
+                          {t('extensions.skills.invocationManualOnly')}
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -460,7 +475,7 @@ export const SkillEditorDialog = ({
 
                 <div className="grid gap-3 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="skill-name">Skill name</Label>
+                    <Label htmlFor="skill-name">{t('extensions.skills.skillName')}</Label>
                     <Input
                       id="skill-name"
                       value={name}
@@ -472,11 +487,11 @@ export const SkillEditorDialog = ({
                         }
                         applyFormToRawContent({ name: nextValue });
                       }}
-                      placeholder="Write concise skill name"
+                      placeholder={t('extensions.skills.skillNamePlaceholder')}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="skill-license">License</Label>
+                    <Label htmlFor="skill-license">{t('extensions.skills.license')}</Label>
                     <Input
                       id="skill-license"
                       value={license}
@@ -485,14 +500,14 @@ export const SkillEditorDialog = ({
                         setLicense(nextValue);
                         applyFormToRawContent({ license: nextValue });
                       }}
-                      placeholder="MIT"
+                      placeholder={t('extensions.skills.licensePlaceholder')}
                     />
                   </div>
                 </div>
 
                 <div className="grid gap-3 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="skill-description">Description</Label>
+                    <Label htmlFor="skill-description">{t('extensions.skills.description')}</Label>
                     <Input
                       id="skill-description"
                       value={description}
@@ -501,11 +516,13 @@ export const SkillEditorDialog = ({
                         setDescription(nextValue);
                         applyFormToRawContent({ description: nextValue });
                       }}
-                      placeholder="What this skill helps with"
+                      placeholder={t('extensions.skills.descriptionPlaceholder')}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="skill-compatibility">Compatibility</Label>
+                    <Label htmlFor="skill-compatibility">
+                      {t('extensions.skills.compatibility')}
+                    </Label>
                     <Input
                       id="skill-compatibility"
                       value={compatibility}
@@ -514,7 +531,7 @@ export const SkillEditorDialog = ({
                         setCompatibility(nextValue);
                         applyFormToRawContent({ compatibility: nextValue });
                       }}
-                      placeholder="claude-code, cursor"
+                      placeholder={t('extensions.skills.compatibilityPlaceholder')}
                     />
                   </div>
                 </div>
@@ -522,16 +539,19 @@ export const SkillEditorDialog = ({
                 {!customMarkdownDetected && (
                   <>
                     <section className="space-y-1">
-                      <h3 className="text-sm font-semibold text-text">2. Instructions</h3>
+                      <h3 className="text-sm font-semibold text-text">
+                        {t('extensions.skills.instructionsTitle')}
+                      </h3>
                       <p className="text-sm text-text-muted">
-                        These sections generate the skill file for you, so you do not need to edit
-                        markdown unless you want to.
+                        {t('extensions.skills.instructionsDescription')}
                       </p>
                     </section>
 
                     <div className="grid gap-3">
                       <div className="space-y-2">
-                        <Label htmlFor="skill-when-to-use">When Claude should reach for this</Label>
+                        <Label htmlFor="skill-when-to-use">
+                          {t('extensions.skills.whenClaudeShouldReach')}
+                        </Label>
                         <Textarea
                           id="skill-when-to-use"
                           value={whenToUse}
@@ -541,13 +561,13 @@ export const SkillEditorDialog = ({
                             setWhenToUse(nextValue);
                             applyFormToRawContent({ whenToUse: nextValue });
                           }}
-                          placeholder="Example: Use this when the task is a code review or bug triage request."
+                          placeholder={t('extensions.skills.whenToUsePlaceholder')}
                           className="min-h-[88px]"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="skill-steps">Main steps Claude should follow</Label>
+                        <Label htmlFor="skill-steps">{t('extensions.skills.mainSteps')}</Label>
                         <Textarea
                           id="skill-steps"
                           value={steps}
@@ -557,15 +577,13 @@ export const SkillEditorDialog = ({
                             setSteps(nextValue);
                             applyFormToRawContent({ steps: nextValue });
                           }}
-                          placeholder={
-                            '1. Inspect the relevant files.\n2. Explain the main risk first.\n3. Suggest the safest fix.'
-                          }
+                          placeholder={t('extensions.skills.stepsPlaceholder')}
                           className="min-h-[120px]"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="skill-notes">Extra notes or guardrails</Label>
+                        <Label htmlFor="skill-notes">{t('extensions.skills.extraNotes')}</Label>
                         <Textarea
                           id="skill-notes"
                           value={notes}
@@ -575,13 +593,12 @@ export const SkillEditorDialog = ({
                             setNotes(nextValue);
                             applyFormToRawContent({ notes: nextValue });
                           }}
-                          placeholder="Example: Call out missing tests, regressions, and risky assumptions."
+                          placeholder={t('extensions.skills.notesPlaceholder')}
                           className="min-h-[88px]"
                         />
                         {instructionsLocked && (
                           <p className="text-xs text-text-muted">
-                            Structured fields are locked because you switched to manual `SKILL.md`
-                            editing below.
+                            {t('extensions.skills.structuredFieldsLocked')}
                           </p>
                         )}
                       </div>
@@ -590,24 +607,27 @@ export const SkillEditorDialog = ({
                 )}
 
                 <section className="space-y-1">
-                  <h3 className="text-sm font-semibold text-text">3. Extra files</h3>
+                  <h3 className="text-sm font-semibold text-text">
+                    {t('extensions.skills.extraFilesTitle')}
+                  </h3>
                   <p className="text-sm text-text-muted">
-                    Add supporting docs, scripts, or assets only if this skill really needs them.
+                    {t('extensions.skills.extraFilesDescription')}
                   </p>
                 </section>
 
                 <div className="rounded-lg border border-border p-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <p className="font-medium text-text">Optional files</p>
+                      <p className="font-medium text-text">
+                        {t('extensions.skills.optionalFiles')}
+                      </p>
                       <p className="mt-1 text-xs text-text-muted">
-                        Add starter files that will be included in the review and written together
-                        with `SKILL.md`.
+                        {t('extensions.skills.optionalFilesHint')}
                       </p>
                     </div>
                     {mode === 'edit' && (
                       <Badge variant="outline" className="font-normal">
-                        Root and folder are locked for edits
+                        {t('extensions.skills.rootAndFolderLocked')}
                       </Badge>
                     )}
                   </div>
@@ -620,9 +640,9 @@ export const SkillEditorDialog = ({
                         className="mt-0.5"
                       />
                       <div>
-                        <p className="font-medium text-text">References</p>
+                        <p className="font-medium text-text">{t('extensions.skills.references')}</p>
                         <p className="mt-1 text-xs text-text-muted">
-                          Add supporting docs, links, or examples that Claude can look at.
+                          {t('extensions.skills.referencesDescription')}
                         </p>
                       </div>
                     </label>
@@ -634,10 +654,9 @@ export const SkillEditorDialog = ({
                         className="mt-0.5"
                       />
                       <div>
-                        <p className="font-medium text-text">Scripts</p>
+                        <p className="font-medium text-text">{t('extensions.skills.scripts')}</p>
                         <p className="mt-1 text-xs text-text-muted">
-                          Add helper commands or setup notes. Review carefully before sharing this
-                          skill.
+                          {t('extensions.skills.scriptsDescription')}
                         </p>
                       </div>
                     </label>
@@ -649,9 +668,9 @@ export const SkillEditorDialog = ({
                         className="mt-0.5"
                       />
                       <div>
-                        <p className="font-medium text-text">Assets</p>
+                        <p className="font-medium text-text">{t('extensions.skills.assets')}</p>
                         <p className="mt-1 text-xs text-text-muted">
-                          Add screenshots or bundled media only if they help explain the workflow.
+                          {t('extensions.skills.assetsDescription')}
                         </p>
                       </div>
                     </label>
@@ -660,7 +679,7 @@ export const SkillEditorDialog = ({
                   {auxiliaryDraftFilePaths.length > 0 && (
                     <div className="mt-4">
                       <p className="text-xs font-medium uppercase tracking-wide text-text-muted">
-                        Added files:
+                        {t('extensions.skills.addedFiles')}
                       </p>
                       <div className="mt-2 flex flex-wrap gap-2">
                         {auxiliaryDraftFilePaths.map((filePath) => (
@@ -684,13 +703,13 @@ export const SkillEditorDialog = ({
                     <div>
                       <h3 className="text-sm font-semibold text-text">
                         {customMarkdownDetected
-                          ? '2. SKILL.md editor'
-                          : '4. Advanced SKILL.md editor'}
+                          ? t('extensions.skills.advancedEditorCustomTitle')
+                          : t('extensions.skills.advancedEditorTitle')}
                       </h3>
                       <p className="text-sm text-text-muted">
                         {customMarkdownDetected
-                          ? 'This skill uses a custom markdown format, so edit it directly here.'
-                          : 'Most people can skip this. Open it only if you want direct control over the raw markdown file.'}
+                          ? t('extensions.skills.advancedEditorCustomDescription')
+                          : t('extensions.skills.advancedEditorDescription')}
                       </p>
                     </div>
                     {!customMarkdownDetected && (
@@ -699,7 +718,9 @@ export const SkillEditorDialog = ({
                         size="sm"
                         onClick={() => setShowAdvancedEditor((prev) => !prev)}
                       >
-                        {showAdvancedEditor ? 'Hide Advanced Editor' : 'Show Advanced Editor'}
+                        {showAdvancedEditor
+                          ? t('extensions.skills.hideAdvancedEditor')
+                          : t('extensions.skills.showAdvancedEditor')}
                       </Button>
                     )}
                   </div>
@@ -728,7 +749,7 @@ export const SkillEditorDialog = ({
                           }}
                         >
                           <RotateCcw className="mr-1.5 size-3.5" />
-                          Reset From Structured Fields
+                          {t('extensions.skills.resetFromStructuredFields')}
                         </Button>
                       </div>
 
@@ -790,21 +811,19 @@ export const SkillEditorDialog = ({
             <div className="sticky bottom-0 z-10 flex flex-wrap items-center gap-3 border-t border-border bg-surface px-6 py-4 shadow-[0_-8px_24px_rgba(0,0,0,0.08)]">
               <Button variant="outline" onClick={onClose}>
                 <X className="mr-1.5 size-3.5" />
-                Cancel
+                {t('common.cancel')}
               </Button>
               <div className="min-w-64 flex-1">
-                <p className="text-sm text-text-muted">
-                  Review the file changes first, then confirm save in the next step.
-                </p>
+                <p className="text-sm text-text-muted">{t('extensions.skills.reviewHint')}</p>
                 {mutationError && <p className="mt-1 text-sm text-red-400">{mutationError}</p>}
               </div>
               <Button onClick={() => void handleReview()} disabled={reviewLoading || saveLoading}>
                 <FileSearch className="mr-1.5 size-3.5" />
                 {reviewLoading
-                  ? 'Preparing...'
+                  ? t('extensions.skills.preparing')
                   : mode === 'create'
-                    ? 'Review And Create'
-                    : 'Review And Save'}
+                    ? t('extensions.skills.reviewAndCreate')
+                    : t('extensions.skills.reviewAndSave')}
               </Button>
             </div>
           </div>
@@ -818,8 +837,16 @@ export const SkillEditorDialog = ({
         error={mutationError}
         onClose={() => setReviewOpen(false)}
         onConfirm={() => void handleConfirmSave()}
-        confirmLabel={mode === 'create' ? 'Create Skill' : 'Save Skill'}
-        reviewLabel={mode === 'create' ? 'Creating a skill' : 'Saving this skill'}
+        confirmLabel={
+          mode === 'create'
+            ? t('extensions.skills.createSkillConfirm')
+            : t('extensions.skills.saveSkillConfirm')
+        }
+        reviewLabel={
+          mode === 'create'
+            ? t('extensions.skills.creatingSkill')
+            : t('extensions.skills.savingSkill')
+        }
       />
     </>
   );

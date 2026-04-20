@@ -4,6 +4,7 @@
  */
 
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { api } from '@renderer/api';
 import { Badge } from '@renderer/components/ui/badge';
@@ -44,9 +45,9 @@ interface McpServerDetailDialogProps {
 
 type Scope = 'local' | 'user';
 
-const SCOPE_OPTIONS: { value: Scope; label: string }[] = [
-  { value: 'user', label: 'User (global)' },
-  { value: 'local', label: 'Local' },
+const SCOPE_OPTION_KEYS: { value: Scope; labelKey: string }[] = [
+  { value: 'user', labelKey: 'extensions.scopeUserGlobal' },
+  { value: 'local', labelKey: 'extensions.scopeLocal' },
 ];
 
 export const McpServerDetailDialog = ({
@@ -57,6 +58,7 @@ export const McpServerDetailDialog = ({
   open,
   onClose,
 }: McpServerDetailDialogProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const installProgress = useStore(
     (s) => (server ? s.mcpInstallProgress[server.id] : undefined) ?? 'idle'
   );
@@ -233,7 +235,7 @@ export const McpServerDetailDialog = ({
                       className="border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
                       variant="outline"
                     >
-                      Installed
+                      {t('extensions.installed')}
                     </Badge>
                   )}
                   {server.source !== 'official' && <SourceBadge source={server.source} />}
@@ -246,12 +248,12 @@ export const McpServerDetailDialog = ({
         {/* Metadata grid */}
         <div className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
           <div>
-            <span className="text-text-muted">Source</span>
+            <span className="text-text-muted">{t('extensions.source')}</span>
             <p className="capitalize text-text">{server.source}</p>
           </div>
           {stars != null && (
             <div>
-              <span className="text-text-muted">GitHub Stars</span>
+              <span className="text-text-muted">{t('extensions.githubStars')}</span>
               <p className="flex items-center gap-1 text-text">
                 <Star className="size-3.5 fill-amber-400 text-amber-400" />
                 {stars.toLocaleString()}
@@ -260,18 +262,18 @@ export const McpServerDetailDialog = ({
           )}
           {server.version && (
             <div>
-              <span className="text-text-muted">Version</span>
+              <span className="text-text-muted">{t('extensions.version')}</span>
               <p className="text-text">{server.version}</p>
             </div>
           )}
           {server.license && (
             <div>
-              <span className="text-text-muted">License</span>
+              <span className="text-text-muted">{t('extensions.license')}</span>
               <p className="text-text">{server.license}</p>
             </div>
           )}
           <div>
-            <span className="text-text-muted">Install Type</span>
+            <span className="text-text-muted">{t('extensions.installType')}</span>
             {server.installSpec?.type === 'stdio' ? (
               <Button
                 variant="link"
@@ -283,32 +285,32 @@ export const McpServerDetailDialog = ({
             ) : (
               <p className="text-text">
                 {server.installSpec
-                  ? `HTTP: ${server.installSpec.transportType}`
-                  : 'Manual setup required'}
+                  ? t('extensions.mcp.httpPrefix', { type: server.installSpec.transportType })
+                  : t('extensions.mcp.manualSetupRequired')}
               </p>
             )}
           </div>
           {server.author && (
             <div>
-              <span className="text-text-muted">Author</span>
+              <span className="text-text-muted">{t('extensions.mcp.author')}</span>
               <p className="text-text">{server.author}</p>
             </div>
           )}
           {server.hostingType && (
             <div>
-              <span className="text-text-muted">Hosting</span>
+              <span className="text-text-muted">{t('extensions.mcp.hosting')}</span>
               <p className="capitalize text-text">{server.hostingType}</p>
             </div>
           )}
           {server.publishedAt && (
             <div>
-              <span className="text-text-muted">Published</span>
+              <span className="text-text-muted">{t('extensions.mcp.published')}</span>
               <p className="text-text">{new Date(server.publishedAt).toLocaleDateString()}</p>
             </div>
           )}
           {server.updatedAt && (
             <div>
-              <span className="text-text-muted">Updated</span>
+              <span className="text-text-muted">{t('extensions.mcp.updated')}</span>
               <p className="text-text">{new Date(server.updatedAt).toLocaleDateString()}</p>
             </div>
           )}
@@ -318,25 +320,26 @@ export const McpServerDetailDialog = ({
         {server.requiresAuth && (
           <div className="flex items-center gap-2 rounded-md border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-sm text-amber-400">
             <Lock className="size-4" />
-            This server requires authentication
+            {t('extensions.mcp.requiresAuthNotice')}
           </div>
         )}
         {isHttp && !server.requiresAuth && (server.authHeaders?.length ?? 0) === 0 && (
           <div className="rounded-md border border-blue-500/30 bg-blue-500/5 px-3 py-2 text-sm text-blue-400">
-            Remote MCP servers may still require custom headers or API keys even when the registry
-            does not describe them. If connection fails after install, check the provider docs.
+            {t('extensions.mcp.remoteHeadersNotice')}
           </div>
         )}
         {(isInstalled || diagnosticsLoading) && (
           <div className="space-y-2 rounded-md border border-border bg-surface-raised px-4 py-3">
             <div className="flex items-center justify-between gap-3">
-              <span className="text-sm font-medium text-text">Claude Status</span>
+              <span className="text-sm font-medium text-text">
+                {t('extensions.mcp.claudeStatus')}
+              </span>
               {diagnosticsLoading && !diagnostic ? (
                 <Badge
                   className="border-border bg-surface-raised text-text-muted"
                   variant="outline"
                 >
-                  Checking...
+                  {t('extensions.mcp.checking')}
                 </Badge>
               ) : diagnostic ? (
                 <Badge className={diagnosticBadgeClass} variant="outline">
@@ -347,13 +350,13 @@ export const McpServerDetailDialog = ({
                   className="border-border bg-surface-raised text-text-muted"
                   variant="outline"
                 >
-                  Not checked
+                  {t('extensions.mcp.notChecked')}
                 </Badge>
               )}
             </div>
             {diagnostic?.target && (
               <div>
-                <p className="mb-1 text-xs text-text-muted">Launch Target</p>
+                <p className="mb-1 text-xs text-text-muted">{t('extensions.mcp.launchTarget')}</p>
                 <code className="block overflow-x-auto rounded bg-surface px-2 py-1 text-xs text-text">
                   {diagnostic.target}
                 </code>
@@ -366,13 +369,15 @@ export const McpServerDetailDialog = ({
         {canAutoInstall && (
           <div className="space-y-3 rounded-md border border-border bg-surface-raised p-4">
             <h4 className="text-sm font-medium text-text">
-              {isInstalled ? 'Manage Installation' : 'Install Server'}
+              {isInstalled
+                ? t('extensions.mcp.manageInstallation')
+                : t('extensions.mcp.installServer')}
             </h4>
 
             {/* Server name */}
             <div className="space-y-1.5">
               <Label htmlFor="server-name" className="text-xs">
-                Server Name
+                {t('extensions.mcp.serverName')}
               </Label>
               <Input
                 id="server-name"
@@ -385,15 +390,15 @@ export const McpServerDetailDialog = ({
 
             {/* Scope */}
             <div className="space-y-1.5">
-              <Label className="text-xs">Scope</Label>
+              <Label className="text-xs">{t('extensions.mcp.scope')}</Label>
               <Select value={scope} onValueChange={(v) => setScope(v as Scope)}>
                 <SelectTrigger className="h-8 text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {SCOPE_OPTIONS.map((opt) => (
+                  {SCOPE_OPTION_KEYS.map((opt) => (
                     <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label}
+                      {t(opt.labelKey)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -403,7 +408,7 @@ export const McpServerDetailDialog = ({
             {/* Environment variables */}
             {server.envVars.length > 0 && (
               <div className="space-y-1.5">
-                <Label className="text-xs">Environment Variables</Label>
+                <Label className="text-xs">{t('extensions.mcp.environmentVariables')}</Label>
                 <div className="space-y-2">
                   {server.envVars.map((env) => (
                     <div key={env.name} className="flex items-center gap-2">
@@ -420,7 +425,9 @@ export const McpServerDetailDialog = ({
                         placeholder={env.description ?? env.name}
                       />
                       {autoFilledFields.has(env.name) && envValues[env.name] && (
-                        <span className="shrink-0 text-[10px] text-emerald-400">Auto-filled</span>
+                        <span className="shrink-0 text-[10px] text-emerald-400">
+                          {t('extensions.mcp.autoFilled')}
+                        </span>
                       )}
                     </div>
                   ))}
@@ -432,7 +439,7 @@ export const McpServerDetailDialog = ({
             {isHttp && (
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <Label className="text-xs">Headers</Label>
+                  <Label className="text-xs">{t('extensions.mcp.headers')}</Label>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -440,7 +447,9 @@ export const McpServerDetailDialog = ({
                     className="h-6 px-1.5 text-xs"
                   >
                     <Plus className="mr-1 size-3" />
-                    {hasSuggestedHeaders ? 'Add custom' : 'Add'}
+                    {hasSuggestedHeaders
+                      ? t('extensions.mcp.addCustomShort')
+                      : t('extensions.mcp.add')}
                   </Button>
                 </div>
                 {headers.length > 0 && (
@@ -457,7 +466,7 @@ export const McpServerDetailDialog = ({
                               value={header.key}
                               onChange={(e) => updateHeader(index, 'key', e.target.value)}
                               className="h-7 w-32 text-xs"
-                              placeholder="Header-Name"
+                              placeholder={t('extensions.headerNamePlaceholder')}
                             />
                           )}
                           <Input
@@ -480,7 +489,7 @@ export const McpServerDetailDialog = ({
                         {(header.description || header.valueTemplate || header.isRequired) && (
                           <p className="text-[10px] text-text-muted">
                             {[
-                              header.isRequired ? 'Required' : null,
+                              header.isRequired ? t('extensions.mcp.required') : null,
                               header.description,
                               header.valueTemplate,
                             ]
@@ -512,7 +521,7 @@ export const McpServerDetailDialog = ({
 
         {!canAutoInstall && (
           <div className="rounded-md border border-border bg-surface-raised px-4 py-3 text-sm text-text-muted">
-            This server requires manual setup. Check the repository for installation instructions.
+            {t('extensions.mcp.manualSetupNotice')}
           </div>
         )}
 
@@ -521,7 +530,7 @@ export const McpServerDetailDialog = ({
           <div>
             <h4 className="mb-2 flex items-center gap-1.5 text-sm font-medium text-text">
               <Wrench className="size-4" />
-              Tools ({server.tools.length})
+              {t('extensions.mcp.toolsCount', { count: server.tools.length })}
             </h4>
             <div className="max-h-48 space-y-1 overflow-y-auto">
               {server.tools.map((tool) => (
@@ -543,7 +552,7 @@ export const McpServerDetailDialog = ({
               onClick={() => void api.openExternal(server.repositoryUrl!)}
             >
               <ExternalLink className="mr-1 size-3.5" />
-              Repository
+              {t('extensions.mcp.repository')}
             </Button>
           )}
           {server.glamaUrl && (
@@ -553,7 +562,7 @@ export const McpServerDetailDialog = ({
               onClick={() => void api.openExternal(server.glamaUrl!)}
             >
               <ExternalLink className="mr-1 size-3.5" />
-              Glama
+              {t('extensions.mcp.glama')}
             </Button>
           )}
           {server.websiteUrl && (
@@ -563,7 +572,7 @@ export const McpServerDetailDialog = ({
               onClick={() => void api.openExternal(server.websiteUrl!)}
             >
               <ExternalLink className="mr-1 size-3.5" />
-              Website
+              {t('extensions.mcp.website')}
             </Button>
           )}
         </div>

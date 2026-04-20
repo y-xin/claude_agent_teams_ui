@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Label } from '@renderer/components/ui/label';
 import { cn } from '@renderer/lib/utils';

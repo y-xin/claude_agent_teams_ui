@@ -7,6 +7,7 @@ import {
   RepositoryDropdown,
   SelectedRepositoryItem,
 } from '@renderer/components/common/RepositoryDropdown';
+import { useTranslation } from 'react-i18next';
 
 import type { RepositoryDropdownItem } from '@renderer/components/settings/hooks/useSettingsConfig';
 
@@ -25,18 +26,20 @@ export const RepositoryScopeSection = ({
   onRemove,
   disabled,
 }: Readonly<RepositoryScopeSectionProps>): React.JSX.Element => {
+  const { t } = useTranslation();
+
   return (
     <details className="mt-4">
       <summary className="cursor-pointer text-xs uppercase tracking-widest text-text-muted hover:text-text-secondary">
-        Advanced: Repository Scope
+        {t('settings.triggers.advancedRepoScope')}
       </summary>
       <div className="mt-3 border-l border-border pl-4">
         <span className="mb-2 block text-xs text-text-muted">
-          Limit to Repositories (applies only to selected repositories)
+          {t('settings.triggers.limitToRepos')}
         </span>
         {selectedItems.length === 0 ? (
           <p className="mb-2 text-xs italic text-text-muted">
-            No repositories selected - trigger applies to all repositories
+            {t('settings.triggers.noReposSelected')}
           </p>
         ) : (
           selectedItems.map((item, idx) => (
@@ -53,14 +56,12 @@ export const RepositoryScopeSection = ({
         <RepositoryDropdown
           onSelect={onAdd}
           excludeIds={repositoryIds}
-          placeholder="Select repository to add..."
+          placeholder={t('settings.triggers.selectRepoPlaceholder')}
           disabled={disabled}
           className="mt-2"
         />
 
-        <p className="mt-2 text-xs text-text-muted">
-          When repositories are selected, this trigger only fires for errors in those repositories.
-        </p>
+        <p className="mt-2 text-xs text-text-muted">{t('settings.triggers.repoScopeHint')}</p>
       </div>
     </details>
   );

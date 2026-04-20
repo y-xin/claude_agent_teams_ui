@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { MemberBadge } from '@renderer/components/team/MemberBadge';
 import { buildMemberColorMap } from '@renderer/utils/memberHelpers';

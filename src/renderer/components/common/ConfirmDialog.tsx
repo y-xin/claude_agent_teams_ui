@@ -6,6 +6,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { AlertTriangle } from 'lucide-react';
 
@@ -69,6 +70,7 @@ export async function confirm(opts: {
 export const ConfirmDialog = (): React.JSX.Element | null => {
   const [state, setState] = useState<ConfirmDialogState>(initialState);
   const dialogRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
 
   // Register singleton setter
   useEffect(() => {
@@ -115,7 +117,7 @@ export const ConfirmDialog = (): React.JSX.Element | null => {
         className="absolute inset-0 cursor-default"
         style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}
         onClick={() => close(false)}
-        aria-label="Close dialog"
+        aria-label={t('common.closeDialog')}
         tabIndex={-1}
       />
       <div
@@ -156,7 +158,7 @@ export const ConfirmDialog = (): React.JSX.Element | null => {
               color: 'var(--color-text-secondary)',
             }}
           >
-            {state.cancelLabel ?? 'Cancel'}
+            {state.cancelLabel ?? t('common.cancel')}
           </button>
           <button
             data-confirm-btn
@@ -167,7 +169,7 @@ export const ConfirmDialog = (): React.JSX.Element | null => {
                 : 'bg-zinc-600 text-white hover:bg-zinc-500'
             }`}
           >
-            {state.confirmLabel ?? 'Confirm'}
+            {state.confirmLabel ?? t('common.confirm')}
           </button>
         </div>
       </div>

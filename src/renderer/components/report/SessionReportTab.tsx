@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 
 import { useStore } from '@renderer/store';
+import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
 import { computeTakeaways } from '@renderer/utils/reportAssessments';
 import { analyzeSession } from '@renderer/utils/sessionAnalyzer';

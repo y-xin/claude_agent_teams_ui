@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ImageLightbox } from '@renderer/components/team/attachments/ImageLightbox';
 import { Button } from '@renderer/components/ui/button';
@@ -23,6 +24,7 @@ export const TaskAttachments = ({
   taskId,
   attachments,
 }: TaskAttachmentsProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const saveTaskAttachment = useStore((s) => s.saveTaskAttachment);
   const deleteTaskAttachment = useStore((s) => s.deleteTaskAttachment);
   const getTaskAttachmentData = useStore((s) => s.getTaskAttachmentData);
@@ -242,7 +244,7 @@ export const TaskAttachments = ({
       {/* Drop zone indicator */}
       {dragOver ? (
         <div className="flex items-center justify-center rounded-md border-2 border-dashed border-blue-500/40 bg-blue-500/5 py-4 text-xs text-blue-400">
-          Drop image here
+          {t('team.dropImageHere')}
         </div>
       ) : null}
 
@@ -264,9 +266,11 @@ export const TaskAttachments = ({
           onClick={() => fileInputRef.current?.click()}
         >
           {uploading ? <Loader2 size={12} className="animate-spin" /> : <ImagePlus size={12} />}
-          Attach image
+          {t('team.attachImage')}
         </Button>
-        <span className="text-[10px] text-[var(--color-text-muted)]">or paste / drag-drop</span>
+        <span className="text-[10px] text-[var(--color-text-muted)]">
+          {t('team.orPasteDragDrop')}
+        </span>
       </div>
 
       {error ? <p className="text-xs text-red-400">{error}</p> : null}

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { getNextSuggestedMemberName } from '@renderer/components/team/members/memberNameSets';
 import {
@@ -57,6 +58,7 @@ export const AddMemberDialog = ({
   projectPath,
   existingMembers,
 }: AddMemberDialogProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const [members, setMembers] = useState<MemberDraft[]>(() => buildInitialDrafts(existingNames));
   const [error, setError] = useState<string | null>(null);
 
@@ -74,16 +76,18 @@ export const AddMemberDialog = ({
       const inlineError = validateMemberNameInline(name);
       if (inlineError) return inlineError;
 
-      if (trimmed === 'user' || trimmed === 'team-lead') return `Name "${trimmed}" is reserved`;
+      if (trimmed === 'user' || trimmed === 'team-lead')
+        return t('team.addMemberDialog.nameReserved', { name: trimmed });
 
       // Check against existing team members
-      if (existingNames.some((n) => n.toLowerCase() === trimmed)) return 'Name is already taken';
+      if (existingNames.some((n) => n.toLowerCase() === trimmed))
+        return t('team.addMemberDialog.nameTaken');
 
       // Check for duplicates within the draft list
       const draftOccurrences = members.filter(
         (m) => m.name.trim().toLowerCase() === trimmed
       ).length;
-      if (draftOccurrences > 1) return 'Duplicate name in the list';
+      if (draftOccurrences > 1) return t('team.addMemberDialog.duplicateName');
 
       return null;
     },
@@ -107,7 +111,7 @@ export const AddMemberDialog = ({
       return;
     }
     if (built.length === 0) {
-      setError('Add at least one member');
+      setError(t('team.addMemberDialog.addAtLeastOne'));
       return;
     }
     setError(null);
@@ -147,8 +151,10 @@ export const AddMemberDialog = ({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className={`${DIALOG_WIDTH} max-w-[90vw]`}>
         <DialogHeader>
-          <DialogTitle>Add Members</DialogTitle>
-          <DialogDescription>Add new members to {teamName}</DialogDescription>
+          <DialogTitle>{t('team.addMemberDialog.title')}</DialogTitle>
+          <DialogDescription>
+            {t('team.addMemberDialog.description', { teamName })}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="max-h-[60vh] overflow-y-auto py-2">
@@ -167,11 +173,13 @@ export const AddMemberDialog = ({
 
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onClose} disabled={adding}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button type="button" disabled={adding || !hasValidMembers} onClick={handleSubmit}>
             {adding ? <Loader2 className="mr-1.5 size-4 animate-spin" /> : null}
-            {memberCount > 1 ? `Add ${memberCount} members` : 'Add member'}
+            {memberCount > 1
+              ? t('team.addMemberDialog.addMemberPlural', { count: memberCount })
+              : t('team.addMemberDialog.addMemberSingular')}
           </Button>
         </DialogFooter>
       </DialogContent>

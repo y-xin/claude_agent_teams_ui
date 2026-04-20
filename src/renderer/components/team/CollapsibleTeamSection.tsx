@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Badge } from '@renderer/components/ui/badge';
 import { cn } from '@renderer/lib/utils';
@@ -58,6 +59,7 @@ export const CollapsibleTeamSection = ({
   keepMounted,
   children,
 }: CollapsibleTeamSectionProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(defaultOpen);
   const isOpen = forceOpen ? true : open;
   const sectionRef = useRef<HTMLElement>(null);
@@ -98,7 +100,7 @@ export const CollapsibleTeamSection = ({
               return next;
             })
           }
-          aria-label={isOpen ? 'Collapse section' : 'Expand section'}
+          aria-label={isOpen ? t('team.section.collapse') : t('team.section.expand')}
         />
         <div
           className={cn(
@@ -124,9 +126,9 @@ export const CollapsibleTeamSection = ({
             <Badge
               variant="secondary"
               className="bg-blue-500/20 px-1.5 py-0.5 text-[10px] font-normal leading-none text-blue-600 dark:text-blue-400"
-              title={`${secondaryBadge} unread`}
+              title={t('team.section.unreadCount', { count: secondaryBadge })}
             >
-              {secondaryBadge} new
+              {t('team.section.newCount', { count: secondaryBadge })}
             </Badge>
           )}
           {afterBadge}

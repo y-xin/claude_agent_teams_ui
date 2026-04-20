@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useStore } from '@renderer/store';
 import { useTabIdOptional } from '@renderer/contexts/useTabUIContext';
@@ -110,6 +111,7 @@ export const MemberLogsTab = ({
   showLeadPreview = false,
   onPreviewOnlineChange,
 }: MemberLogsTabProps): React.JSX.Element => {
+  const { t } = useTranslation();
   // Visibility check: skip polling when tab is hidden (display:none) to avoid OOM
   const tabId = useTabIdOptional();
   const activeTabId = useStore((s) => s.activeTabId);
@@ -311,7 +313,7 @@ export const MemberLogsTab = ({
               id: `${previewLog.sessionId}:recent:${idx}`,
               timestamp: new Date(p.timestamp),
               kind: 'output' as const,
-              label: p.kind === 'thinking' ? 'Thinking' : 'Output',
+              label: p.kind === 'thinking' ? t('team.members.thinking') : t('team.members.output'),
               content: p.text,
             }));
           }
@@ -325,7 +327,7 @@ export const MemberLogsTab = ({
           id: `${previewLog.sessionId}:lastOutput`,
           timestamp: new Date(previewLog.startTime),
           kind: 'output',
-          label: 'Output',
+          label: t('team.members.output'),
           content: previewLog.lastOutputPreview,
         });
       }
@@ -334,7 +336,7 @@ export const MemberLogsTab = ({
           id: `${previewLog.sessionId}:lastThinking`,
           timestamp: new Date(previewLog.startTime),
           kind: 'output',
-          label: 'Thinking',
+          label: t('team.members.thinking'),
           content: previewLog.lastThinkingPreview,
         });
       }
@@ -347,7 +349,7 @@ export const MemberLogsTab = ({
       }
       return [];
     }
-    const raw = extractSubagentPreviewMessages(previewChunks);
+    const raw = extractSubagentPreviewMessages(previewChunks, t);
     // For lead preview, user messages are system-generated prompts (not useful).
     // Show only AI outputs — the actual work results.
     // If no outputs found, fall back to summary previews.
@@ -660,7 +662,7 @@ export const MemberLogsTab = ({
     return (
       <div className="flex items-center justify-center gap-2 py-8 text-xs text-[var(--color-text-muted)]">
         <Loader2 size={14} className="animate-spin" />
-        Searching logs...
+        {t('team.members.searchingLogs')}
       </div>
     );
   }
@@ -678,13 +680,13 @@ export const MemberLogsTab = ({
     return (
       <div className="py-8 text-center text-xs text-[var(--color-text-muted)]">
         <FileText size={20} className="mx-auto mb-2 opacity-40" />
-        No logs found
+        {t('team.members.noLogsFound')}
         <p className="mt-1 text-[10px] opacity-60">
           {taskId != null
             ? taskStatus === 'in_progress'
-              ? 'Task is in progress — waiting for session activity (auto-refreshing)...'
-              : 'No session activity for this task yet'
-            : 'This member has no recorded session activity yet'}
+              ? t('team.members.taskInProgressWaiting')
+              : t('team.members.noSessionForTask')
+            : t('team.members.noRecordedActivity')}
         </p>
       </div>
     );
@@ -729,13 +731,14 @@ const LogCard = ({
   detailLoading,
   onToggle,
 }: LogCardProps): React.JSX.Element => {
-  const createdAgo = formatRelativeTime(log.startTime);
+  const { t } = useTranslation();
+  const createdAgo = formatRelativeTime(log.startTime, t);
   const lastActivityTime = useMemo(() => {
     const startMs = new Date(log.startTime).getTime();
     if (!Number.isFinite(startMs) || log.durationMs <= 0) return null;
     return new Date(startMs + log.durationMs).toISOString();
   }, [log.startTime, log.durationMs]);
-  const updatedAgo = lastActivityTime ? formatRelativeTime(lastActivityTime) : null;
+  const updatedAgo = lastActivityTime ? formatRelativeTime(lastActivityTime, t) : null;
 
   const memberColorCss = useMemo(() => {
     if (!log.memberName) return null;
@@ -778,8 +781,7 @@ const LogCard = ({
                       </span>
                     </TooltipTrigger>
                     <TooltipContent side="top" className="max-w-[240px] text-center">
-                      Full team lead session logs — useful for global orchestration context, not
-                      specific to this agent
+                      {t('team.members.leadSessionTooltip')}
                     </TooltipContent>
                   </Tooltip>
                 )}
@@ -791,7 +793,9 @@ const LogCard = ({
                       <Clock size={10} />
                       {updatedAgo}
                     </span>
-                    <span style={{ opacity: 0.4 }}>started {createdAgo}</span>
+                    <span style={{ opacity: 0.4 }}>
+                      {t('team.members.started', { time: createdAgo })}
+                    </span>
                   </>
                 ) : (
                   <span className="flex items-center gap-1">
@@ -805,7 +809,9 @@ const LogCard = ({
                   {log.messageCount}
                 </span>
                 {log.isOngoing && (
-                  <span className="rounded-full bg-green-500/20 px-1.5 text-green-400">active</span>
+                  <span className="rounded-full bg-green-500/20 px-1.5 text-green-400">
+                    {t('team.members.active')}
+                  </span>
                 )}
               </div>
               {log.lastOutputPreview && !expanded && (
@@ -819,7 +825,9 @@ const LogCard = ({
             </div>
           </button>
         </TooltipTrigger>
-        <TooltipContent side="bottom">{expanded ? 'Hide details' : 'Show details'}</TooltipContent>
+        <TooltipContent side="bottom">
+          {expanded ? t('team.members.hideDetails') : t('team.members.showDetails')}
+        </TooltipContent>
       </Tooltip>
 
       {expanded && (
@@ -827,12 +835,12 @@ const LogCard = ({
           {detailLoading && (
             <div className="flex items-center gap-2 py-4 text-xs text-[var(--color-text-muted)]">
               <Loader2 size={12} className="animate-spin" />
-              Loading details...
+              {t('team.members.loadingDetails')}
             </div>
           )}
           {!detailLoading && !detailChunks && (
             <div className="py-4 text-xs text-[var(--color-text-muted)]">
-              Failed to load details
+              {t('team.members.failedToLoadDetails')}
             </div>
           )}
           {!detailLoading && detailChunks && (
@@ -849,7 +857,10 @@ const LogCard = ({
   );
 };
 
-function formatRelativeTime(isoString: string): string {
+function formatRelativeTime(
+  isoString: string,
+  t: (key: string, opts?: Record<string, unknown>) => string
+): string {
   const date = new Date(isoString);
   const now = Date.now();
   const diffMs = now - date.getTime();
@@ -857,14 +868,17 @@ function formatRelativeTime(isoString: string): string {
   const diffHours = Math.floor(diffMin / 60);
   const diffDays = Math.floor(diffHours / 24);
 
-  if (diffMin < 1) return 'just now';
-  if (diffMin < 60) return `${diffMin}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffDays < 7) return `${diffDays}d ago`;
+  if (diffMin < 1) return t('team.members.justNow');
+  if (diffMin < 60) return t('team.members.minutesAgo', { count: diffMin });
+  if (diffHours < 24) return t('team.members.hoursAgo', { count: diffHours });
+  if (diffDays < 7) return t('team.members.daysAgo', { count: diffDays });
   return date.toLocaleDateString();
 }
 
-function extractSubagentPreviewMessages(chunks: EnhancedChunk[]): SubagentPreviewMessage[] {
+function extractSubagentPreviewMessages(
+  chunks: EnhancedChunk[],
+  t: (key: string, opts?: Record<string, unknown>) => string
+): SubagentPreviewMessage[] {
   const conversation = transformChunksToConversation(chunks, [], false);
 
   const out: SubagentPreviewMessage[] = [];
@@ -882,7 +896,7 @@ function extractSubagentPreviewMessages(chunks: EnhancedChunk[]): SubagentPrevie
             id: `${item.group.id}:output:${di.timestamp.toISOString()}:${j}`,
             timestamp: di.timestamp,
             kind: 'output',
-            label: 'Output',
+            label: t('team.members.output'),
             content: di.content,
           });
         } else if (di.type === 'teammate_message') {
@@ -890,7 +904,7 @@ function extractSubagentPreviewMessages(chunks: EnhancedChunk[]): SubagentPrevie
             id: `${item.group.id}:teammate:${di.teammateMessage.id}`,
             timestamp: di.teammateMessage.timestamp,
             kind: 'teammate_message',
-            label: `Message — ${di.teammateMessage.teammateId}`,
+            label: t('team.members.messageFrom', { name: di.teammateMessage.teammateId }),
             content: di.teammateMessage.content || di.teammateMessage.summary,
           });
         }
@@ -902,7 +916,7 @@ function extractSubagentPreviewMessages(chunks: EnhancedChunk[]): SubagentPrevie
           id: `${item.group.id}:user:${item.group.timestamp.toISOString()}`,
           timestamp: item.group.timestamp,
           kind: 'user',
-          label: 'User',
+          label: t('team.members.userLabel'),
           content: text,
         });
       }

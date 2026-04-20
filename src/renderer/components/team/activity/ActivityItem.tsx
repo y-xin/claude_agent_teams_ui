@@ -1,4 +1,5 @@
 import { Fragment, memo, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { MarkdownViewer } from '@renderer/components/chat/viewers/MarkdownViewer';
 import { CopyButton } from '@renderer/components/common/CopyButton';
@@ -433,6 +434,7 @@ export const ActivityItem = memo(
     expandItemKey,
     onExpandContent,
   }: ActivityItemProps): React.JSX.Element {
+    const { t } = useTranslation();
     const colors = getTeamColorSet(memberColor ?? message.color ?? '');
     const { isLight } = useTheme();
     // Hide role when it matches the sender name (avoids "lead" badge + "Team Lead" text duplication)
@@ -731,7 +733,11 @@ export const ActivityItem = memo(
           }
         >
           {isUnread ? (
-            <span className="size-2 shrink-0 rounded-full bg-blue-500" title="Unread" aria-hidden />
+            <span
+              className="size-2 shrink-0 rounded-full bg-blue-500"
+              title={t('team.unread')}
+              aria-hidden
+            />
           ) : null}
           {/* Chevron for collapsible messages */}
           {showChevron ? (
@@ -916,7 +922,7 @@ export const ActivityItem = memo(
             {onExpand && expandItemKey && (
               <button
                 type="button"
-                aria-label="Expand message"
+                aria-label={t('team.expandMessage')}
                 className="absolute right-0 top-1/2 -translate-y-1/2 rounded p-0.5 opacity-0 transition-opacity focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500/50 group-hover:opacity-100"
                 style={{ color: CARD_ICON_MUTED }}
                 onClick={(e) => {
@@ -1039,7 +1045,7 @@ export const ActivityItem = memo(
                           <Reply size={14} />
                         </button>
                       </TooltipTrigger>
-                      <TooltipContent side="top">Reply to message</TooltipContent>
+                      <TooltipContent side="top">{t('team.replyToMessage')}</TooltipContent>
                     </Tooltip>
                   ) : null}
                   {onCreateTask ? (
@@ -1057,7 +1063,7 @@ export const ActivityItem = memo(
                           <ListPlus size={14} />
                         </button>
                       </TooltipTrigger>
-                      <TooltipContent side="top">Create task from message</TooltipContent>
+                      <TooltipContent side="top">{t('team.createTaskFromMessage')}</TooltipContent>
                     </Tooltip>
                   ) : null}
                   <CopyButton text={displayText} inline />

@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactMarkdown, { type Components, defaultUrlTransform } from 'react-markdown';
+import { useTranslation } from 'react-i18next';
 
 import { api } from '@renderer/api';
 import { CopyButton } from '@renderer/components/common/CopyButton';
@@ -687,6 +688,7 @@ export const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
   teamColorByName: providedTeamColorByName,
   onTeamClick: providedOnTeamClick,
 }) => {
+  const { t } = useTranslation();
   const [showRaw, setShowRaw] = React.useState(false);
   const [rawLimit, setRawLimit] = React.useState(LARGE_PREVIEW_CHARS);
   const { isLight } = useTheme();
@@ -784,7 +786,7 @@ export const MarkdownViewer: React.FC<MarkdownViewerProps> = ({
             className="flex items-center justify-between px-3 py-2 text-xs"
             style={{ color: COLOR_TEXT_MUTED }}
           >
-            <span>Raw preview</span>
+            <span>{t('chat.rawPreviewLabel')}</span>
             <button
               type="button"
               className="underline"

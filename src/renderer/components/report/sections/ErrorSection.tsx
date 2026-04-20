@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { AlertTriangle, ChevronDown, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { ReportSection } from '../ReportSection';
 

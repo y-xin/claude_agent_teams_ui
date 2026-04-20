@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { MessageSquare } from 'lucide-react';
 
@@ -41,6 +42,7 @@ export const TextItem: React.FC<TextItemProps> = ({
   highlightStyle,
   notificationDotColor,
 }) => {
+  const { t } = useTranslation();
   const fullContent = step.content.outputText ?? preview;
   const summary = searchQueryOverride
     ? highlightQueryInText(preview, searchQueryOverride, `${markdownItemId ?? step.id}:summary`, {
@@ -54,7 +56,7 @@ export const TextItem: React.FC<TextItemProps> = ({
   return (
     <BaseItem
       icon={<MessageSquare className="size-4" />}
-      label="Output"
+      label={t('chat.output')}
       summary={summary}
       tokenCount={tokenCount}
       timestamp={timestamp}

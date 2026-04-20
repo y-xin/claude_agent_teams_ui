@@ -3,6 +3,7 @@
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   COLOR_BORDER,
@@ -53,6 +54,7 @@ export const SessionContextHeader = ({
   viewMode,
   onViewModeChange,
 }: Readonly<SessionContextHeaderProps>): React.ReactElement => {
+  const { t } = useTranslation();
   return (
     <div className="shrink-0 px-4 py-3" style={{ borderBottom: `1px solid ${COLOR_BORDER}` }}>
       {/* Title row */}
@@ -60,7 +62,7 @@ export const SessionContextHeader = ({
         <div className="flex items-center gap-2">
           <FileText size={16} style={{ color: COLOR_TEXT_SECONDARY }} />
           <h2 className="text-sm font-semibold" style={{ color: COLOR_TEXT }}>
-            Visible Context
+            {t('chat.visibleContext')}
           </h2>
           <span
             className="rounded px-1.5 py-0.5 text-xs"
@@ -79,7 +81,7 @@ export const SessionContextHeader = ({
               onClick={onClose}
               className="rounded p-1 transition-colors hover:bg-white/10"
               style={{ color: COLOR_TEXT_SECONDARY }}
-              aria-label="Close panel"
+              aria-label={t('chat.closePanel')}
             >
               <X size={16} />
             </button>
@@ -95,7 +97,7 @@ export const SessionContextHeader = ({
         <div className="flex items-center gap-4">
           {/* Visible Context tokens */}
           <div>
-            <span style={{ color: COLOR_TEXT_MUTED }}>Visible: </span>
+            <span style={{ color: COLOR_TEXT_MUTED }}>{t('chat.visible')}: </span>
             <span className="font-medium tabular-nums" style={{ color: COLOR_TEXT_SECONDARY }}>
               ~{formatTokens(totalTokens)}
             </span>
@@ -103,7 +105,7 @@ export const SessionContextHeader = ({
           {/* Total Input tokens (if provided) */}
           {totalSessionTokens !== undefined && totalSessionTokens > 0 && (
             <div>
-              <span style={{ color: COLOR_TEXT_MUTED }}>Input: </span>
+              <span style={{ color: COLOR_TEXT_MUTED }}>{t('chat.input')}: </span>
               <span className="font-medium tabular-nums" style={{ color: COLOR_TEXT_SECONDARY }}>
                 {formatTokens(totalSessionTokens)}
               </span>
@@ -133,7 +135,7 @@ export const SessionContextHeader = ({
           {/* Cost */}
           {sessionMetrics.costUsd !== undefined && sessionMetrics.costUsd > 0 && (
             <div className="col-span-2">
-              <span style={{ color: COLOR_TEXT_MUTED }}>Session Cost: </span>
+              <span style={{ color: COLOR_TEXT_MUTED }}>{t('chat.sessionCost')}: </span>
               <span className="font-medium tabular-nums" style={{ color: COLOR_TEXT_SECONDARY }}>
                 {formatCostUsd(sessionMetrics.costUsd + (subagentCostUsd ?? 0))}
               </span>
@@ -141,9 +143,9 @@ export const SessionContextHeader = ({
                 <span style={{ color: COLOR_TEXT_MUTED }}>
                   {' ('}
                   {formatCostUsd(sessionMetrics.costUsd)}
-                  {' parent + '}
+                  {` ${t('chat.parent')} + `}
                   {formatCostUsd(subagentCostUsd)}
-                  {' subagents'}
+                  {` ${t('chat.subagents')}`}
                   {onViewReport && (
                     <>
                       {' · '}
@@ -152,7 +154,7 @@ export const SessionContextHeader = ({
                         className="underline"
                         style={{ color: COLOR_TEXT_SECONDARY }}
                       >
-                        details
+                        {t('chat.details')}
                       </button>
                     </>
                   )}
@@ -171,7 +173,7 @@ export const SessionContextHeader = ({
           style={{ borderTop: `1px solid ${COLOR_BORDER_SUBTLE}` }}
         >
           <span className="mr-1 text-[10px]" style={{ color: COLOR_TEXT_MUTED }}>
-            Phase:
+            {t('chat.phase')}:
           </span>
           {phaseInfo.phases.map((phase) => (
             <button
@@ -200,7 +202,7 @@ export const SessionContextHeader = ({
               color: selectedPhase === null ? '#818cf8' : COLOR_TEXT_MUTED,
             }}
           >
-            Current
+            {t('chat.current')}
           </button>
         </div>
       )}
@@ -211,7 +213,7 @@ export const SessionContextHeader = ({
         style={{ borderTop: `1px solid ${COLOR_BORDER_SUBTLE}` }}
       >
         <span className="mr-1 text-[10px]" style={{ color: COLOR_TEXT_MUTED }}>
-          View:
+          {t('chat.view')}:
         </span>
         <button
           onClick={() => onViewModeChange('category')}
@@ -223,7 +225,7 @@ export const SessionContextHeader = ({
           }}
         >
           <LayoutList size={10} />
-          Category
+          {t('chat.category')}
         </button>
         <button
           onClick={() => onViewModeChange('ranked')}
@@ -235,7 +237,7 @@ export const SessionContextHeader = ({
           }}
         >
           <ArrowDownWideNarrow size={10} />
-          By Size
+          {t('chat.bySize')}
         </button>
       </div>
     </div>

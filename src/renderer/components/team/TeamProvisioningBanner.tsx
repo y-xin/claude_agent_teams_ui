@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@renderer/components/ui/button';
 import { useStore } from '@renderer/store';
@@ -16,6 +17,7 @@ interface TeamProvisioningBannerProps {
 export const TeamProvisioningBanner = ({
   teamName,
 }: TeamProvisioningBannerProps): React.JSX.Element | null => {
+  const { t } = useTranslation();
   const { progress, cancelProvisioning, teamMembers } = useStore(
     useShallow((s) => ({
       progress: getCurrentProvisioningProgressForTeam(s, teamName),
@@ -86,7 +88,7 @@ export const TeamProvisioningBanner = ({
         </div>
         <ProvisioningProgressBlock
           key={progress.runId}
-          title="Launch failed"
+          title={t('team.launchFailed')}
           message={progress.error ?? null}
           tone="error"
           currentStepIndex={lastActiveStepRef.current}
@@ -116,7 +118,7 @@ export const TeamProvisioningBanner = ({
       <div className="mb-3">
         <ProvisioningProgressBlock
           key={progress.runId}
-          title="Launch details"
+          title={t('team.launchDetails')}
           message={progress.message}
           messageSeverity={progress.messageSeverity}
           currentStepIndex={progressStepIndex >= 0 ? progressStepIndex : -1}
@@ -138,7 +140,7 @@ export const TeamProvisioningBanner = ({
       <div className="mb-3">
         <ProvisioningProgressBlock
           key={progress.runId}
-          title="Launching team"
+          title={t('team.launchingTeam')}
           message={progress.message}
           messageSeverity={progress.messageSeverity}
           currentStepIndex={progressStepIndex >= 0 ? progressStepIndex : -1}

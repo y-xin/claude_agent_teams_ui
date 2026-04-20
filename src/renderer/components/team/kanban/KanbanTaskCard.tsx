@@ -1,4 +1,5 @@
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { MemberBadge } from '@renderer/components/team/MemberBadge';
 import { UnreadCommentsBadge } from '@renderer/components/team/UnreadCommentsBadge';
@@ -238,6 +239,7 @@ export const KanbanTaskCard = memo(
     onViewChanges,
     onDeleteTask,
   }: KanbanTaskCardProps): React.JSX.Element {
+    const { t } = useTranslation();
     const unreadCount = useUnreadCommentCount(teamName, task.id, task.comments);
     const blockedByIds = task.blockedBy?.filter((id) => id.length > 0) ?? [];
     const blocksIds = task.blocks?.filter((id) => id.length > 0) ?? [];
@@ -255,7 +257,7 @@ export const KanbanTaskCard = memo(
       <>
         {canDisplay && task.changePresence === 'has_changes' ? (
           <TaskActionIconButton
-            label="Changes"
+            label={t('team.kanban.changes')}
             icon={<FileCode className="size-2.5" />}
             variant="ghost"
             className="text-sky-400 hover:bg-sky-500/10 hover:text-sky-300"
@@ -272,7 +274,7 @@ export const KanbanTaskCard = memo(
         <UnreadCommentsBadge unreadCount={unreadCount} totalCount={task.comments?.length ?? 0} />
         {onDeleteTask ? (
           <TaskActionIconButton
-            label="Delete task"
+            label={t('team.kanban.deleteTask')}
             icon={<Trash2 size={11} />}
             variant="ghost"
             className="text-red-400 hover:bg-red-500/10 hover:text-red-300"
@@ -322,7 +324,9 @@ export const KanbanTaskCard = memo(
               }`}
             >
               <HelpCircle size={10} />
-              {task.needsClarification === 'user' ? 'Awaiting user' : 'Awaiting lead'}
+              {task.needsClarification === 'user'
+                ? t('team.kanban.awaitingUser')
+                : t('team.kanban.awaitingLead')}
             </span>
           ) : null}
           {task.reviewState === 'needsFix' ? (
@@ -374,7 +378,7 @@ export const KanbanTaskCard = memo(
             {columnId === 'todo' ? (
               <>
                 <TaskActionIconButton
-                  label="Start"
+                  label={t('team.kanban.start')}
                   icon={<Play size={11} />}
                   className="border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300"
                   onClick={(e) => {
@@ -383,7 +387,7 @@ export const KanbanTaskCard = memo(
                   }}
                 />
                 <TaskActionIconButton
-                  label="Complete"
+                  label={t('team.kanban.complete')}
                   icon={<CheckCircle2 size={11} />}
                   className="border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300"
                   onClick={(e) => {
@@ -397,7 +401,7 @@ export const KanbanTaskCard = memo(
             {columnId === 'in_progress' ? (
               <>
                 <TaskActionIconButton
-                  label="Complete"
+                  label={t('team.kanban.complete')}
                   icon={<CheckCircle2 size={11} />}
                   className="border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300"
                   onClick={(e) => {
@@ -412,7 +416,7 @@ export const KanbanTaskCard = memo(
             {columnId === 'done' ? (
               <>
                 <TaskActionIconButton
-                  label="Approve"
+                  label={t('team.kanban.approve')}
                   icon={<CheckCircle2 size={11} />}
                   className="border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300"
                   onClick={(e) => {
@@ -421,7 +425,7 @@ export const KanbanTaskCard = memo(
                   }}
                 />
                 <TaskActionIconButton
-                  label="Request review"
+                  label={t('team.kanban.requestReview')}
                   icon={<Eye size={11} />}
                   className="border-violet-500/40 text-violet-400 hover:bg-violet-500/10 hover:text-violet-300"
                   onClick={(e) => {
@@ -441,7 +445,7 @@ export const KanbanTaskCard = memo(
                 ) : null}
                 <div className="flex flex-wrap items-center gap-2">
                   <TaskActionIconButton
-                    label="Approve"
+                    label={t('team.kanban.approve')}
                     icon={<CheckCircle2 size={11} />}
                     className="border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300"
                     onClick={(e) => {
@@ -450,7 +454,7 @@ export const KanbanTaskCard = memo(
                     }}
                   />
                   <TaskActionIconButton
-                    label="Request changes"
+                    label={t('team.kanban.requestChanges')}
                     icon={<FilePenLine size={11} />}
                     variant="destructive"
                     className="bg-red-500/90 text-white hover:bg-red-500"
@@ -465,7 +469,7 @@ export const KanbanTaskCard = memo(
 
             {columnId === 'approved' ? (
               <TaskActionIconButton
-                label="Disapprove"
+                label={t('team.kanban.disapprove')}
                 icon={<RotateCcw size={11} />}
                 className="border-amber-500/40 text-amber-400 hover:bg-amber-500/10 hover:text-amber-300"
                 onClick={(e) => {

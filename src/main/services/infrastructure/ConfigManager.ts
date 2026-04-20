@@ -206,6 +206,7 @@ export interface GeneralConfig {
   defaultTab: 'dashboard' | 'last-session';
   claudeRootPath: string | null;
   agentLanguage: string;
+  uiLanguage: string;
   autoExpandAIGroups: boolean;
   useNativeTitleBar: boolean;
   /** Paths manually added via "Select Folder" that persist across app restarts */
@@ -292,6 +293,7 @@ const DEFAULT_CONFIG: AppConfig = {
     defaultTab: 'dashboard',
     claudeRootPath: null,
     agentLanguage: 'system',
+    uiLanguage: 'system',
     autoExpandAIGroups: false,
     useNativeTitleBar: false,
     customProjectPaths: [],

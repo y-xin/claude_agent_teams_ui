@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   CARD_ICON_MUTED,
@@ -55,6 +56,7 @@ export const ExecutionTrace: React.FC<ExecutionTraceProps> = ({
   searchExpandedItemId,
   registerToolRef,
 }): React.JSX.Element => {
+  const { t } = useTranslation();
   const [manualExpandedItemId, setManualExpandedItemId] = useState<string | null>(null);
 
   // Use searchExpandedItemId if set, otherwise use manually expanded item
@@ -167,7 +169,7 @@ export const ExecutionTrace: React.FC<ExecutionTraceProps> = ({
               <BaseItem
                 key={itemId}
                 icon={<MailOpen className="size-4" />}
-                label="Input"
+                label={t('chat.inputLabel')}
                 summary={truncateText(item.content, 80)}
                 tokenCount={item.tokenCount}
                 timestamp={item.timestamp}

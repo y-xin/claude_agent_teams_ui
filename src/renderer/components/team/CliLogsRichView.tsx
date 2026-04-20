@@ -11,6 +11,7 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { DisplayItemList } from '@renderer/components/chat/DisplayItemList';
 import { highlightQueryInText } from '@renderer/components/chat/searchHighlightUtils';
@@ -262,7 +263,11 @@ const SubagentSectionBlock = ({
   onItemClick: (itemId: string) => void;
   searchQueryOverride?: string;
 }): React.JSX.Element => {
-  const label = `Agent — ${section.description} (${section.toolCount} tool${section.toolCount !== 1 ? 's' : ''})`;
+  const { t } = useTranslation();
+  const label = t('team.cliLogs.agentLabel', {
+    description: section.description,
+    count: section.toolCount,
+  });
 
   return (
     <div
@@ -345,6 +350,7 @@ export const CliLogsRichView = ({
   viewerState: controlledState,
   onViewerStateChange,
 }: CliLogsRichViewProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const stickToEdgeRef = useRef(true);
   const lastOrderRef = useRef<CliLogsOrder>(order);
@@ -565,7 +571,7 @@ export const CliLogsRichView = ({
             <span className="relative inline-flex size-2 rounded-full bg-[var(--color-text-muted)]" />
           </span>
           <span className="text-[11px] text-[var(--color-text-muted)]">
-            Waiting for response...
+            {t('team.cliLogs.waitingForResponse')}
           </span>
         </div>
         {footer}

@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { isElectronMode } from '@renderer/api';
 import {
@@ -55,6 +56,7 @@ export const SettingsTabs = ({
   activeSection,
   onSectionChange,
 }: Readonly<SettingsTabsProps>): React.JSX.Element => {
+  const { t } = useTranslation();
   const isElectron = useMemo(() => isElectronMode(), []);
   const visibleTabs = useMemo(
     () => tabs.filter((tab) => !tab.electronOnly || isElectron),
@@ -80,14 +82,14 @@ export const SettingsTabs = ({
                 }`}
               >
                 <Icon className="size-3.5" />
-                {tab.label}
+                {t(`settings.tabs.${tab.id}`)}
 
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <span
                       role="button"
                       tabIndex={0}
-                      aria-label={`What is ${tab.label}?`}
+                      aria-label={t('settings.tabs.whatIs', { tab: t(`settings.tabs.${tab.id}`) })}
                       onClick={(event) => event.stopPropagation()}
                       onMouseDown={(event) => event.stopPropagation()}
                       onKeyDown={(event) => {
@@ -101,7 +103,7 @@ export const SettingsTabs = ({
                     </span>
                   </TooltipTrigger>
                   <TooltipContent className="max-w-64 text-pretty text-xs leading-relaxed">
-                    {tab.description}
+                    {t(`settings.tabs.${tab.id}Desc`)}
                   </TooltipContent>
                 </Tooltip>
               </button>

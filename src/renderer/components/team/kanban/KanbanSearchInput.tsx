@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { MemberBadge } from '@renderer/components/team/MemberBadge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@renderer/components/ui/tooltip';
@@ -29,6 +30,7 @@ export const KanbanSearchInput = ({
   tasks,
   members,
 }: KanbanSearchInputProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const [showDropdown, setShowDropdown] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -130,7 +132,7 @@ export const KanbanSearchInput = ({
       <input
         ref={inputRef}
         type="text"
-        placeholder="Search tasks... (#id or text)"
+        placeholder={t('team.kanban.searchPlaceholder')}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
@@ -147,7 +149,7 @@ export const KanbanSearchInput = ({
               <X size={14} />
             </button>
           </TooltipTrigger>
-          <TooltipContent side="bottom">Clear search</TooltipContent>
+          <TooltipContent side="bottom">{t('dashboard.clearSearch')}</TooltipContent>
         </Tooltip>
       )}
 
@@ -160,7 +162,7 @@ export const KanbanSearchInput = ({
           <div className="flex items-center gap-1.5 px-3 py-1.5">
             <Hash size={10} className="text-[var(--color-text-muted)]" />
             <span className="text-[10px] font-medium uppercase tracking-wide text-[var(--color-text-muted)]">
-              Tasks
+              {t('layout.tasks')}
             </span>
           </div>
           {suggestions.map((task, index) => (
@@ -272,10 +274,10 @@ const TaskSuggestionItem = React.memo(function TaskSuggestionItem({
             />
           )}
           {createdAgo && (
-            <span className="text-[9px] text-[var(--color-text-muted)]">created {createdAgo}</span>
+            <span className="text-[9px] text-[var(--color-text-muted)]">{createdAgo}</span>
           )}
           {updatedAgo && updatedAgo !== createdAgo && (
-            <span className="text-[9px] text-[var(--color-text-muted)]">updated {updatedAgo}</span>
+            <span className="text-[9px] text-[var(--color-text-muted)]">{updatedAgo}</span>
           )}
         </div>
       </div>

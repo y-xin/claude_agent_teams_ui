@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import {
   KANBAN_COLUMN_DISPLAY,
   REVIEW_STATE_DISPLAY,
@@ -13,6 +15,7 @@ interface TaskRowProps {
 }
 
 export const TaskRow = ({ task }: TaskRowProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const blockedByIds = task.blockedBy?.filter((id) => id.length > 0) ?? [];
   const blocksIds = task.blocks?.filter((id) => id.length > 0) ?? [];
   const kanbanColumn = getTaskKanbanColumn(task);
@@ -24,7 +27,7 @@ export const TaskRow = ({ task }: TaskRowProps): React.JSX.Element => {
       </td>
       <td className="px-3 py-2 text-sm text-[var(--color-text)]">{task.subject}</td>
       <td className="px-3 py-2 text-xs text-[var(--color-text-muted)]">
-        {task.owner ?? 'Unassigned'}
+        {task.owner ?? t('team.tasks.unassigned')}
       </td>
       <td className="px-3 py-2 text-xs text-[var(--color-text-muted)]">
         <div className="flex flex-wrap items-center gap-1">

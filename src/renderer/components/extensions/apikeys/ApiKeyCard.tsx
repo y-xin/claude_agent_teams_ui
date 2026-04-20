@@ -3,6 +3,7 @@
  */
 
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Badge } from '@renderer/components/ui/badge';
 import { Button } from '@renderer/components/ui/button';
@@ -23,6 +24,7 @@ interface ApiKeyCardProps {
 }
 
 export const ApiKeyCard = ({ apiKey, onEdit }: ApiKeyCardProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const deleteApiKey = useStore((s) => s.deleteApiKey);
   const [copied, setCopied] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -87,7 +89,9 @@ export const ApiKeyCard = ({ apiKey, onEdit }: ApiKeyCardProps): React.JSX.Eleme
                 )}
               </Button>
             </TooltipTrigger>
-            <TooltipContent>{copied ? 'Copied!' : 'Copy env var name'}</TooltipContent>
+            <TooltipContent>
+              {copied ? t('common.copied') : t('extensions.apiKeys.copyEnvVar')}
+            </TooltipContent>
           </Tooltip>
         </TooltipProvider>
       </div>
@@ -111,7 +115,7 @@ export const ApiKeyCard = ({ apiKey, onEdit }: ApiKeyCardProps): React.JSX.Eleme
                   <Pencil className="size-3.5 text-text-muted" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Edit</TooltipContent>
+              <TooltipContent>{t('common.edit')}</TooltipContent>
             </Tooltip>
           </TooltipProvider>
 
@@ -127,7 +131,9 @@ export const ApiKeyCard = ({ apiKey, onEdit }: ApiKeyCardProps): React.JSX.Eleme
                   <Trash2 className="size-3.5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>{confirmDelete ? 'Click again to confirm' : 'Delete'}</TooltipContent>
+              <TooltipContent>
+                {confirmDelete ? t('extensions.apiKeys.clickToConfirm') : t('common.delete')}
+              </TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>

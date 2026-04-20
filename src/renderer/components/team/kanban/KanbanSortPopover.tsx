@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import { Button } from '@renderer/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@renderer/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@renderer/components/ui/tooltip';
@@ -12,32 +14,32 @@ export interface KanbanSortState {
 
 const SORT_OPTIONS: {
   field: KanbanSortField;
-  label: string;
-  description: string;
+  labelKey: string;
+  descKey: string;
   icon: React.ReactNode;
 }[] = [
   {
     field: 'updatedAt',
-    label: 'Last updated',
-    description: 'Recently updated first',
+    labelKey: 'team.kanban.sortLastUpdated',
+    descKey: 'team.kanban.sortLastUpdatedDesc',
     icon: <Clock size={14} />,
   },
   {
     field: 'createdAt',
-    label: 'Created',
-    description: 'Newest first',
+    labelKey: 'team.kanban.sortCreated',
+    descKey: 'team.kanban.sortCreatedDesc',
     icon: <Calendar size={14} />,
   },
   {
     field: 'owner',
-    label: 'Owner',
-    description: 'Alphabetically by assignee',
+    labelKey: 'team.kanban.sortOwner',
+    descKey: 'team.kanban.sortOwnerDesc',
     icon: <User size={14} />,
   },
   {
     field: 'manual',
-    label: 'Manual',
-    description: 'Drag-and-drop order',
+    labelKey: 'team.kanban.sortManual',
+    descKey: 'team.kanban.sortManualDesc',
     icon: <GripVertical size={14} />,
   },
 ];
@@ -51,6 +53,7 @@ export const KanbanSortPopover = ({
   sort,
   onSortChange,
 }: KanbanSortPopoverProps): React.JSX.Element => {
+  const { t } = useTranslation();
   const isNonDefault = sort.field !== 'updatedAt';
 
   return (
@@ -62,7 +65,7 @@ export const KanbanSortPopover = ({
               variant="ghost"
               size="sm"
               className="relative h-7 px-2 text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-              aria-label="Sort tasks"
+              aria-label={t('team.kanban.sortTasks')}
             >
               <ArrowUpDown size={14} />
               {isNonDefault && (
@@ -73,12 +76,12 @@ export const KanbanSortPopover = ({
             </Button>
           </PopoverTrigger>
         </TooltipTrigger>
-        <TooltipContent side="bottom">Sort tasks</TooltipContent>
+        <TooltipContent side="bottom">{t('team.kanban.sortTasks')}</TooltipContent>
       </Tooltip>
       <PopoverContent align="end" className="w-56 p-0">
         <div className="p-3">
           <p className="mb-2 text-[11px] font-medium uppercase tracking-wider text-[var(--color-text-muted)]">
-            Sort by
+            {t('team.kanban.sortBy')}
           </p>
           <div className="space-y-0.5">
             {SORT_OPTIONS.map((option) => {
@@ -104,14 +107,14 @@ export const KanbanSortPopover = ({
                     {option.icon}
                   </span>
                   <div className="min-w-0">
-                    <div className="font-medium">{option.label}</div>
+                    <div className="font-medium">{t(option.labelKey)}</div>
                     <div
                       className={cn(
                         'text-[10px]',
                         isSelected ? 'text-blue-300/70' : 'text-[var(--color-text-muted)]'
                       )}
                     >
-                      {option.description}
+                      {t(option.descKey)}
                     </div>
                   </div>
                   {isSelected && (
@@ -130,7 +133,7 @@ export const KanbanSortPopover = ({
               className="h-6 px-2 text-[11px] text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
               onClick={() => onSortChange({ field: 'updatedAt' })}
             >
-              Reset
+              {t('team.kanban.reset')}
             </Button>
           </div>
         )}
